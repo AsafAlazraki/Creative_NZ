@@ -2,6 +2,10 @@
 
 ## 0.1.0 — Initial build (2026-04-23)
 
+Fresh Next.js 15 + TypeScript + Tailwind v4 + Drizzle + better-sqlite3 build of KavaWorks per `KAVAWORKS_BUILD_BRIEF.md`. All 22 routes render across 7 role personas × 5 cultural themes × light/dark mode.
+
+
+
 Fresh build from the KavaWorks brief. Single-file React PWA at `app/KavaWorks.html`.
 
 ### Added
