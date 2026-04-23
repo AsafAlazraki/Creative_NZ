@@ -1,0 +1,11 @@
+node_modules/
+.next/
+db/kavaworks.db
+db/kavaworks.db-shm
+db/kavaworks.db-wal
+db/migrations/
+.env
+.env*.local
+*.log
+.DS_Store
+
