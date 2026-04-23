@@ -1,0 +1,88 @@
+import {
+  Home,
+  Compass,
+  Search,
+  PlusSquare,
+  Film,
+  List,
+  Calendar,
+  Zap,
+  ShoppingBag,
+  User,
+  Award,
+  Users,
+  Building2,
+  BarChart2,
+  Activity,
+  Share2,
+  Bookmark,
+  BookOpen,
+  Shield,
+  X,
+  Check,
+  ChevronRight,
+  ChevronLeft,
+  ChevronDown,
+  Heart,
+  MessageCircle,
+  Send,
+  MoreHorizontal,
+  Globe,
+  Sun,
+  Moon,
+  Circle,
+  Dot,
+} from 'lucide-react';
+
+const MAP = {
+  home: Home,
+  compass: Compass,
+  search: Search,
+  'plus-square': PlusSquare,
+  film: Film,
+  list: List,
+  calendar: Calendar,
+  zap: Zap,
+  'shopping-bag': ShoppingBag,
+  user: User,
+  award: Award,
+  users: Users,
+  building: Building2,
+  'bar-chart-2': BarChart2,
+  activity: Activity,
+  'share-2': Share2,
+  bookmark: Bookmark,
+  'book-open': BookOpen,
+  shield: Shield,
+  x: X,
+  check: Check,
+  'chevron-right': ChevronRight,
+  'chevron-left': ChevronLeft,
+  'chevron-down': ChevronDown,
+  heart: Heart,
+  'message-circle': MessageCircle,
+  send: Send,
+  'more-horizontal': MoreHorizontal,
+  globe: Globe,
+  sun: Sun,
+  moon: Moon,
+  circle: Circle,
+  dot: Dot,
+} as const;
+
+export type IconName = keyof typeof MAP;
+
+export function Icon({
+  name,
+  size = 16,
+  className,
+  strokeWidth = 1.8,
+}: {
+  name: string;
+  size?: number;
+  className?: string;
+  strokeWidth?: number;
+}) {
+  const Component = (MAP as Record<string, typeof Home>)[name] ?? Home;
+  return <Component size={size} className={className} strokeWidth={strokeWidth} aria-hidden />;
+}
