@@ -5,6 +5,7 @@ import { DesktopNav } from '@/components/nav/DesktopNav';
 import { BottomNav } from '@/components/nav/BottomNav';
 import { RoleSwitcher } from '@/components/nav/RoleSwitcher';
 import { ThemeControls } from '@/components/nav/ThemeControls';
+import { PwaRegister } from '@/components/PwaRegister';
 
 export const metadata: Metadata = {
   title: 'KavaWorks — A home for Pacific arts',
@@ -70,6 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </main>
         </div>
         <BottomNav user={user} />
+        <PwaRegister />
       </body>
     </html>
   );
