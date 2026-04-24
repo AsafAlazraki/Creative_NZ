@@ -4,9 +4,19 @@ import { NationBadge } from './NationBadge';
 import { VerifiedBadge } from './Badges';
 
 /**
- * The permanent attribution that travels with every work.
- * Artist name + island + nation flag + cultural story.
- * Cannot be removed after first sale (enforced server-side in production).
+ * AttributionBlock — permanent record travelling with every work.
+ *
+ * Per the design language, this is the SINGLE MOST WEIGHTED element
+ * on an item page:
+ *   - thick 4px left border in the ceremony primary colour
+ *   - 2px outer ink border on the other three sides
+ *   - 32px padding
+ *   - no rounded corners, no shadow
+ *   - eyebrow label in Inter caps
+ *   - artist name in Fraunces
+ *   - nation + flag inline
+ *   - cultural story as Fraunces italic pull-block
+ *   - permanence disclaimer in small Inter muted
  */
 export function AttributionBlock({
   artistId,
@@ -23,40 +33,73 @@ export function AttributionBlock({
 
   return (
     <section
-      className={`rounded-lg border p-4 ${compact ? '' : 'p-6'}`}
-      style={{ borderColor: 'var(--hairline)', background: 'var(--surface-2)' }}
       aria-label="Cultural attribution"
+      style={{
+        background: 'var(--paper)',
+        border: 'var(--line)',
+        borderLeft: '6px solid var(--ceremony-primary)',
+        padding: compact ? 20 : 32,
+      }}
     >
-      <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-        <span aria-hidden>❖</span>
+      <div
+        className="flex items-center gap-2 mb-4 font-body font-bold uppercase"
+        style={{
+          fontSize: 11,
+          letterSpacing: '0.2em',
+          color: 'var(--ceremony-primary)',
+        }}
+      >
+        <span aria-hidden>◆</span>
         <span>Attribution · permanent</span>
       </div>
+
       <Link
         href={`/artist/${artist.handle}`}
-        className="flex items-baseline gap-2 hover:underline"
+        className="flex items-baseline gap-2 mb-2"
       >
-        <span className="font-display text-lg font-semibold" style={{ color: 'var(--ink)' }}>
+        <span
+          className="font-display"
+          style={{
+            fontSize: compact ? 24 : 34,
+            letterSpacing: '-0.02em',
+            color: 'var(--ink)',
+            lineHeight: 1.05,
+          }}
+        >
           {artist.name}
         </span>
         {artist.verified && <VerifiedBadge />}
       </Link>
-      <div className="mt-1 flex items-center gap-3 text-sm">
+
+      <div className="flex flex-wrap items-center gap-3 font-body text-sm mb-4">
+        <span aria-hidden className="text-lg">{nation?.flag}</span>
         <NationBadge nationId={artist.primaryNationId} />
-        <span style={{ color: 'var(--ink-soft)' }}>·</span>
+        <span aria-hidden style={{ color: 'var(--ink-soft)' }}>·</span>
         <span style={{ color: 'var(--ink-muted)' }}>{artist.city}</span>
       </div>
+
       {!compact && (
-        <p
-          className="mt-4 font-editorial text-base italic"
-          style={{ color: 'var(--ink-muted)', lineHeight: 1.6 }}
+        <blockquote
+          className="font-editorial italic"
+          style={{
+            fontSize: 19,
+            lineHeight: 1.55,
+            color: 'var(--ink)',
+            borderLeft: '2px solid var(--ceremony-primary)',
+            paddingLeft: 16,
+          }}
         >
           {culturalStory}
-        </p>
+        </blockquote>
       )}
+
       {!compact && (
-        <p className="mt-3 text-xs" style={{ color: 'var(--ink-soft)' }}>
-          Attribution cannot be removed, hidden, or edited after first sale. {nation ? `${nation.name} · ` : ''}
-          {artist.city}.
+        <p
+          className="mt-5 font-body"
+          style={{ fontSize: 13, color: 'var(--ink-muted)', lineHeight: 1.5 }}
+        >
+          Attribution cannot be removed, hidden, or edited after first sale.
+          Mana travels with the work.
         </p>
       )}
     </section>

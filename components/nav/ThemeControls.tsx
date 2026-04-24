@@ -4,11 +4,13 @@ import { switchTheme, switchCulturalTheme } from '@/app/actions';
 import { Icon } from '@/components/ui/Icon';
 
 const CULTURAL_THEMES = [
-  { id: 'ula-fala', label: 'Ula Fala', color: '#c8342a' },
-  { id: 'moana', label: 'Moana', color: '#2f6b7a' },
-  { id: 'tapa', label: 'Tapa', color: '#8b5a2b' },
-  { id: 'niu', label: 'Niu', color: '#4a7c3a' },
-  { id: 'koula', label: 'Koula', color: '#c89836' },
+  { id: 'ula-fala', label: 'Ula', hint: 'Sāmoan siapo red', color: '#b8261c' },
+  { id: 'koula', label: 'Ngatu', hint: 'Tongan koka gold', color: '#c89a1f' },
+  { id: 'tivaevae', label: 'Tīvaevae', hint: 'Cook Islands cerise', color: '#d62960' },
+  { id: 'tapa', label: 'Masi', hint: 'Fijian bark charcoal', color: '#3e2d1b' },
+  { id: 'kapa', label: 'Kapa', hint: 'Hawaiian dark-ground', color: '#1e1e1e' },
+  { id: 'niu', label: 'Bilum', hint: 'PNG networked jade', color: '#0c5c3a' },
+  { id: 'moana', label: 'Te Bino', hint: 'Kiribati shell + indigo', color: '#0e1e3a' },
 ] as const;
 
 export function ThemeControls({
@@ -26,8 +28,8 @@ export function ThemeControls({
       <button
         aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         onClick={() => start(() => switchTheme(theme === 'dark' ? 'light' : 'dark'))}
-        className="rounded-md border p-1.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
-        style={{ borderColor: 'var(--hairline)' }}
+        className="border-2 p-2 transition-colors hover:bg-[color-mix(in_srgb,var(--paper)_14%,transparent)]"
+        style={{ borderColor: 'var(--paper)', color: 'var(--paper)' }}
         disabled={pending}
       >
         <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={14} />
@@ -35,14 +37,14 @@ export function ThemeControls({
       <div className="relative">
         <button
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
-          style={{ borderColor: 'var(--hairline)' }}
+          className="flex items-center gap-1.5 border-2 px-3 py-2 text-xs font-semibold transition-colors hover:bg-[color-mix(in_srgb,var(--paper)_14%,transparent)]"
+          style={{ borderColor: 'var(--paper)', color: 'var(--paper)' }}
           aria-haspopup="menu"
           aria-expanded={open}
           aria-label="Cultural theme"
         >
           <span
-            className="inline-block h-3 w-3 rounded-full"
+            className="inline-block h-4 w-4"
             style={{
               background: CULTURAL_THEMES.find((c) => c.id === cultural)?.color,
             }}
@@ -60,13 +62,13 @@ export function ThemeControls({
             />
             <div
               role="menu"
-              className="absolute right-0 z-50 mt-2 w-44 rounded-lg border shadow-lg"
-              style={{ background: 'var(--surface)', borderColor: 'var(--hairline)' }}
+              className="absolute right-0 z-50 mt-2 w-60 border-2"
+              style={{ background: 'var(--surface)', borderColor: 'var(--ink)' }}
             >
-              <div className="border-b px-3 py-2 text-xs uppercase tracking-wider"
-                style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
+              <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em]"
+                style={{ borderBottom: 'var(--line)', color: 'var(--ink-muted)' }}
               >
-                Cultural theme
+                Cultural ceremony
               </div>
               {CULTURAL_THEMES.map((c) => (
                 <button
@@ -78,14 +80,19 @@ export function ThemeControls({
                       setOpen(false);
                     })
                   }
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)]"
                 >
                   <span
-                    className="inline-block h-3 w-3 rounded-full"
+                    className="inline-block h-4 w-4 shrink-0"
                     style={{ background: c.color }}
                     aria-hidden
                   />
-                  <span className="flex-1">{c.label}</span>
+                  <span className="flex-1">
+                    <span className="font-semibold">{c.label}</span>
+                    <span className="block text-[11px]" style={{ color: 'var(--ink-muted)' }}>
+                      {c.hint}
+                    </span>
+                  </span>
                   {c.id === cultural && <Icon name="check" size={14} />}
                 </button>
               ))}

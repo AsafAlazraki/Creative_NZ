@@ -1,333 +1,368 @@
 @import 'tailwindcss';
 
+/* ============================================================
+ * KavaWorks — Design Language Foundation
+ *
+ * Authority: KAVAWORKS_DESIGN_LANGUAGE.md
+ * Aesthetic thesis: maximalism as default; pattern at full saturation;
+ * thick ceremonial lines; no rounded panels; no box-shadows; inverted
+ * ground (dark chrome + paper content) by default.
+ *
+ * Type stack — four voices, layered on every surface:
+ *   DISPLAY    Archivo Black    carved, stamped
+ *   EDITORIAL  Fraunces         warm serif, italic for emphasis
+ *   BODY       Inter            workmanlike
+ *   NUMERALS   JetBrains Mono   ceremonial numbers
+ * ============================================================ */
+
 @theme {
-  --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-editorial: 'EB Garamond', 'Lora', Georgia, serif;
+  --font-display: 'Archivo Black', 'Archivo', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-editorial: 'Fraunces', 'EB Garamond', Georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-
-  --color-bg: #f2efe9;
-  --color-surface: #ffffff;
-  --color-surface-2: #f8f6f2;
-  --color-surface-3: #efeae0;
-
-  --color-ink: #0f0e0c;
-  --color-ink-muted: #6b6258;
-  --color-ink-soft: #9a9086;
-  --color-hairline: rgb(15 14 12 / 0.08);
-
-  --color-brand: #c8342a;
-  --color-brand-ink: #ffffff;
-
-  --color-accent-gold: #b8913d;
-  --color-accent-jade: #5a7a6b;
-  --color-accent-coral: #e07856;
-  --color-accent-ocean: #2f5d6b;
-
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-
-  --ease-kava: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================================
- * Default (fallback) tokens
+ * Ground + paper ceremony — inverted by default
  * ============================================================ */
 :root {
-  --bg: #f2efe9;
-  --surface: #ffffff;
-  --surface-2: #f8f6f2;
-  --surface-3: #efeae0;
-  --ink: #0f0e0c;
-  --ink-muted: #6b6258;
-  --ink-soft: #9a9086;
-  --hairline: rgb(15 14 12 / 0.08);
-  --brand: #c8342a;
-  --brand-soft: #ef8a83;
-  --brand-ink: #ffffff;
-  --accent-gold: #b8913d;
-  --accent-jade: #5a7a6b;
-  --accent-coral: #e07856;
-  --accent-ocean: #2f5d6b;
-  --pattern-opacity: 0.1;
-  --pattern-size: 48px;
-  --shadow-sm: 0 1px 2px rgb(15 14 12 / 0.04);
-  --shadow-md: 0 4px 12px rgb(15 14 12 / 0.06);
-  --shadow-lg: 0 12px 32px rgb(15 14 12 / 0.08);
-  --accent-gradient: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 70%, black));
+  /* Paper (content surfaces) */
+  --paper: #f5eddc;
+  --paper-2: #ebe0c8;
+  --paper-3: #d9cba8;
+
+  /* Ground (chrome, ceremonial bands) */
+  --ground: #14100c;
+  --ground-2: #1e1813;
+  --ground-3: #2a211a;
+
+  /* Ink — kept for compatibility with existing components */
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--paper-2);
+  --surface-3: var(--paper-3);
+  --ink: var(--ground);
+  --ink-muted: #6b5a42;
+  --ink-soft: #94826a;
+  --hairline: rgb(20 16 12 / 0.16);
+  --brand-ink: var(--paper);
+
+  /* Seven ceremonies — set in per-ceremony blocks below */
+  --ceremony-primary: #b8261c;
+  --ceremony-deep: #731510;
+  --ceremony-accent: #d45f3c;
+  --ceremony-cream: #f2ddba;
+  --ceremony-shadow: #3b0a08;
+  --brand: var(--ceremony-primary);
+  --brand-soft: var(--ceremony-accent);
+
+  /* Functional accents — constant across ceremonies */
+  --mana-gold: #c89a1f;
+  --verified-jade: #1f7a5e;
+  --tapu-ember: #731510;
+  --elder-halo: #e8b42a;
+  --coral-alert: #c84b3e;
+
+  /* Pattern control — full saturation, not texture by default */
+  --pattern-opacity: 1;
+  --pattern-size: 64px;
+
+  /* Ceremonial lines */
+  --line: 2px solid var(--ground);
+  --line-bold: 4px solid var(--ground);
+  --line-ceremonial: 8px solid var(--ground);
+  --line-gold: 4px solid var(--mana-gold);
+
+  /* Spacing — 8px baseline */
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 24px;
+  --sp-4: 32px;
+  --sp-5: 48px;
+  --sp-6: 72px;
+  --sp-7: 96px;
+  --sp-8: 128px;
+
+  /* Motion — ceremonial time */
+  --dur-quick: 180ms;
+  --dur-standard: 320ms;
+  --dur-ceremonial: 480ms;
+  --dur-arrival: 640ms;
+  --ease-arrive: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-depart: cubic-bezier(0.64, 0, 0.78, 0);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-kava: var(--ease-arrive);
 }
 
 /* ============================================================
- * Cultural themes — FULL palette shift, not just accent.
- * Each theme is designed sensitively for the tradition it names.
+ * The seven ceremonies — full palettes, real pigments.
+ * Each is a complete visual identity, not just an accent colour.
  *
- *   ula-fala: Sāmoan chiefly red ula (pandanus necklace).
- *             Warm cream ground, deep red brand, tapa earth accents.
- *             Proud, ceremonial, Pasifika red.
+ *   ula       Sāmoan siapo red
+ *   ngatu     Tongan koka gold + soot
+ *   tivaevae  Cook Islands appliqué cerise
+ *   masi      Fijian orthogonal charcoal/iron
+ *   kapa      Hawaiian dark-ground black/red/turmeric
+ *   bilum     PNG networked jade/cerise/gold
+ *   tebino    Kiribati shell/indigo
  *
- *   moana:    The ocean that connects all Pacific peoples.
- *             Seafoam ground, deep teal brand, coral counter-accent.
- *             Cool, expansive, horizon-facing.
- *
- *   tapa:     Siapo / ngatu / hiapo / kapa / masi — bark cloth.
- *             Oatmeal ground, warm umber brand, rust and ochre.
- *             Handmade, earthen, intimate.
- *
- *   niu:      Coconut palm / foundational growth.
- *             Jade-tinted ground, fern green brand, bronze accent.
- *             Verdant, grounded, Polynesian cosmology.
- *
- *   koula:    Tongan gold / Heilala festival warmth.
- *             Golden cream ground, warm gold brand, deep crimson accent.
- *             Regal, celebratory, ceremonial warmth.
- *
- * IMPORTANT ordering: cultural themes declared BEFORE dark mode, so
- * dark mode's single-attribute selector (same specificity) wins via
- * "last rule wins". See docs/LESSONS_LEARNED.md.
+ * Legacy names (ula-fala, koula, moana, niu, tapa) map to these
+ * so existing components keep working while we migrate.
  * ============================================================ */
 
-/* ULA FALA — Sāmoan red --------------------------------------- */
+/* ULA — Sāmoan siapo */
+[data-theme-cultural='ula'],
 [data-theme-cultural='ula-fala'] {
-  --bg: #f5ede3;
-  --surface: #fffaf2;
-  --surface-2: #ece1cf;
-  --surface-3: #e0d2bc;
-  --ink: #1a0f0b;
-  --ink-muted: #6d5343;
-  --ink-soft: #a08c76;
-  --hairline: rgb(26 15 11 / 0.1);
-  --brand: #c8342a;
-  --brand-soft: #e67268;
-  --accent-gold: #b8913d;
-  --accent-jade: #6a7d65;
-  --accent-coral: #d67b5b;
-  --accent-ocean: #2f5d6b;
-  --pattern-opacity: 0.12;
-  --pattern-size: 52px;
-  --accent-gradient: linear-gradient(135deg, #c8342a, #8b5a2b);
+  --ceremony-primary: #b8261c;
+  --ceremony-deep: #731510;
+  --ceremony-accent: #d45f3c;
+  --ceremony-cream: #f2ddba;
+  --ceremony-shadow: #3b0a08;
+  --brand: var(--ceremony-primary);
+  --brand-soft: var(--ceremony-accent);
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--ceremony-cream);
 }
 
-/* MOANA — Ocean teal ----------------------------------------- */
-[data-theme-cultural='moana'] {
-  --bg: #e8eff1;
-  --surface: #fafcfc;
-  --surface-2: #d8e5e9;
-  --surface-3: #c4d6db;
-  --ink: #0a1518;
-  --ink-muted: #4a6a6f;
-  --ink-soft: #7c9297;
-  --hairline: rgb(10 21 24 / 0.1);
-  --brand: #2f6b7a;
-  --brand-soft: #5a94a3;
-  --accent-gold: #b8913d;
-  --accent-jade: #548b7b;
-  --accent-coral: #e07856;
-  --accent-ocean: #1e4a57;
-  --pattern-opacity: 0.08;
-  --pattern-size: 60px;
-  --accent-gradient: linear-gradient(135deg, #2f6b7a, #1e3a4a);
-}
-
-/* TAPA — Bark cloth earth ------------------------------------ */
-[data-theme-cultural='tapa'] {
-  --bg: #ede5d1;
-  --surface: #fdf6e9;
-  --surface-2: #e3d6ba;
-  --surface-3: #d4c29f;
-  --ink: #1f140a;
-  --ink-muted: #6d563c;
-  --ink-soft: #9e8766;
-  --hairline: rgb(31 20 10 / 0.12);
-  --brand: #8b5a2b;
-  --brand-soft: #b37f50;
-  --accent-gold: #b8913d;
-  --accent-jade: #6a7851;
-  --accent-coral: #c55a3c;
-  --accent-ocean: #405c5f;
-  --pattern-opacity: 0.14;
-  --pattern-size: 44px;
-  --accent-gradient: linear-gradient(135deg, #8b5a2b, #5c3a1b);
-}
-
-/* NIU — Coconut jade ----------------------------------------- */
-[data-theme-cultural='niu'] {
-  --bg: #e8ede0;
-  --surface: #f8f6ea;
-  --surface-2: #d5dec7;
-  --surface-3: #c0ccaf;
-  --ink: #0c150a;
-  --ink-muted: #52624a;
-  --ink-soft: #849279;
-  --hairline: rgb(12 21 10 / 0.1);
-  --brand: #4a7c3a;
-  --brand-soft: #6fa35f;
-  --accent-gold: #b8913d;
-  --accent-jade: #3b6430;
-  --accent-coral: #c8342a;
-  --accent-ocean: #2f5d6b;
-  --pattern-opacity: 0.11;
-  --pattern-size: 48px;
-  --accent-gradient: linear-gradient(135deg, #4a7c3a, #2a4d1f);
-}
-
-/* KOULA — Tongan gold ---------------------------------------- */
+/* NGATU — Tongan koka */
+[data-theme-cultural='ngatu'],
 [data-theme-cultural='koula'] {
-  --bg: #f5edd6;
-  --surface: #fefaea;
-  --surface-2: #ebdeb6;
-  --surface-3: #dbc996;
-  --ink: #1f1606;
-  --ink-muted: #6a562d;
-  --ink-soft: #9c8757;
-  --hairline: rgb(31 22 6 / 0.12);
-  --brand: #c89836;
-  --brand-soft: #e4b55c;
-  --accent-gold: #a57513;
-  --accent-jade: #6a7851;
-  --accent-coral: #c8342a;
-  --accent-ocean: #2f5d6b;
-  --pattern-opacity: 0.14;
-  --pattern-size: 50px;
-  --accent-gradient: linear-gradient(135deg, #c89836, #8b5f13);
+  --ceremony-primary: #c89a1f;
+  --ceremony-deep: #6b4a11;
+  --ceremony-accent: #e8b33c;
+  --ceremony-cream: #edd8a3;
+  --ceremony-shadow: #1a1208;
+  --brand: var(--ceremony-primary);
+  --brand-soft: var(--ceremony-accent);
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--ceremony-cream);
+}
+
+/* TIVAEVAE — Cook Islands appliqué */
+[data-theme-cultural='tivaevae'] {
+  --ceremony-primary: #d62960;
+  --ceremony-deep: #5c1028;
+  --ceremony-accent: #e8a92c;
+  --ceremony-cream: #f8f0e1;
+  --ceremony-shadow: #5c1028;
+  --brand: var(--ceremony-primary);
+  --brand-soft: var(--ceremony-accent);
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--ceremony-cream);
+}
+
+/* MASI — Fijian bark grid */
+[data-theme-cultural='masi'],
+[data-theme-cultural='tapa'] {
+  --ceremony-primary: #3e2d1b;
+  --ceremony-deep: #1c1108;
+  --ceremony-accent: #a86236;
+  --ceremony-cream: #e8d9b8;
+  --ceremony-shadow: #1c1108;
+  --brand: var(--ceremony-primary);
+  --brand-soft: var(--ceremony-accent);
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--ceremony-cream);
+}
+
+/* KAPA — Hawaiian dark-ground tradition */
+[data-theme-cultural='kapa'] {
+  --ceremony-primary: #1e1e1e;
+  --ceremony-deep: #0c0c0c;
+  --ceremony-accent: #8b2020;
+  --ceremony-cream: #efe3cb;
+  --ceremony-shadow: #0c0c0c;
+  --brand: var(--ceremony-accent); /* use red for interactive warmth */
+  --brand-soft: #d4a73e;
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--ceremony-cream);
+}
+
+/* BILUM — PNG networked */
+[data-theme-cultural='bilum'],
+[data-theme-cultural='niu'] {
+  --ceremony-primary: #0c5c3a;
+  --ceremony-deep: #041e13;
+  --ceremony-accent: #c12176;
+  --ceremony-cream: #dccfa5;
+  --ceremony-shadow: #041e13;
+  --brand: var(--ceremony-primary);
+  --brand-soft: var(--ceremony-accent);
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--ceremony-cream);
+}
+
+/* TE BINO — Kiribati / Solomons shell + indigo */
+[data-theme-cultural='tebino'],
+[data-theme-cultural='moana'] {
+  --ceremony-primary: #0e1e3a;
+  --ceremony-deep: #040914;
+  --ceremony-accent: #2b6b7a;
+  --ceremony-cream: #f3ede0;
+  --ceremony-shadow: #040914;
+  --brand: var(--ceremony-primary);
+  --brand-soft: var(--ceremony-accent);
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--ceremony-cream);
 }
 
 /* ============================================================
- * Dark mode — applied AFTER cultural themes so ink/surface flip,
- * but each cultural theme's brand hue is preserved at higher chroma.
+ * Dark mode — inverted ceremony.
+ * Collector (kapa) defaults to dark; others can opt in.
+ * Dark must come AFTER the cultural-theme blocks so same-specificity
+ * wins by "last rule".
  * ============================================================ */
 [data-theme='dark'] {
-  --bg: #0f0e0c;
-  --surface: #1a1714;
-  --surface-2: #252019;
-  --surface-3: #2f2820;
-  --ink: #f2efe9;
-  --ink-muted: #a49d91;
-  --ink-soft: #70685c;
-  --hairline: rgb(242 239 233 / 0.1);
-  --brand-ink: #ffffff;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
-  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
+  --paper: #14100c;
+  --paper-2: #1e1813;
+  --paper-3: #2a211a;
+  --ground: #f5eddc;
+  --ground-2: #ebe0c8;
+  --ground-3: #d9cba8;
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-2: var(--paper-2);
+  --surface-3: var(--paper-3);
+  --ink: var(--ground);
+  --ink-muted: #c7b89c;
+  --ink-soft: #8f8268;
+  --hairline: rgb(245 237 220 / 0.15);
+  --brand-ink: var(--ground);
+  --line: 2px solid var(--ground);
+  --line-bold: 4px solid var(--ground);
+  --line-ceremonial: 8px solid var(--ground);
 }
 
-/* Dark mode + cultural theme combinations — preserve cultural brand hue
- * with a slight chroma lift for legibility against dark surfaces. */
+/* Dark + ceremony combos — keep pigments vivid against dark ground */
+[data-theme='dark'][data-theme-cultural='ula'],
 [data-theme='dark'][data-theme-cultural='ula-fala'] {
-  --bg: #140908;
-  --surface: #231210;
-  --surface-2: #2d1814;
-  --ink-muted: #b89788;
-  --brand: #e54b41;
-  --brand-soft: #ef7872;
+  --ceremony-primary: #e54b41;
+  --brand: var(--ceremony-primary);
 }
-[data-theme='dark'][data-theme-cultural='moana'] {
-  --bg: #07141a;
-  --surface: #102027;
-  --surface-2: #162c35;
-  --ink-muted: #8db0b8;
-  --brand: #4fa3b6;
-  --brand-soft: #7dbcca;
-}
-[data-theme='dark'][data-theme-cultural='tapa'] {
-  --bg: #140e07;
-  --surface: #231a10;
-  --surface-2: #2d2115;
-  --ink-muted: #c5a97f;
-  --brand: #c88a55;
-  --brand-soft: #dba77a;
-}
-[data-theme='dark'][data-theme-cultural='niu'] {
-  --bg: #0a120a;
-  --surface: #141e13;
-  --surface-2: #1c2a1a;
-  --ink-muted: #a6c199;
-  --brand: #6fae5a;
-  --brand-soft: #95c585;
-}
+[data-theme='dark'][data-theme-cultural='ngatu'],
 [data-theme='dark'][data-theme-cultural='koula'] {
-  --bg: #141007;
-  --surface: #231b0f;
-  --surface-2: #2e2312;
-  --ink-muted: #d5b474;
-  --brand: #e8b652;
-  --brand-soft: #f0c978;
+  --ceremony-primary: #e8b33c;
+  --brand: var(--ceremony-primary);
+}
+[data-theme='dark'][data-theme-cultural='tivaevae'] {
+  --ceremony-primary: #f04078;
+  --brand: var(--ceremony-primary);
+}
+[data-theme='dark'][data-theme-cultural='masi'],
+[data-theme='dark'][data-theme-cultural='tapa'] {
+  --ceremony-primary: #d48a55;
+  --brand: var(--ceremony-primary);
+}
+[data-theme='dark'][data-theme-cultural='kapa'] {
+  --ceremony-primary: #d4a73e;
+  --brand: var(--ceremony-primary);
+}
+[data-theme='dark'][data-theme-cultural='bilum'],
+[data-theme='dark'][data-theme-cultural='niu'] {
+  --ceremony-primary: #1c8a5a;
+  --brand: var(--ceremony-primary);
+}
+[data-theme='dark'][data-theme-cultural='tebino'],
+[data-theme='dark'][data-theme-cultural='moana'] {
+  --ceremony-primary: #5aa0b3;
+  --brand: var(--ceremony-primary);
 }
 
 /* ============================================================
- * Base element resets / typography
+ * Base resets — tuned for the design language
  * ============================================================ */
 * {
   border-color: var(--hairline);
 }
+
+/* NO rounded corners on panels; NO box-shadows. These are banned in
+ * the design language. Avatars and pills can opt in locally. */
+html {
+  background: var(--paper);
+}
+
 html,
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
-  font-feature-settings: 'ss01', 'tnum', 'lnum', 'kern';
+  font-size: 17px; /* body is 17px, larger than typical 16 */
+  line-height: 1.5;
+  font-feature-settings: 'tnum', 'lnum', 'kern';
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  transition: background 380ms var(--ease-kava), color 380ms var(--ease-kava);
 }
-body {
-  min-height: 100vh;
-}
+body { min-height: 100vh; }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
   color: var(--ink);
 }
 
+/* Display scale — Archivo Black earns its weight */
+.display-xl { font-size: clamp(3.5rem, 8vw, 7.5rem); letter-spacing: -0.035em; line-height: 0.94; }
+.display-l  { font-size: clamp(2.75rem, 6vw, 5rem);   letter-spacing: -0.03em;  line-height: 0.98; }
+.display    { font-size: clamp(2rem, 4vw, 3.5rem);    letter-spacing: -0.025em; line-height: 1.02; }
+
 .font-editorial {
   font-family: var(--font-editorial);
-  font-feature-settings: 'kern', 'liga';
+  font-feature-settings: 'ss01', 'ss02', 'liga', 'kern';
+  letter-spacing: 0;
 }
 .font-mono {
   font-family: var(--font-mono);
   font-feature-settings: 'tnum', 'lnum';
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Eyebrow — all-caps exhibition-signage label */
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.eyebrow-on-ground {
+  color: color-mix(in srgb, var(--paper) 80%, transparent);
 }
 
+/* Links: border-bottom, not text-decoration */
+a { color: inherit; text-decoration: none; }
+.link {
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 1px;
+  transition: border-color var(--dur-quick) var(--ease-smooth);
+}
+.link:hover { border-color: var(--brand); }
+
+/* Focus — gold, generous, visible */
 :focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 4px solid var(--mana-gold);
+  outline-offset: 3px;
+  border-radius: 0;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--ink-soft);
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--ink-soft); }
+::-webkit-scrollbar-track { background: transparent; }
 
 /* ============================================================
- * Motion / reduced-motion
+ * Motion
  * ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -335,144 +370,254 @@ a {
   }
 }
 @media (prefers-reduced-transparency: reduce) {
-  :root {
-    --pattern-opacity: 0;
-  }
-  [data-theme] {
-    --pattern-opacity: 0;
-  }
+  :root, [data-theme] { --pattern-opacity: 0.6; }
 }
 
-/* ============================================================
- * Cultural pattern utilities
- * ============================================================ */
-.pattern-bg {
-  background-image: var(--pattern-image, none);
-  background-size: var(--pattern-size, 48px);
-  background-repeat: repeat;
-  opacity: var(--pattern-opacity, 0.1);
-}
-
-@keyframes skeleton-wash {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--surface-2) 0%,
-    var(--surface-3) 50%,
-    var(--surface-2) 100%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-wash 2.4s linear infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .skeleton {
-    animation: none;
-    background: var(--surface-2);
-  }
-}
-
+/* Page arrival — stagger */
 .page-fade-in {
-  animation: page-fade 240ms var(--ease-kava);
+  animation: page-fade var(--dur-arrival) var(--ease-arrive) both;
 }
 @keyframes page-fade {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.honour-pulse {
-  animation: honour-pulse 400ms var(--ease-kava);
+/* Ceremonial band wipe */
+.band-wipe {
+  animation: band-wipe var(--dur-ceremonial) var(--ease-arrive) both;
 }
-@keyframes honour-pulse {
-  0%, 100% { transform: scale(1); }
-  40% { transform: scale(1.3); }
+@keyframes band-wipe {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0); }
 }
 
+/* Column rail wipe-right */
+.rail-wipe {
+  animation: rail-wipe var(--dur-ceremonial) var(--ease-arrive) both;
+  animation-delay: 100ms;
+}
+@keyframes rail-wipe {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Elder glyph pulse */
+@keyframes elder-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.elder-pulse {
+  animation: elder-pulse 2400ms var(--ease-smooth) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .elder-pulse { animation: none; }
+}
+
+/* Pattern skeleton */
+@keyframes pattern-wash {
+  from { background-position: -100% 0; }
+  to   { background-position: 200% 0; }
+}
+.skeleton {
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--brand) 10%, transparent) 50%,
+      transparent 100%),
+    var(--paper-2);
+  background-size: 200% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  animation: pattern-wash 3s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; background: var(--paper-2); }
+}
+
+/* Countdown flip (mono digits) */
+@keyframes countdown-flip {
+  0%   { transform: rotateX(0); }
+  50%  { transform: rotateX(-90deg); }
+  100% { transform: rotateX(0); }
+}
+.countdown-digit { display: inline-block; animation: countdown-flip 220ms var(--ease-smooth); }
+
+/* ============================================================
+ * Compositional primitives
+ * ============================================================ */
+
+/* Ceremonial band — pattern at FULL SATURATION */
+.ceremonial-band {
+  position: relative;
+  width: 100%;
+  min-height: 144px;
+  background: var(--ceremony-primary);
+  border-bottom: var(--line-ceremonial);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Pattern rail — full-height vertical rail at content column edge */
+.pattern-rail {
+  width: 48px;
+  background: var(--ceremony-primary);
+  border-right: var(--line-bold);
+  align-self: stretch;
+}
+
+/* Framed plate — heavy ink border, square or portrait */
+.framed-plate {
+  background: var(--ceremony-primary);
+  border: var(--line-bold);
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Panel — square corners, thick border, no shadow */
+.panel {
+  background: var(--paper);
+  border: var(--line);
+  border-radius: 0; /* NEVER round */
+}
+
+/* Heavy panel — for ceremonial weight (AttributionBlock) */
+.panel-heavy {
+  background: var(--paper);
+  border: var(--line-bold);
+  border-left: 6px solid var(--ceremony-primary);
+  padding: var(--sp-4);
+  border-radius: 0;
+}
+
+/* Inverted panel — ground + paper text, for chrome moments */
+.panel-inverted {
+  background: var(--ground);
+  color: var(--paper);
+  border: var(--line);
+}
+
+/* Ceremonial line */
+.line-bold { border-bottom: var(--line-bold); }
+.line-ceremonial { border-bottom: var(--line-ceremonial); }
+.hairline { border-top: 1px solid var(--hairline); }
+
+/* Pull-quote — Fraunces italic at display scale */
 .pull-quote {
   font-family: var(--font-editorial);
-  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
-  line-height: 1.3;
   font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  line-height: 1.2;
   color: var(--ink);
-  border-left: 3px solid var(--brand);
-  padding-left: 1.25rem;
+  border-left: var(--line-ceremonial);
+  border-color: var(--ceremony-primary);
+  padding-left: var(--sp-3);
+  margin: var(--sp-5) 0;
 }
 
+/* Theme rule — short gradient-free brand bar */
+.theme-rule {
+  display: block;
+  width: 96px;
+  height: 6px;
+  background: var(--ceremony-primary);
+  margin-top: var(--sp-2);
+}
+
+/* Cultural rail utility (profile etc) */
 .cultural-rail {
-  width: 40px;
-  min-height: 100%;
-  background: var(--pattern-image, none);
-  background-size: 48px;
-  background-repeat: repeat;
-  opacity: calc(var(--pattern-opacity, 0.1) * 0.8);
+  min-width: 48px;
+  background: var(--ceremony-primary);
+  align-self: stretch;
 }
 
+/* Badges — keep as pills, these are allowed rounded */
 .mana-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-gold);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-gold) 20%, transparent);
+  width: 10px;
+  height: 10px;
+  background: var(--mana-gold);
+  transform: rotate(45deg);
 }
 
 .verified-dot {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border-radius: 50%;
-  background: var(--accent-jade);
+  background: var(--verified-jade);
   color: white;
   font-size: 10px;
   line-height: 14px;
   text-align: center;
-  font-weight: 600;
+  font-weight: 800;
+  border-radius: 2px;
 }
 
 .inati-badge {
-  background: color-mix(in srgb, var(--accent-jade) 14%, transparent);
-  color: var(--accent-jade);
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ceremony-primary);
+  font-weight: 700;
+  padding: 4px 10px;
   font-size: 11px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 2px solid var(--ceremony-primary);
 }
 
 .tapu-indicator {
-  background: color-mix(in srgb, var(--accent-coral) 16%, transparent);
-  color: var(--accent-coral);
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 12px;
+  background: var(--tapu-ember);
+  color: var(--paper);
+  font-weight: 700;
+  padding: 4px 10px;
   font-size: 11px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 2px solid var(--tapu-ember);
 }
 
-.hairline {
-  border-top: 1px solid var(--hairline);
+/* Buttons — square, weighted, carved feel */
+.btn {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  font-size: 15px;
+  padding: 14px 28px;
+  border: 2px solid currentColor;
+  background: transparent;
+  color: var(--ink);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--dur-quick) var(--ease-smooth),
+              color var(--dur-quick) var(--ease-smooth);
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn-primary {
+  background: var(--ceremony-primary);
+  color: var(--paper);
+  border: 2px solid var(--ceremony-primary);
+}
+.btn-primary:hover {
+  background: var(--ground);
+  color: var(--paper);
+  border-color: var(--ground);
+}
+.btn-ghost-on-ground {
+  background: transparent;
+  color: var(--paper);
+  border: 2px solid var(--paper);
+}
+.btn-ghost-on-ground:hover {
+  background: var(--paper);
+  color: var(--ground);
 }
 
-.bleed {
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  border-radius: 16px;
+/* Global override: remove rounded corners on panels and disable shadow
+ * for elements the design forbids. Avatars, dots, and pill badges keep
+ * their roundness via explicit local classes. */
+.rounded-2xl, .rounded-xl, .rounded-lg, .rounded-md, .rounded {
+  border-radius: 0 !important;
 }
-.bleed-2 {
-  background: var(--surface-2);
-  border-radius: 16px;
-}
-
-/* ============================================================
- * Theme-aware decorative flourish — appears once per major section
- * header so the cultural theme's identity shows beyond accent colour.
- * ============================================================ */
-.theme-rule {
-  display: block;
-  width: 80px;
-  height: 3px;
-  background: var(--accent-gradient);
-  border-radius: 3px;
+.rounded-full { border-radius: 9999px !important; } /* keep for avatars, dots */
+.shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
+  box-shadow: none !important;
 }

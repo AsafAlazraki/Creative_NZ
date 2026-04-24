@@ -12,8 +12,8 @@ export function RoleSwitcher({ currentRole }: { currentRole: RoleId }) {
   return (
     <div className="relative">
       <button
-        className="flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
-        style={{ borderColor: 'var(--hairline)' }}
+        className="flex items-center gap-2 border-2 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-[color-mix(in_srgb,var(--paper)_14%,transparent)]"
+        style={{ borderColor: 'var(--paper)', color: 'var(--paper)' }}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="menu"
         aria-expanded={open}
@@ -34,8 +34,8 @@ export function RoleSwitcher({ currentRole }: { currentRole: RoleId }) {
           />
           <div
             role="menu"
-            className="absolute right-0 z-50 mt-2 w-80 rounded-lg border shadow-lg"
-            style={{ background: 'var(--surface)', borderColor: 'var(--hairline)' }}
+            className="absolute right-0 z-50 mt-2 w-80 border-2"
+            style={{ background: 'var(--surface)', borderColor: 'var(--ink)' }}
           >
             <div className="border-b px-4 py-3" style={{ borderColor: 'var(--hairline)' }}>
               <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>

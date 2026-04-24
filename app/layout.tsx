@@ -43,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
       </head>
@@ -61,11 +61,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <div className="flex min-h-screen w-full">
           <DesktopNav user={user} />
           <main id="main" className="flex-1 min-w-0 pb-24 lg:pb-12" role="main">
-            <div className="sticky top-0 z-40 flex items-center justify-end gap-2 border-b px-4 py-2 xl:px-12"
-              style={{ background: 'color-mix(in srgb, var(--bg) 92%, transparent)', backdropFilter: 'blur(8px)', borderColor: 'var(--hairline)' }}
+            <div
+              className="sticky top-0 z-40 flex items-center justify-between gap-2 px-4 py-3 xl:px-10"
+              style={{
+                background: 'var(--ground)',
+                color: 'var(--paper)',
+                borderBottom: 'var(--line-bold)',
+              }}
             >
-              <ThemeControls theme={theme} cultural={cultural} />
-              <RoleSwitcher currentRole={user.role} />
+              <div className="flex items-center gap-3 lg:hidden">
+                <span className="font-display text-xl tracking-tight" style={{ letterSpacing: '-0.03em' }}>
+                  KAVAWORKS.
+                </span>
+              </div>
+              <div className="flex items-center gap-2 ml-auto">
+                <ThemeControls theme={theme} cultural={cultural} />
+                <RoleSwitcher currentRole={user.role} />
+              </div>
             </div>
             <div className="page-fade-in">{children}</div>
           </main>

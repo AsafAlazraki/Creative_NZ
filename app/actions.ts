@@ -19,7 +19,19 @@ export async function switchTheme(theme: 'light' | 'dark') {
 }
 
 export async function switchCulturalTheme(
-  cultural: 'ula-fala' | 'moana' | 'tapa' | 'niu' | 'koula',
+  cultural:
+    | 'ula-fala'
+    | 'moana'
+    | 'tapa'
+    | 'niu'
+    | 'koula'
+    | 'ula'
+    | 'ngatu'
+    | 'tivaevae'
+    | 'masi'
+    | 'kapa'
+    | 'bilum'
+    | 'tebino',
 ) {
   const jar = await cookies();
   jar.set(CULTURAL_COOKIE, cultural, { maxAge: ONE_YEAR, path: '/', sameSite: 'lax' });
