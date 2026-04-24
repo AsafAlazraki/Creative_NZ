@@ -58,10 +58,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to content
         </a>
-        <div className="mx-auto flex min-h-screen w-full max-w-[1400px]">
+        <div className="flex min-h-screen w-full">
           <DesktopNav user={user} />
           <main id="main" className="flex-1 min-w-0 pb-24 lg:pb-12" role="main">
-            <div className="sticky top-0 z-40 flex items-center justify-end gap-2 border-b px-4 py-2 lg:px-8"
+            <div className="sticky top-0 z-40 flex items-center justify-end gap-2 border-b px-4 py-2 xl:px-12"
               style={{ background: 'color-mix(in srgb, var(--bg) 92%, transparent)', backdropFilter: 'blur(8px)', borderColor: 'var(--hairline)' }}
             >
               <ThemeControls theme={theme} cultural={cultural} />

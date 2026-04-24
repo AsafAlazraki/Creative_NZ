@@ -7,13 +7,13 @@ import {
   getWorksByArtist,
 } from '@/lib/repo';
 import { AttributionBlock } from '@/components/cultural/AttributionBlock';
-import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { NationBadge } from '@/components/cultural/NationBadge';
 import { InatiBadge, TapuIndicator } from '@/components/cultural/Badges';
 import { WorkCard } from '@/components/market/WorkCard';
 import { BuySheet } from '@/components/market/BuySheet';
 import { formatPrice } from '@/lib/utils';
+import { workImageUrl } from '@/lib/images';
 
 export default async function WorkDetailPage({
   params,
@@ -27,6 +27,23 @@ export default async function WorkDetailPage({
   if (!artist) notFound();
   const nation = getNation(work.nationId);
   const otherWorks = getWorksByArtist(artist.id).filter((w) => w.id !== work.id).slice(0, 3);
+  const mainImg = workImageUrl({
+    artform: work.artform,
+    nationId: work.nationId,
+    materials: work.materials,
+    seed: work.id,
+    w: 1400,
+    h: 1700,
+  });
+  const detailImg = workImageUrl({
+    artform: work.artform,
+    nationId: work.nationId,
+    materials: work.materials,
+    seed: `${work.id}-detail`,
+    w: 1400,
+    h: 1000,
+  });
+  void nation;
 
   return (
     <div className="px-4 py-6 lg:px-10">
@@ -39,37 +56,18 @@ export default async function WorkDetailPage({
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
-        <div className="min-w-0">
-          <CulturalPattern
-            id={nation?.patternId ?? 'pattern-tapa'}
-            opacity={0.18}
-            tone="brand"
-            size={72}
-            className="aspect-[4/5] overflow-hidden rounded-2xl border"
-          >
-            <div
-              className="relative flex aspect-[4/5] items-end p-8"
-              style={{ borderColor: 'var(--hairline)' }}
-            >
-              {work.tapu && (
-                <div className="absolute right-4 top-4">
-                  <TapuIndicator />
-                </div>
-              )}
-              <div
-                className="max-w-md rounded-md px-4 py-3 font-editorial italic"
-                style={{
-                  background: 'color-mix(in srgb, var(--surface) 92%, transparent)',
-                  color: 'var(--ink-muted)',
-                  backdropFilter: 'blur(4px)',
-                  fontSize: 15,
-                  lineHeight: 1.4,
-                }}
-              >
-                {work.artform} · {work.materials}
+        <div className="min-w-0 space-y-4">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border bg-[color:var(--surface-2)]" style={{ borderColor: 'var(--hairline)' }}>
+            <img src={mainImg} alt={work.title} className="h-full w-full object-cover" loading="eager" />
+            {work.tapu && (
+              <div className="absolute right-4 top-4">
+                <TapuIndicator />
               </div>
-            </div>
-          </CulturalPattern>
+            )}
+          </div>
+          <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border bg-[color:var(--surface-2)]" style={{ borderColor: 'var(--hairline)' }}>
+            <img src={detailImg} alt={`${work.title} detail`} className="h-full w-full object-cover" loading="lazy" />
+          </div>
         </div>
 
         <div className="min-w-0 space-y-6">

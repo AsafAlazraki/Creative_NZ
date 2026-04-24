@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { db } from '@/db';
 import * as s from '@/db/schema';
 import { getArtistById, getWorkById, getNation } from '@/lib/repo';
-import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 import { InatiBadge, TapuIndicator } from '@/components/cultural/Badges';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { AttributionBlock } from '@/components/cultural/AttributionBlock';
@@ -10,6 +9,7 @@ import { CountdownClient } from '@/components/feed/CountdownClient';
 import { TAUHI_VA_KB } from '@/lib/tauhi-va-kb';
 import { formatPrice } from '@/lib/utils';
 import { InatiFramingClient } from '@/components/market/InatiFramingClient';
+import { workImageUrl } from '@/lib/images';
 
 export const metadata = { title: 'Drops · KavaWorks' };
 
@@ -26,28 +26,40 @@ export default async function DropsPage() {
         const work = getWorkById(drop.workId);
         if (!artist || !work) return null;
         const nation = getNation(artist.primaryNationId);
+        void nation;
+        const dropImg = workImageUrl({
+          artform: work.artform,
+          nationId: work.nationId,
+          materials: work.materials,
+          seed: `drop-${drop.id}`,
+          w: 2000,
+          h: 1200,
+        });
         return (
           <section
             key={drop.id}
-            className="mb-10 overflow-hidden rounded-2xl border"
+            className="mb-10 overflow-hidden rounded-3xl border"
             style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
           >
-            <CulturalPattern
-              id={nation?.patternId ?? 'pattern-tapa'}
-              opacity={0.14}
-              tone="brand"
-              size={72}
-              className="border-b"
-            >
-              <div className="grid gap-8 p-6 md:grid-cols-2 lg:p-12">
+            <div className="relative min-h-[420px] border-b xl:min-h-[520px]" style={{ borderColor: 'var(--hairline)' }}>
+              <img src={dropImg} alt="" className="absolute inset-0 h-full w-full object-cover" loading="eager" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(to top right, rgba(15,14,12,0.9) 0%, rgba(15,14,12,0.6) 50%, rgba(15,14,12,0.2) 100%)',
+                }}
+              />
+              <div className="relative grid gap-8 p-6 md:grid-cols-2 lg:p-12 xl:p-16 text-white">
                 <div className="flex flex-col justify-between">
                   <div>
                     <InatiBadge />
-                    <h1 className="mt-3 font-display text-4xl font-semibold md:text-5xl">
+                    <h1 className="mt-3 font-display font-semibold"
+                        style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', lineHeight: 1.05, letterSpacing: '-0.02em' }}
+                    >
                       {work.title}
                     </h1>
-                    <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
-                      <AvatarIllustrated nationId={artist.primaryNationId} size={28} name={artist.name} />
+                    <div className="mt-3 flex items-center gap-2 text-sm text-white/85">
+                      <AvatarIllustrated nationId={artist.primaryNationId} size={32} name={artist.name} />
                       <Link href={`/artist/${artist.handle}`} className="font-semibold hover:underline">
                         {artist.name}
                       </Link>
@@ -57,7 +69,7 @@ export default async function DropsPage() {
 
                   <div className="mt-8">
                     <CountdownClient target={drop.closesAt} size="lg" />
-                    <div className="mt-3 font-mono text-sm" style={{ color: 'var(--ink-muted)' }}>
+                    <div className="mt-3 font-mono text-sm text-white/85">
                       {drop.remainingUnits} of {drop.totalUnits} remaining · {formatPrice(work.priceNzd)}
                     </div>
                   </div>
@@ -65,7 +77,7 @@ export default async function DropsPage() {
                   <div className="mt-6 flex flex-wrap gap-2">
                     <Link
                       href={`/market/${work.id}`}
-                      className="rounded-md px-5 py-3 font-semibold"
+                      className="rounded-md px-6 py-3.5 font-semibold shadow-2xl transition-transform hover:scale-[1.02]"
                       style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
                     >
                       Claim this piece — {formatPrice(work.priceNzd)}
@@ -73,13 +85,13 @@ export default async function DropsPage() {
                   </div>
                 </div>
 
-                <aside className="space-y-4 font-editorial italic" style={{ color: 'var(--ink)', fontSize: 17, lineHeight: 1.55 }}>
+                <aside className="space-y-4 font-editorial italic text-white/95" style={{ fontSize: 18, lineHeight: 1.6 }}>
                   {drop.storyFraming.split('\n\n').map((p, i) => (
                     <p key={i}>{p}</p>
                   ))}
                 </aside>
               </div>
-            </CulturalPattern>
+            </div>
             <div className="p-6 lg:p-10">
               <AttributionBlock artistId={artist.id} culturalStory={work.culturalStory} />
             </div>

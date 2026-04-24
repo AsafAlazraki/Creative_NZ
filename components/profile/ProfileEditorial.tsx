@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { HydratedArtist, HydratedPost, HydratedWork } from '@/lib/repo';
 import { getNation } from '@/lib/repo';
 import type { CurrentUser } from '@/lib/auth';
-import { CulturalPattern, CulturalRail } from '@/components/cultural/CulturalPattern';
+import { CulturalRail } from '@/components/cultural/CulturalPattern';
 import { NationBadge } from '@/components/cultural/NationBadge';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import {
@@ -10,6 +10,7 @@ import {
   ElderBadge,
   ManaBadge,
 } from '@/components/cultural/Badges';
+import { heroImageUrl, portraitImageUrl } from '@/lib/images';
 import { WorkCard } from '@/components/market/WorkCard';
 import { PostCard } from '@/components/feed/PostCard';
 import { formatPrice, formatCount } from '@/lib/utils';
@@ -238,7 +239,7 @@ export function ProfileEditorial({
 
 function ProfileHero({
   artist,
-  viewer,
+  viewer: _viewer,
   isSelf,
 }: {
   artist: HydratedArtist;
@@ -246,74 +247,94 @@ function ProfileHero({
   isSelf: boolean;
 }) {
   const nation = getNation(artist.primaryNationId);
+  const heroTheme = `${artist.artforms[0] ?? 'Pacific art'}, ${nation?.name ?? 'Pacific'} tradition, studio space, editorial`;
+  const heroImg = heroImageUrl(heroTheme, `${artist.id}-hero`, 2200, 900);
+  const portraitImg = portraitImageUrl(artist.name, artist.primaryNationId, 400, 400);
+
   return (
     <header className="relative">
-      <CulturalPattern
-        id={nation?.patternId ?? 'pattern-tapa'}
-        opacity={0.18}
-        tone="brand"
-        size={80}
-        className="min-h-[320px] border-b"
-      >
-        <div className="relative flex min-h-[320px] flex-col justify-end px-4 py-6 lg:px-10 lg:py-10">
-          <div className="flex items-start gap-4">
-            <AvatarIllustrated nationId={artist.primaryNationId} size={104} name={artist.name} />
+      <div className="relative min-h-[380px] border-b overflow-hidden xl:min-h-[480px]" style={{ borderColor: 'var(--hairline)' }}>
+        <img
+          src={heroImg}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="eager"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(15,14,12,0.88) 0%, rgba(15,14,12,0.55) 55%, rgba(15,14,12,0.2) 100%)',
+          }}
+        />
+        <div className="relative flex min-h-[380px] xl:min-h-[480px] flex-col justify-end px-4 py-8 lg:px-10 lg:py-12">
+          <div className="flex items-end gap-5">
+            <img
+              src={portraitImg}
+              alt={artist.name}
+              width={128}
+              height={128}
+              className="h-24 w-24 shrink-0 rounded-full object-cover ring-4 ring-white/80 md:h-32 md:w-32 lg:h-36 lg:w-36"
+              loading="eager"
+            />
             <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-baseline gap-2">
-                <h1 className="font-display text-4xl font-semibold leading-tight lg:text-5xl">
+              <div className="flex flex-wrap items-baseline gap-2 text-white">
+                <h1 className="font-display font-semibold leading-tight"
+                    style={{ fontSize: 'clamp(2rem, 5.5vw, 4.5rem)', letterSpacing: '-0.02em' }}
+                >
                   {artist.name}
                 </h1>
                 {artist.verified && <VerifiedBadge />}
                 {artist.elderStatus && <ElderBadge />}
               </div>
               <div
-                className="mt-2 flex flex-wrap items-center gap-3 text-sm"
-                style={{ color: 'var(--ink-muted)' }}
+                className="mt-2 flex flex-wrap items-center gap-3 text-sm text-white/85 lg:text-base"
               >
                 <span className="font-mono">@{artist.handle}</span>
                 <span aria-hidden>·</span>
-                <NationBadge nationId={artist.primaryNationId} />
+                <span className="flex items-center gap-1.5">
+                  <span aria-hidden>{nation?.flag}</span>
+                  <span>{nation?.name}</span>
+                </span>
                 <span aria-hidden>·</span>
                 <span>{artist.city}</span>
               </div>
             </div>
           </div>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap gap-2">
             {!isSelf && (
               <button
-                className="rounded-md px-4 py-2 text-sm font-semibold"
+                className="rounded-md px-5 py-2.5 text-sm font-semibold shadow-lg transition-transform hover:scale-[1.02]"
                 style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
               >
                 Follow
               </button>
             )}
             {!isSelf && (
-              <button
-                className="rounded-md border px-4 py-2 text-sm font-semibold"
-                style={{ borderColor: 'var(--hairline)' }}
+              <Link
+                href={`/messages/${artist.handle}`}
+                className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
               >
                 Message
-              </button>
+              </Link>
             )}
             {isSelf && (
               <Link
                 href="/analytics"
-                className="rounded-md border px-4 py-2 text-sm font-semibold"
-                style={{ borderColor: 'var(--hairline)' }}
+                className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
               >
                 <Icon name="bar-chart-2" size={14} className="mr-1 inline" />
                 Analytics
               </Link>
             )}
             <button
-              className="rounded-md border px-4 py-2 text-sm font-semibold"
-              style={{ borderColor: 'var(--hairline)' }}
+              className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
             >
               Share
             </button>
           </div>
         </div>
-      </CulturalPattern>
+      </div>
     </header>
   );
 }

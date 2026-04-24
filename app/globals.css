@@ -29,15 +29,11 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
 
-  --shadow-sm: 0 1px 2px rgb(15 14 12 / 0.04);
-  --shadow-md: 0 4px 12px rgb(15 14 12 / 0.06);
-  --shadow-lg: 0 12px 32px rgb(15 14 12 / 0.08);
-
   --ease-kava: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================================
- * Base tokens
+ * Default (fallback) tokens
  * ============================================================ */
 :root {
   --bg: #f2efe9;
@@ -49,53 +45,214 @@
   --ink-soft: #9a9086;
   --hairline: rgb(15 14 12 / 0.08);
   --brand: #c8342a;
+  --brand-soft: #ef8a83;
   --brand-ink: #ffffff;
   --accent-gold: #b8913d;
   --accent-jade: #5a7a6b;
   --accent-coral: #e07856;
   --accent-ocean: #2f5d6b;
   --pattern-opacity: 0.1;
+  --pattern-size: 48px;
   --shadow-sm: 0 1px 2px rgb(15 14 12 / 0.04);
   --shadow-md: 0 4px 12px rgb(15 14 12 / 0.06);
   --shadow-lg: 0 12px 32px rgb(15 14 12 / 0.08);
+  --accent-gradient: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 70%, black));
 }
 
 /* ============================================================
- * Cultural theme overrides — MUST come BEFORE dark mode.
- * Dark mode has the same specificity (0,0,1,0) so later rules win.
+ * Cultural themes — FULL palette shift, not just accent.
+ * Each theme is designed sensitively for the tradition it names.
+ *
+ *   ula-fala: Sāmoan chiefly red ula (pandanus necklace).
+ *             Warm cream ground, deep red brand, tapa earth accents.
+ *             Proud, ceremonial, Pasifika red.
+ *
+ *   moana:    The ocean that connects all Pacific peoples.
+ *             Seafoam ground, deep teal brand, coral counter-accent.
+ *             Cool, expansive, horizon-facing.
+ *
+ *   tapa:     Siapo / ngatu / hiapo / kapa / masi — bark cloth.
+ *             Oatmeal ground, warm umber brand, rust and ochre.
+ *             Handmade, earthen, intimate.
+ *
+ *   niu:      Coconut palm / foundational growth.
+ *             Jade-tinted ground, fern green brand, bronze accent.
+ *             Verdant, grounded, Polynesian cosmology.
+ *
+ *   koula:    Tongan gold / Heilala festival warmth.
+ *             Golden cream ground, warm gold brand, deep crimson accent.
+ *             Regal, celebratory, ceremonial warmth.
+ *
+ * IMPORTANT ordering: cultural themes declared BEFORE dark mode, so
+ * dark mode's single-attribute selector (same specificity) wins via
+ * "last rule wins". See docs/LESSONS_LEARNED.md.
  * ============================================================ */
+
+/* ULA FALA — Sāmoan red --------------------------------------- */
 [data-theme-cultural='ula-fala'] {
+  --bg: #f5ede3;
+  --surface: #fffaf2;
+  --surface-2: #ece1cf;
+  --surface-3: #e0d2bc;
+  --ink: #1a0f0b;
+  --ink-muted: #6d5343;
+  --ink-soft: #a08c76;
+  --hairline: rgb(26 15 11 / 0.1);
   --brand: #c8342a;
+  --brand-soft: #e67268;
+  --accent-gold: #b8913d;
+  --accent-jade: #6a7d65;
+  --accent-coral: #d67b5b;
+  --accent-ocean: #2f5d6b;
+  --pattern-opacity: 0.12;
+  --pattern-size: 52px;
+  --accent-gradient: linear-gradient(135deg, #c8342a, #8b5a2b);
 }
+
+/* MOANA — Ocean teal ----------------------------------------- */
 [data-theme-cultural='moana'] {
+  --bg: #e8eff1;
+  --surface: #fafcfc;
+  --surface-2: #d8e5e9;
+  --surface-3: #c4d6db;
+  --ink: #0a1518;
+  --ink-muted: #4a6a6f;
+  --ink-soft: #7c9297;
+  --hairline: rgb(10 21 24 / 0.1);
   --brand: #2f6b7a;
+  --brand-soft: #5a94a3;
+  --accent-gold: #b8913d;
+  --accent-jade: #548b7b;
+  --accent-coral: #e07856;
+  --accent-ocean: #1e4a57;
+  --pattern-opacity: 0.08;
+  --pattern-size: 60px;
+  --accent-gradient: linear-gradient(135deg, #2f6b7a, #1e3a4a);
 }
+
+/* TAPA — Bark cloth earth ------------------------------------ */
 [data-theme-cultural='tapa'] {
+  --bg: #ede5d1;
+  --surface: #fdf6e9;
+  --surface-2: #e3d6ba;
+  --surface-3: #d4c29f;
+  --ink: #1f140a;
+  --ink-muted: #6d563c;
+  --ink-soft: #9e8766;
+  --hairline: rgb(31 20 10 / 0.12);
   --brand: #8b5a2b;
+  --brand-soft: #b37f50;
+  --accent-gold: #b8913d;
+  --accent-jade: #6a7851;
+  --accent-coral: #c55a3c;
+  --accent-ocean: #405c5f;
+  --pattern-opacity: 0.14;
+  --pattern-size: 44px;
+  --accent-gradient: linear-gradient(135deg, #8b5a2b, #5c3a1b);
 }
+
+/* NIU — Coconut jade ----------------------------------------- */
 [data-theme-cultural='niu'] {
+  --bg: #e8ede0;
+  --surface: #f8f6ea;
+  --surface-2: #d5dec7;
+  --surface-3: #c0ccaf;
+  --ink: #0c150a;
+  --ink-muted: #52624a;
+  --ink-soft: #849279;
+  --hairline: rgb(12 21 10 / 0.1);
   --brand: #4a7c3a;
+  --brand-soft: #6fa35f;
+  --accent-gold: #b8913d;
+  --accent-jade: #3b6430;
+  --accent-coral: #c8342a;
+  --accent-ocean: #2f5d6b;
+  --pattern-opacity: 0.11;
+  --pattern-size: 48px;
+  --accent-gradient: linear-gradient(135deg, #4a7c3a, #2a4d1f);
 }
+
+/* KOULA — Tongan gold ---------------------------------------- */
 [data-theme-cultural='koula'] {
+  --bg: #f5edd6;
+  --surface: #fefaea;
+  --surface-2: #ebdeb6;
+  --surface-3: #dbc996;
+  --ink: #1f1606;
+  --ink-muted: #6a562d;
+  --ink-soft: #9c8757;
+  --hairline: rgb(31 22 6 / 0.12);
   --brand: #c89836;
+  --brand-soft: #e4b55c;
+  --accent-gold: #a57513;
+  --accent-jade: #6a7851;
+  --accent-coral: #c8342a;
+  --accent-ocean: #2f5d6b;
+  --pattern-opacity: 0.14;
+  --pattern-size: 50px;
+  --accent-gradient: linear-gradient(135deg, #c89836, #8b5f13);
 }
 
 /* ============================================================
- * Dark mode — AFTER cultural themes. Order matters.
+ * Dark mode — applied AFTER cultural themes so ink/surface flip,
+ * but each cultural theme's brand hue is preserved at higher chroma.
  * ============================================================ */
 [data-theme='dark'] {
   --bg: #0f0e0c;
-  --surface: #242018;
-  --surface-2: #2c2820;
-  --surface-3: #1b1814;
+  --surface: #1a1714;
+  --surface-2: #252019;
+  --surface-3: #2f2820;
   --ink: #f2efe9;
   --ink-muted: #a49d91;
-  --ink-soft: #6b6258;
-  --hairline: rgb(242 239 233 / 0.08);
+  --ink-soft: #70685c;
+  --hairline: rgb(242 239 233 / 0.1);
   --brand-ink: #ffffff;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.5);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
+}
+
+/* Dark mode + cultural theme combinations — preserve cultural brand hue
+ * with a slight chroma lift for legibility against dark surfaces. */
+[data-theme='dark'][data-theme-cultural='ula-fala'] {
+  --bg: #140908;
+  --surface: #231210;
+  --surface-2: #2d1814;
+  --ink-muted: #b89788;
+  --brand: #e54b41;
+  --brand-soft: #ef7872;
+}
+[data-theme='dark'][data-theme-cultural='moana'] {
+  --bg: #07141a;
+  --surface: #102027;
+  --surface-2: #162c35;
+  --ink-muted: #8db0b8;
+  --brand: #4fa3b6;
+  --brand-soft: #7dbcca;
+}
+[data-theme='dark'][data-theme-cultural='tapa'] {
+  --bg: #140e07;
+  --surface: #231a10;
+  --surface-2: #2d2115;
+  --ink-muted: #c5a97f;
+  --brand: #c88a55;
+  --brand-soft: #dba77a;
+}
+[data-theme='dark'][data-theme-cultural='niu'] {
+  --bg: #0a120a;
+  --surface: #141e13;
+  --surface-2: #1c2a1a;
+  --ink-muted: #a6c199;
+  --brand: #6fae5a;
+  --brand-soft: #95c585;
+}
+[data-theme='dark'][data-theme-cultural='koula'] {
+  --bg: #141007;
+  --surface: #231b0f;
+  --surface-2: #2e2312;
+  --ink-muted: #d5b474;
+  --brand: #e8b652;
+  --brand-soft: #f0c978;
 }
 
 /* ============================================================
@@ -112,6 +269,7 @@ body {
   font-feature-settings: 'ss01', 'tnum', 'lnum', 'kern';
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background 380ms var(--ease-kava), color 380ms var(--ease-kava);
 }
 body {
   min-height: 100vh;
@@ -133,26 +291,22 @@ h6 {
   font-family: var(--font-editorial);
   font-feature-settings: 'kern', 'liga';
 }
-
 .font-mono {
   font-family: var(--font-mono);
   font-feature-settings: 'tnum', 'lnum';
 }
 
-/* Links */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Focus */
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Scrollbar polish */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -160,13 +314,15 @@ a {
 ::-webkit-scrollbar-thumb {
   background: var(--ink-soft);
   border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
 /* ============================================================
- * Motion + reduced-motion
+ * Motion / reduced-motion
  * ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -178,7 +334,6 @@ a {
     scroll-behavior: auto !important;
   }
 }
-
 @media (prefers-reduced-transparency: reduce) {
   :root {
     --pattern-opacity: 0;
@@ -189,7 +344,7 @@ a {
 }
 
 /* ============================================================
- * Cultural pattern utility
+ * Cultural pattern utilities
  * ============================================================ */
 .pattern-bg {
   background-image: var(--pattern-image, none);
@@ -198,22 +353,6 @@ a {
   opacity: var(--pattern-opacity, 0.1);
 }
 
-.pattern-band {
-  position: relative;
-  overflow: hidden;
-}
-.pattern-band::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--pattern-image, none);
-  background-size: var(--pattern-size, 48px);
-  background-repeat: repeat;
-  opacity: 0.12;
-  pointer-events: none;
-}
-
-/* Soft skeleton wash */
 @keyframes skeleton-wash {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -235,16 +374,14 @@ a {
   }
 }
 
-/* Page transition (cross-fade) */
 .page-fade-in {
-  animation: page-fade 200ms var(--ease-kava);
+  animation: page-fade 240ms var(--ease-kava);
 }
 @keyframes page-fade {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Honour (like) tap ripple */
 .honour-pulse {
   animation: honour-pulse 400ms var(--ease-kava);
 }
@@ -253,7 +390,6 @@ a {
   40% { transform: scale(1.3); }
 }
 
-/* Editorial pull-quote */
 .pull-quote {
   font-family: var(--font-editorial);
   font-size: clamp(1.5rem, 2.6vw, 2.25rem);
@@ -264,27 +400,24 @@ a {
   padding-left: 1.25rem;
 }
 
-/* Cultural rail (vertical pattern stripe on desktop profile) */
 .cultural-rail {
   width: 40px;
   min-height: 100%;
   background: var(--pattern-image, none);
   background-size: 48px;
   background-repeat: repeat;
-  opacity: 0.08;
+  opacity: calc(var(--pattern-opacity, 0.1) * 0.8);
 }
 
-/* Gold mana dot */
 .mana-dot {
   display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgb(184 145 61 / 0.12);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-gold) 20%, transparent);
 }
 
-/* Verified jade check */
 .verified-dot {
   display: inline-block;
   width: 14px;
@@ -298,9 +431,8 @@ a {
   font-weight: 600;
 }
 
-/* Inati badge */
 .inati-badge {
-  background: color-mix(in srgb, var(--accent-jade) 12%, transparent);
+  background: color-mix(in srgb, var(--accent-jade) 14%, transparent);
   color: var(--accent-jade);
   font-weight: 600;
   padding: 2px 8px;
@@ -309,9 +441,8 @@ a {
   letter-spacing: 0.02em;
 }
 
-/* Tapu indicator */
 .tapu-indicator {
-  background: color-mix(in srgb, var(--accent-coral) 15%, transparent);
+  background: color-mix(in srgb, var(--accent-coral) 16%, transparent);
   color: var(--accent-coral);
   font-weight: 600;
   padding: 2px 8px;
@@ -320,12 +451,10 @@ a {
   letter-spacing: 0.02em;
 }
 
-/* Hairline divider */
 .hairline {
   border-top: 1px solid var(--hairline);
 }
 
-/* Utility for bleed bg */
 .bleed {
   background: var(--surface);
   border: 1px solid var(--hairline);
@@ -334,4 +463,16 @@ a {
 .bleed-2 {
   background: var(--surface-2);
   border-radius: 16px;
+}
+
+/* ============================================================
+ * Theme-aware decorative flourish — appears once per major section
+ * header so the cultural theme's identity shows beyond accent colour.
+ * ============================================================ */
+.theme-rule {
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: var(--accent-gradient);
+  border-radius: 3px;
 }

@@ -234,6 +234,23 @@ function run() {
       work_ids TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL
     );
+    CREATE TABLE conversations (
+      id TEXT PRIMARY KEY,
+      conversation_key TEXT NOT NULL UNIQUE,
+      user_a TEXT NOT NULL,
+      user_b TEXT NOT NULL,
+      last_message_at TEXT NOT NULL,
+      last_message_preview TEXT
+    );
+    CREATE TABLE messages (
+      id TEXT PRIMARY KEY,
+      conversation_id TEXT NOT NULL,
+      sender_id TEXT NOT NULL,
+      body TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      read_at TEXT
+    );
+    CREATE INDEX idx_messages_conv ON messages(conversation_id, created_at);
   `);
 
   // ---- Seed ----
@@ -545,6 +562,54 @@ function run() {
     JSON.stringify(['work_016', 'work_011', 'work_017']),
     now,
   );
+
+  // Seed some conversations so the inbox isn't empty.
+  const insertConv = db.prepare(
+    `INSERT INTO conversations (id, conversation_key, user_a, user_b, last_message_at, last_message_preview)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+  );
+  const insertMsg = db.prepare(
+    `INSERT INTO messages (id, conversation_id, sender_id, body, created_at, read_at)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+  );
+
+  const convKey = (a: string, b: string) => [a, b].sort().join('|');
+  const seedConv = (id: string, a: string, b: string, messages: Array<{ from: string; body: string; at: string }>) => {
+    const last = messages[messages.length - 1];
+    insertConv.run(id, convKey(a, b), a, b, last.at, last.body.slice(0, 80));
+    messages.forEach((m, i) =>
+      insertMsg.run(`${id}_m${i}`, id, m.from, m.body, m.at, m.at),
+    );
+  };
+
+  seedConv('conv_1', 'artist_001', 'artist_003', [
+    { from: 'artist_003', body: 'Bula Lesā. I saw your Whenua Whakapapa III at Māngere last October. It stopped me.', at: '2026-04-20T10:04:00+12:00' },
+    { from: 'artist_001', body: 'Fa\'afetai, Akanisi. Means a lot coming from you. How is the Kirikiriroa youth wānanga?', at: '2026-04-20T11:22:00+12:00' },
+    { from: 'artist_003', body: 'Twelve kids this cohort. Two of them are already ready to show — pieces that carry their own voice, not just mine.', at: '2026-04-20T11:41:00+12:00' },
+    { from: 'artist_001', body: 'That\'s the work. When can they bring pieces up to Auckland? I\'ll make space at the Saturday wānanga.', at: '2026-04-20T12:00:00+12:00' },
+  ]);
+
+  seedConv('conv_2', 'artist_001', 'persona_adviser', [
+    { from: 'persona_adviser', body: 'Mālō e lelei Lesā — I\'m reviewing the AOG Pacific Tier 2 round opening in May. Are you thinking about applying with the Saturday wānanga?', at: '2026-04-19T09:00:00+12:00' },
+    { from: 'artist_001', body: 'Mālō Semisi. I think so. The wānanga has outgrown my garage. Tuesday 2pm kōrero?', at: '2026-04-19T09:45:00+12:00' },
+    { from: 'persona_adviser', body: 'Booked. I\'ll bring the AOG criteria and a template. We\'ll write the first paragraph together.', at: '2026-04-19T09:58:00+12:00' },
+  ]);
+
+  seedConv('conv_3', 'artist_001', 'persona_collector', [
+    { from: 'persona_collector', body: 'Kia ora Lesā. Hinemoa here. I\'d like to acquire Moana Whakapapa I for our family collection. It belongs with us.', at: '2026-04-18T16:00:00+12:00' },
+    { from: 'artist_001', body: 'Tēnā koe Hinemoa. I\'d be honoured. Would you like to visit the studio before you decide?', at: '2026-04-18T17:12:00+12:00' },
+    { from: 'persona_collector', body: 'Yes — Friday afternoon if that works.', at: '2026-04-18T17:30:00+12:00' },
+  ]);
+
+  seedConv('conv_4', 'artist_001', 'persona_org', [
+    { from: 'persona_org', body: 'Talofa Lesā. We\'d love to programme a small solo show of your new series for November. Could we talk?', at: '2026-04-17T10:00:00+12:00' },
+    { from: 'artist_001', body: 'Talofa. Yes — absolutely. Let me know a time.', at: '2026-04-17T10:22:00+12:00' },
+  ]);
+
+  seedConv('conv_5', 'artist_001', 'artist_005', [
+    { from: 'artist_005', body: 'Lesā — my first drop goes live tomorrow. Very nervous. Just wanted to say thank you for all of it.', at: '2026-04-21T20:00:00+12:00' },
+    { from: 'artist_001', body: 'Folasāga. The work is good. Inati holds the rest. Breathe.', at: '2026-04-21T20:14:00+12:00' },
+  ]);
 
   db.close();
 

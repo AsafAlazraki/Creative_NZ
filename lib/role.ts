@@ -63,20 +63,39 @@ export function roleByPersona(handle: string): RoleId {
   return match?.id ?? 'audience';
 }
 
+/**
+ * Navigation — Facebook/Instagram style. Everyone gets the same primary
+ * nav. Admin gets an extra Admin link. Role stays a property of the user
+ * (shown as profile badge), not a gate for seeing different apps.
+ */
+const BASE_NAV = [
+  'feed',
+  'explore',
+  'market',
+  'drops',
+  'messages',
+  'create',
+  'groups',
+  'events',
+  'grants',
+  'kete',
+  'collections',
+];
+
 export const ROLE_NAV: Record<RoleId, string[]> = {
-  artist: ['feed', 'explore', 'discover', 'create', 'drops', 'market', 'grants', 'groups', 'kete', 'analytics', 'moana'],
-  audience: ['feed', 'explore', 'discover', 'reels', 'drops', 'market', 'collections', 'events', 'grants', 'kete'],
-  collector: ['feed', 'explore', 'discover', 'drops', 'market', 'collections', 'events', 'grants', 'kete'],
-  org: ['feed', 'explore', 'discover', 'events', 'orgs', 'market', 'grants', 'groups', 'kete'],
-  adviser: ['feed', 'grants', 'discover', 'events', 'kete', 'orgs', 'groups'],
-  elder: ['feed', 'groups', 'discover', 'drops', 'market', 'grants', 'kete'],
-  admin: ['feed', 'admin', 'grants', 'groups', 'orgs', 'kete'],
+  artist: BASE_NAV,
+  audience: BASE_NAV,
+  collector: BASE_NAV,
+  org: BASE_NAV,
+  adviser: BASE_NAV,
+  elder: BASE_NAV,
+  admin: [...BASE_NAV, 'admin'],
 };
 
 export const SCREENS: Record<string, { label: string; href: string; icon: string }> = {
-  feed: { label: 'Feed', href: '/', icon: 'home' },
+  feed: { label: 'Home', href: '/', icon: 'home' },
   explore: { label: 'Explore', href: '/explore', icon: 'compass' },
-  discover: { label: 'Discover', href: '/discover', icon: 'search' },
+  discover: { label: 'Search', href: '/discover', icon: 'search' },
   create: { label: 'Create', href: '/create', icon: 'plus-square' },
   reels: { label: 'Reels', href: '/reels', icon: 'film' },
   playlists: { label: 'Playlists', href: '/playlists', icon: 'list' },
@@ -84,6 +103,7 @@ export const SCREENS: Record<string, { label: string; href: string; icon: string
   drops: { label: 'Drops', href: '/drops', icon: 'zap' },
   market: { label: 'Marketplace', href: '/market', icon: 'shopping-bag' },
   profile: { label: 'Profile', href: '/profile', icon: 'user' },
+  messages: { label: 'Messages', href: '/messages', icon: 'message-circle' },
   grants: { label: 'Grants', href: '/grants', icon: 'award' },
   groups: { label: 'Groups', href: '/groups', icon: 'users' },
   orgs: { label: 'Organisations', href: '/orgs', icon: 'building' },

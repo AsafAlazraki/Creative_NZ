@@ -230,6 +230,29 @@ export const collections = sqliteTable('collections', {
   createdAt: text('created_at').notNull(),
 });
 
+/**
+ * Direct messages — 1:1 conversations between users.
+ * conversationKey is the canonical sorted pair `userA|userB` so there's
+ * only ever one conversation per user pair.
+ */
+export const conversations = sqliteTable('conversations', {
+  id: text('id').primaryKey(),
+  conversationKey: text('conversation_key').notNull().unique(),
+  userA: text('user_a').notNull(),
+  userB: text('user_b').notNull(),
+  lastMessageAt: text('last_message_at').notNull(),
+  lastMessagePreview: text('last_message_preview'),
+});
+
+export const messages = sqliteTable('messages', {
+  id: text('id').primaryKey(),
+  conversationId: text('conversation_id').notNull(),
+  senderId: text('sender_id').notNull(),
+  body: text('body').notNull(),
+  createdAt: text('created_at').notNull(),
+  readAt: text('read_at'),
+});
+
 export type Nation = typeof nations.$inferSelect;
 export type Artist = typeof artists.$inferSelect;
 export type Work = typeof works.$inferSelect;
@@ -242,3 +265,5 @@ export type Org = typeof orgs.$inferSelect;
 export type Article = typeof articles.$inferSelect;
 export type Drop = typeof drops.$inferSelect;
 export type Collection = typeof collections.$inferSelect;
+export type Conversation = typeof conversations.$inferSelect;
+export type Message = typeof messages.$inferSelect;
