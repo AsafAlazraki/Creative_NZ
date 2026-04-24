@@ -1,124 +1,42 @@
 import { getCurrentUser } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 import { ARTFORM_NOTES } from '@/lib/tauhi-va-kb';
 import { BEST_TIMES, HASHTAG_TRENDS } from '@/lib/moana-ola-kb';
-import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 import { Icon } from '@/components/ui/Icon';
+import { CreateTabs } from '@/components/create/CreateTabs';
+import { CreateCanvas } from '@/components/create/CreateCanvas';
 
 export const metadata = { title: 'Create · KavaWorks' };
 
-export default async function CreatePage() {
+const TYPES = ['image', 'short', 'long', 'audio', 'listing'] as const;
+type CreateType = (typeof TYPES)[number];
+
+export default async function CreatePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string }>;
+}) {
   const user = await getCurrentUser();
-  if (user.role !== 'artist' && user.role !== 'elder') redirect('/');
+  const { type } = await searchParams;
+  const active: CreateType = TYPES.includes(type as CreateType)
+    ? (type as CreateType)
+    : 'image';
 
   return (
-    <div className="px-4 py-6 lg:px-10">
+    <div className="px-4 py-6 lg:px-10 xl:px-16">
       <header className="mb-8">
-        <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
+        <div className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--ink-soft)' }}>
           Create
         </div>
-        <h1 className="mt-2 font-display text-4xl font-semibold">Share with respect.</h1>
+        <h1 className="mt-2 font-display font-semibold" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em' }}>
+          Share with respect.
+        </h1>
+        <span className="theme-rule mt-3" />
       </header>
 
+      <CreateTabs active={active} />
+
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div>
-          <CulturalPattern
-            id="pattern-tapa"
-            opacity={0.12}
-            tone="brand"
-            size={48}
-            className="mb-6 overflow-hidden rounded-2xl border border-dashed"
-          >
-            <div className="flex aspect-[16/9] flex-col items-center justify-center p-10 text-center">
-              <div
-                className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full"
-                style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-              >
-                <Icon name="plus-square" size={18} />
-              </div>
-              <div className="font-display text-xl font-semibold">Upload a work or drag here</div>
-              <p className="mt-1 text-sm" style={{ color: 'var(--ink-muted)' }}>
-                Image, video up to 90s, or audio.
-              </p>
-            </div>
-          </CulturalPattern>
-
-          <form
-            className="space-y-5"
-            aria-label="Create post form"
-            action="#"
-          >
-            <Field label="Artform">
-              <select
-                className="w-full rounded-md border bg-transparent px-3 py-2"
-                style={{ borderColor: 'var(--hairline)' }}
-                defaultValue="siapo"
-              >
-                {Object.keys(ARTFORM_NOTES).map((k) => (
-                  <option key={k} value={k}>
-                    {k.replace(/_/g, ' ')}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Caption">
-              <textarea
-                className="w-full rounded-md border bg-transparent p-3 font-editorial"
-                style={{ borderColor: 'var(--hairline)', minHeight: 120, lineHeight: 1.5 }}
-                placeholder="Ua mae a uō..."
-              />
-            </Field>
-
-            <Field label="Caption language">
-              <select
-                className="w-full rounded-md border bg-transparent px-3 py-2"
-                style={{ borderColor: 'var(--hairline)' }}
-              >
-                <option value="en">English</option>
-                <option value="sm">Sāmoan</option>
-                <option value="to">Tongan</option>
-                <option value="fj">Fijian</option>
-                <option value="rar">Cook Islands Māori</option>
-                <option value="niu">Niuean</option>
-                <option value="ty">Tahitian</option>
-                <option value="haw">Hawaiian</option>
-                <option value="mi">te reo Māori</option>
-                <option value="bi">Bislama</option>
-                <option value="tpi">Tok Pisin</option>
-              </select>
-            </Field>
-
-            <div
-              className="flex items-start gap-3 rounded-xl border p-4"
-              style={{ borderColor: 'var(--hairline)', background: 'var(--surface-2)' }}
-            >
-              <input type="checkbox" id="tapu" className="mt-1" />
-              <label htmlFor="tapu" className="text-sm">
-                <div className="font-semibold">Mark this work tapu</div>
-                <div className="mt-0.5" style={{ color: 'var(--ink-muted)' }}>
-                  Visible only to members of your primary nation group. Kaitiakitanga — you decide
-                  what's shared.
-                </div>
-              </label>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                className="rounded-md px-5 py-2.5 font-semibold"
-                style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-              >
-                Share with respect
-              </button>
-              <button
-                className="rounded-md border px-5 py-2.5 font-semibold"
-                style={{ borderColor: 'var(--hairline)' }}
-              >
-                Save draft
-              </button>
-            </div>
-          </form>
-        </div>
+        <CreateCanvas type={active} />
 
         <aside className="space-y-5">
           <section
@@ -132,10 +50,25 @@ export default async function CreatePage() {
               <Icon name="activity" size={12} /> Moana Ola · timing
             </div>
             <p className="mt-2 text-sm" style={{ color: 'var(--ink)', lineHeight: 1.5 }}>
-              {BEST_TIMES.craftPost.reason}
+              {BEST_TIMES[
+                active === 'short' ? 'processVideo'
+                : active === 'long' ? 'processVideo'
+                : active === 'audio' ? 'announcement'
+                : active === 'listing' ? 'finishedWork'
+                : 'craftPost'
+              ].reason}
             </p>
-            <p className="mt-2 font-mono text-xs">{BEST_TIMES.craftPost.window}</p>
+            <p className="mt-2 font-mono text-xs">
+              {BEST_TIMES[
+                active === 'short' ? 'processVideo'
+                : active === 'long' ? 'processVideo'
+                : active === 'audio' ? 'announcement'
+                : active === 'listing' ? 'finishedWork'
+                : 'craftPost'
+              ].window}
+            </p>
           </section>
+
           <section
             className="rounded-xl border p-4"
             style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
@@ -144,7 +77,7 @@ export default async function CreatePage() {
               Suggested hashtags
             </h3>
             <div className="flex flex-wrap gap-2">
-              {HASHTAG_TRENDS.slice(0, 6).map((t) => (
+              {HASHTAG_TRENDS.slice(0, 8).map((t) => (
                 <span
                   key={t.tag}
                   className="rounded-full border px-2 py-1 text-xs"
@@ -155,6 +88,7 @@ export default async function CreatePage() {
               ))}
             </div>
           </section>
+
           <section
             className="rounded-xl border p-4"
             style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
@@ -167,19 +101,21 @@ export default async function CreatePage() {
               first sale.
             </p>
           </section>
+
+          <section
+            className="rounded-xl border p-4"
+            style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+          >
+            <h3 className="mb-2 text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+              Artforms ({Object.keys(ARTFORM_NOTES).length})
+            </h3>
+            <p className="text-xs" style={{ color: 'var(--ink-muted)' }}>
+              Siapo, ngatu, hiapo, kapa, masi, tīvaevae, whakairo, tā moko, tatau, kōwhaiwhai, rāranga,
+              bilum, sand drawing, shell jewellery, spoken word, photography, documentary film…
+            </p>
+          </section>
         </aside>
       </div>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-        {label}
-      </label>
-      {children}
     </div>
   );
 }

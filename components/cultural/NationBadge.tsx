@@ -1,5 +1,9 @@
-import { getNation } from '@/lib/repo';
+import { NATIONS } from '@/db/seed-data/nations';
 import { cn } from '@/lib/utils';
+
+function getNationLocal(id: string) {
+  return NATIONS.find((n) => n.id === id);
+}
 
 export function NationBadge({
   nationId,
@@ -10,7 +14,7 @@ export function NationBadge({
   size?: 'xs' | 'sm' | 'md';
   className?: string;
 }) {
-  const nation = getNation(nationId);
+  const nation = getNationLocal(nationId);
   if (!nation) return null;
 
   const textSize = size === 'xs' ? 'text-xs' : size === 'sm' ? 'text-sm' : 'text-base';

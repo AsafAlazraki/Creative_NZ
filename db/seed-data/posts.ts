@@ -47,6 +47,7 @@ export const POSTS: PostSeed[] = [
         createdAt: '2026-04-18T13:15:00+12:00',
       },
     ],
+    linkedWorkId: 'work_001',
   },
   {
     id: 'post_002',
@@ -146,6 +147,7 @@ export const POSTS: PostSeed[] = [
     saves: 104,
     views: 5820,
     commentsData: [],
+    linkedWorkId: 'work_015',
   },
   {
     id: 'post_006',
@@ -232,6 +234,7 @@ export const POSTS: PostSeed[] = [
     saves: 152,
     views: 6214,
     commentsData: [],
+    linkedWorkId: 'work_001',
   },
   {
     id: 'post_010',
@@ -252,6 +255,7 @@ export const POSTS: PostSeed[] = [
     saves: 141,
     views: 5890,
     commentsData: [],
+    linkedWorkId: 'work_007',
   },
   {
     id: 'post_011',
@@ -272,6 +276,7 @@ export const POSTS: PostSeed[] = [
     saves: 87,
     views: 4102,
     commentsData: [],
+    linkedWorkId: 'work_013',
   },
   {
     id: 'post_012',
@@ -292,6 +297,7 @@ export const POSTS: PostSeed[] = [
     saves: 198,
     views: 8412,
     commentsData: [],
+    linkedWorkId: 'work_015',
   },
   {
     id: 'post_013',
@@ -313,6 +319,7 @@ export const POSTS: PostSeed[] = [
     saves: 72,
     views: 3421,
     commentsData: [],
+    linkedWorkId: 'work_019',
   },
   {
     id: 'post_014',
@@ -334,6 +341,7 @@ export const POSTS: PostSeed[] = [
     saves: 54,
     views: 2671,
     commentsData: [],
+    linkedWorkId: 'work_012',
   },
   // --- Teaching posts ---
   {

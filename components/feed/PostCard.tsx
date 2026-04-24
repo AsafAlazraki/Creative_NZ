@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { getArtistById, getNation, type HydratedPost } from '@/lib/repo';
+import { getArtistById, getNation, getWorkById, type HydratedPost } from '@/lib/repo';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { NationBadge } from '@/components/cultural/NationBadge';
-import { VerifiedBadge, ElderBadge, TapuIndicator, RoleBadge } from '@/components/cultural/Badges';
-import { formatCount, timeAgo } from '@/lib/utils';
+import { VerifiedBadge, ElderBadge, TapuIndicator, RoleBadge, InatiBadge } from '@/components/cultural/Badges';
+import { formatCount, formatPrice, timeAgo } from '@/lib/utils';
 import { Icon } from '@/components/ui/Icon';
-import { postImageUrl } from '@/lib/images';
+import { postImageUrl, workImageUrl } from '@/lib/images';
 
 export function PostCard({ post }: { post: HydratedPost }) {
   const artist = getArtistById(post.authorId);
@@ -105,6 +105,8 @@ export function PostCard({ post }: { post: HydratedPost }) {
             ))}
           </div>
         )}
+
+        {post.linkedWorkId && <ShopCard workId={post.linkedWorkId} />}
       </div>
 
       <footer className="flex items-center gap-5 border-t px-5 py-3 text-sm" style={{ borderColor: 'var(--hairline)', color: 'var(--ink-muted)' }}>
@@ -198,6 +200,51 @@ function PostMedia({ post }: { post: HydratedPost }) {
         {post.artform}
       </div>
     </div>
+  );
+}
+
+function ShopCard({ workId }: { workId: string }) {
+  const work = getWorkById(workId);
+  if (!work) return null;
+  const img = workImageUrl({
+    artform: work.artform,
+    nationId: work.nationId,
+    materials: work.materials,
+    seed: work.id,
+    w: 240,
+    h: 240,
+  });
+  return (
+    <Link
+      href={`/market/${work.id}`}
+      className="mt-4 flex items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_4%,transparent)]"
+      style={{ borderColor: 'var(--hairline)', background: 'var(--surface-2)' }}
+    >
+      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg">
+        <img src={img} alt={work.title} className="h-full w-full object-cover" loading="lazy" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span
+            className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold"
+            style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
+          >
+            K
+          </span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+            Shop · this post
+          </span>
+        </div>
+        <div className="truncate text-sm font-semibold">{work.title}</div>
+        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--ink-muted)' }}>
+          <span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>
+            {formatPrice(work.priceNzd)}
+          </span>
+          <InatiBadge size="xs" />
+        </div>
+      </div>
+      <Icon name="chevron-right" size={16} />
+    </Link>
   );
 }
 

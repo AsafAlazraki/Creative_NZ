@@ -111,7 +111,8 @@ function run() {
       shares INTEGER NOT NULL DEFAULT 0,
       saves INTEGER NOT NULL DEFAULT 0,
       views INTEGER NOT NULL DEFAULT 0,
-      comments_data TEXT NOT NULL DEFAULT '[]'
+      comments_data TEXT NOT NULL DEFAULT '[]',
+      linked_work_id TEXT
     );
     CREATE TABLE grants (
       id TEXT PRIMARY KEY,
@@ -340,8 +341,8 @@ function run() {
   }
 
   const insertPost = db.prepare(`
-    INSERT INTO posts (id, author_id, media_type, media_ref, poster_ref, duration_sec, caption, caption_lang, caption_translation, tapu, nation_id, artform, collaborator_handles, created_at, likes, comments, shares, saves, views, comments_data)
-    VALUES (@id, @author_id, @media_type, @media_ref, @poster_ref, @duration_sec, @caption, @caption_lang, @caption_translation, @tapu, @nation_id, @artform, @collaborator_handles, @created_at, @likes, @comments, @shares, @saves, @views, @comments_data)
+    INSERT INTO posts (id, author_id, media_type, media_ref, poster_ref, duration_sec, caption, caption_lang, caption_translation, tapu, nation_id, artform, collaborator_handles, created_at, likes, comments, shares, saves, views, comments_data, linked_work_id)
+    VALUES (@id, @author_id, @media_type, @media_ref, @poster_ref, @duration_sec, @caption, @caption_lang, @caption_translation, @tapu, @nation_id, @artform, @collaborator_handles, @created_at, @likes, @comments, @shares, @saves, @views, @comments_data, @linked_work_id)
   `);
   for (const p of POSTS) {
     insertPost.run({
@@ -365,6 +366,7 @@ function run() {
       saves: p.saves,
       views: p.views,
       comments_data: JSON.stringify(p.commentsData),
+      linked_work_id: p.linkedWorkId ?? null,
     });
   }
 

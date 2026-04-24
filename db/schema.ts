@@ -87,6 +87,9 @@ export const posts = sqliteTable('posts', {
   saves: integer('saves').notNull().default(0),
   views: integer('views').notNull().default(0),
   commentsData: text('comments_data').notNull().default('[]'),
+  /** Optional link to a marketplace work. When set, the post is "shoppable" — */
+  /** shows a product card overlay on video / reel cards. */
+  linkedWorkId: text('linked_work_id'),
 });
 
 export const grants = sqliteTable('grants', {

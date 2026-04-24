@@ -7,10 +7,12 @@ import {
 import { GreetingStrip } from '@/components/cultural/GreetingStrip';
 import { EditorialHero } from './EditorialHero';
 import { IslandStrip } from './IslandStrip';
+import { ShortsRail } from './ShortsRail';
 import { PostCard } from './PostCard';
 import { DropModule, GrantModule, PlatformNoteModule } from './InlineModules';
 import { RightSidebar } from './RightSidebar';
 import { MoanaOlaCard } from './MoanaOlaCard';
+import { ComposerCard } from './ComposerCard';
 
 export async function FeedArtist({ user }: { user: CurrentUser }) {
   const posts = getPosts({
@@ -27,6 +29,8 @@ export async function FeedArtist({ user }: { user: CurrentUser }) {
     <div className="grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[1fr_320px] lg:px-8">
       <div className="min-w-0">
         <GreetingStrip name={user.name} nationId={user.primaryNationId} />
+        <ComposerCard user={user} />
+        <ShortsRail />
         <MoanaOlaCard user={user} />
         <EditorialHero
           artist={featured}

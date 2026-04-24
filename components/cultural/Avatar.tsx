@@ -1,6 +1,11 @@
-import { getNation } from '@/lib/repo';
+import { NATIONS } from '@/db/seed-data/nations';
 import { PATTERN_SVG } from '@/lib/patterns';
 import { cn } from '@/lib/utils';
+
+function nationPattern(nationId: string): keyof typeof PATTERN_SVG {
+  const n = NATIONS.find((x) => x.id === nationId);
+  return (n?.patternId ?? 'pattern-tapa') as keyof typeof PATTERN_SVG;
+}
 
 export function AvatarIllustrated({
   nationId,
@@ -13,8 +18,7 @@ export function AvatarIllustrated({
   name: string;
   className?: string;
 }) {
-  const nation = getNation(nationId);
-  const patternId = (nation?.patternId ?? 'pattern-tapa') as keyof typeof PATTERN_SVG;
+  const patternId = nationPattern(nationId);
   const svg = PATTERN_SVG[patternId]?.replace('%23000', encodeURIComponent('#0F0E0C')) ??
     PATTERN_SVG['pattern-tapa'];
   const bg = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;

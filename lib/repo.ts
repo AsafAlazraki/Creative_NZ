@@ -108,6 +108,7 @@ export function hydratePost(row: typeof s.posts.$inferSelect) {
     commentsData: parseJson<
       Array<{ authorHandle: string; text: string; createdAt: string; elderMark?: boolean }>
     >(row.commentsData, []),
+    linkedWorkId: row.linkedWorkId ?? null,
   };
 }
 

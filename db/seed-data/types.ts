@@ -74,6 +74,7 @@ export type PostSeed = {
     createdAt: string;
     elderMark?: boolean;
   }>;
+  linkedWorkId?: string;
 };
 
 export type WorkSeed = {
