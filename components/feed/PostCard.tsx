@@ -3,14 +3,23 @@ import { getArtistById, getNation, getWorkById, type HydratedPost } from '@/lib/
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { NationBadge } from '@/components/cultural/NationBadge';
 import { VerifiedBadge, ElderBadge, TapuIndicator, RoleBadge, InatiBadge } from '@/components/cultural/Badges';
-import { formatCount, formatPrice, timeAgo } from '@/lib/utils';
+import { formatPrice, timeAgo } from '@/lib/utils';
 import { Icon } from '@/components/ui/Icon';
 import { postImageUrl, workImageUrl } from '@/lib/images';
+import { PostActions } from './PostActions';
+import { userLikedPostIds, userSavedPostIds } from '@/lib/repo';
+import { getCurrentUser } from '@/lib/auth';
 
-export function PostCard({ post }: { post: HydratedPost }) {
+export async function PostCard({ post }: { post: HydratedPost }) {
   const artist = getArtistById(post.authorId);
   if (!artist) return null;
   const nation = getNation(post.nationId);
+
+  const viewer = await getCurrentUser();
+  const likedSet = userLikedPostIds(viewer.id);
+  const savedSet = userSavedPostIds(viewer.id);
+  const liked = likedSet.has(post.id);
+  const saved = savedSet.has(post.id);
 
   const hashtagSeeds = extractHashtags(post.caption, post.captionTranslation);
 
@@ -55,7 +64,7 @@ export function PostCard({ post }: { post: HydratedPost }) {
         </button>
       </header>
 
-      <PostMedia post={post} />
+      <PostMedia post={post} authorName={artist.name} />
 
       <div className="px-5 pb-3 pt-4">
         {post.captionLang !== 'en' && (
@@ -66,7 +75,11 @@ export function PostCard({ post }: { post: HydratedPost }) {
             In {nation?.name ?? post.captionLang}
           </div>
         )}
-        <p className="font-editorial text-[18px] leading-snug" style={{ color: 'var(--ink)' }}>
+        <p
+          lang={post.captionLang || undefined}
+          className="font-editorial text-[18px] leading-snug"
+          style={{ color: 'var(--ink)' }}
+        >
           {post.caption}
         </p>
         {post.captionTranslation && (
@@ -109,38 +122,15 @@ export function PostCard({ post }: { post: HydratedPost }) {
         {post.linkedWorkId && <ShopCard workId={post.linkedWorkId} />}
       </div>
 
-      <footer className="flex items-center gap-5 border-t px-5 py-3 text-sm" style={{ borderColor: 'var(--hairline)', color: 'var(--ink-muted)' }}>
-        <button
-          className="flex items-center gap-1.5 transition-colors hover:text-[color:var(--brand)]"
-          aria-label="Honour"
-        >
-          <Icon name="heart" size={16} />
-          <span className="font-mono">{formatCount(post.likes)}</span>
-        </button>
-        <button
-          className="flex items-center gap-1.5 hover:text-[color:var(--ink)]"
-          aria-label="Comments"
-        >
-          <Icon name="message-circle" size={16} />
-          <span className="font-mono">{formatCount(post.comments)}</span>
-        </button>
-        <button
-          className="flex items-center gap-1.5 hover:text-[color:var(--ink)]"
-          aria-label="Share"
-          title="Share with respect"
-        >
-          <Icon name="send" size={16} />
-          <span className="font-mono">{formatCount(post.shares)}</span>
-        </button>
-        <button
-          className="ml-auto flex items-center gap-1.5 hover:text-[color:var(--ink)]"
-          aria-label="Keep"
-          title="Keep"
-        >
-          <Icon name="bookmark" size={16} />
-          <span className="font-mono">{formatCount(post.saves)}</span>
-        </button>
-      </footer>
+      <PostActions
+        postId={post.id}
+        initialLikes={post.likes}
+        initialComments={post.comments}
+        initialShares={post.shares}
+        initialSaves={post.saves}
+        initiallyLiked={liked}
+        initiallySaved={saved}
+      />
 
       {post.commentsData.length > 0 && (
         <div className="border-t px-5 py-3" style={{ borderColor: 'var(--hairline)' }}>
@@ -163,7 +153,7 @@ export function PostCard({ post }: { post: HydratedPost }) {
   );
 }
 
-function PostMedia({ post }: { post: HydratedPost }) {
+function PostMedia({ post, authorName }: { post: HydratedPost; authorName: string }) {
   const img = postImageUrl({
     artform: post.artform,
     nationId: post.nationId,
@@ -173,12 +163,13 @@ function PostMedia({ post }: { post: HydratedPost }) {
   });
   const isVideo = post.mediaType === 'video';
   const isAudio = post.mediaType === 'audio';
+  const altText = `${post.artform} ${isVideo ? 'video' : isAudio ? 'audio' : 'work'} by ${authorName}`;
 
   return (
     <div className="relative aspect-[4/3] bg-[color:var(--surface-2)] overflow-hidden">
       <img
         src={img}
-        alt={post.artform}
+        alt={altText}
         loading="lazy"
         decoding="async"
         className="absolute inset-0 h-full w-full object-cover"
@@ -187,6 +178,7 @@ function PostMedia({ post }: { post: HydratedPost }) {
         <div
           className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold"
           style={{ background: 'rgba(0,0,0,0.7)', color: 'white' }}
+          aria-hidden
         >
           {isVideo ? '▶' : '♪'} {Math.floor((post.durationSec ?? 0) / 60)}:
           {((post.durationSec ?? 0) % 60).toString().padStart(2, '0')}
@@ -195,8 +187,12 @@ function PostMedia({ post }: { post: HydratedPost }) {
       <div
         className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
         style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.35), transparent)' }}
+        aria-hidden
       />
-      <div className="absolute bottom-3 left-4 font-editorial italic text-white/90 text-sm">
+      <div
+        className="absolute bottom-3 left-4 font-editorial italic text-white/90 text-sm"
+        aria-hidden
+      >
         {post.artform}
       </div>
     </div>

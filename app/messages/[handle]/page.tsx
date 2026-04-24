@@ -5,7 +5,7 @@ import { getArtistByHandle } from '@/lib/repo';
 import { getMessages, getOrCreateConversation } from '@/lib/messages';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { NationBadge } from '@/components/cultural/NationBadge';
-import { sendToHandle } from '../actions';
+import { ThreadComposer } from '@/components/messages/ThreadComposer';
 import { Icon } from '@/components/ui/Icon';
 
 export default async function ThreadPage({ params }: { params: Promise<{ handle: string }> }) {
@@ -17,7 +17,6 @@ export default async function ThreadPage({ params }: { params: Promise<{ handle:
 
   const conv = getOrCreateConversation(me.id, other.id);
   const messages = getMessages(conv.id);
-  const action = sendToHandle.bind(null, handle);
 
   return (
     <div className="flex h-[calc(100vh-56px)] flex-col lg:h-[calc(100vh-64px)]">
@@ -82,30 +81,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ handle:
         </div>
       </div>
 
-      <form
-        action={action}
-        className="border-t px-4 py-3 lg:px-10"
-        style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
-      >
-        <div className="mx-auto flex max-w-2xl items-end gap-2">
-          <textarea
-            name="body"
-            placeholder={`Kōrero with ${other.name.split(' ')[0]}…`}
-            required
-            rows={1}
-            className="flex-1 resize-none rounded-2xl border bg-transparent px-4 py-2.5 text-[15px]"
-            style={{ borderColor: 'var(--hairline)' }}
-          />
-          <button
-            type="submit"
-            className="shrink-0 rounded-full p-3 transition-transform hover:scale-105"
-            style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-            aria-label="Send message"
-          >
-            <Icon name="send" size={16} />
-          </button>
-        </div>
-      </form>
+      <ThreadComposer handle={handle} otherName={other.name} />
     </div>
   );
 }

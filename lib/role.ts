@@ -74,12 +74,14 @@ const BASE_NAV = [
   'market',
   'drops',
   'messages',
+  'notifications',
   'create',
   'groups',
   'events',
   'grants',
   'kete',
   'collections',
+  'settings',
 ];
 
 export const ROLE_NAV: Record<RoleId, string[]> = {
@@ -104,6 +106,8 @@ export const SCREENS: Record<string, { label: string; href: string; icon: string
   market: { label: 'Marketplace', href: '/market', icon: 'shopping-bag' },
   profile: { label: 'Profile', href: '/profile', icon: 'user' },
   messages: { label: 'Messages', href: '/messages', icon: 'message-circle' },
+  notifications: { label: 'Notifications', href: '/notifications', icon: 'bell' },
+  settings: { label: 'Settings', href: '/settings', icon: 'settings' },
   grants: { label: 'Grants', href: '/grants', icon: 'award' },
   groups: { label: 'Groups', href: '/groups', icon: 'users' },
   orgs: { label: 'Organisations', href: '/orgs', icon: 'building' },

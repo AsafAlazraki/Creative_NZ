@@ -65,7 +65,7 @@ export function ShortsRail() {
             >
               <img
                 src={img}
-                alt={r.artform}
+                alt={`${r.artform} short by ${artist.name}`}
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
                 decoding="async"

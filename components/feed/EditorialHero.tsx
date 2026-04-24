@@ -17,7 +17,7 @@ export function EditorialHero({ artist, quote }: { artist: HydratedArtist; quote
       <div className="relative aspect-[16/9] xl:aspect-[2/1] min-h-[360px]">
         <img
           src={img}
-          alt={artist.name}
+          alt={`Featured: ${artist.name}, ${artist.artforms.slice(0, 2).join(' and ')} from ${nation?.name ?? 'the Pacific'}`}
           className="absolute inset-0 h-full w-full object-cover"
           loading="eager"
           decoding="async"

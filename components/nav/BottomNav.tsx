@@ -3,8 +3,12 @@ import type { CurrentUser } from '@/lib/auth';
 import { ROLE_NAV, SCREENS } from '@/lib/role';
 import { Icon } from '@/components/ui/Icon';
 
+/** Mobile bottom nav uses a curated 5-item set rather than slicing the
+ *  longer desktop nav — typical FB/IG mobile pattern. */
+const BOTTOM_NAV_IDS = ['feed', 'explore', 'create', 'notifications', 'messages'];
+
 export function BottomNav({ user }: { user: CurrentUser }) {
-  const items = ROLE_NAV[user.role].slice(0, 5);
+  const items = ROLE_NAV[user.role].filter((id) => BOTTOM_NAV_IDS.includes(id));
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-50 flex items-stretch border-t lg:hidden"

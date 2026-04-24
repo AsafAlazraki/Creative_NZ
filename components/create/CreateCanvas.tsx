@@ -1,6 +1,7 @@
 import { Icon } from '@/components/ui/Icon';
 import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 import { ARTFORM_NOTES } from '@/lib/tauhi-va-kb';
+import { createPost } from '@/app/actions';
 
 type CreateType = 'image' | 'short' | 'long' | 'audio' | 'listing';
 
@@ -61,7 +62,8 @@ export function CreateCanvas({ type }: { type: CreateType }) {
         </div>
       </CulturalPattern>
 
-      <form className="space-y-5" aria-label={`Create ${type}`} action="#">
+      <form className="space-y-5" aria-label={`Create ${type}`} action={createPost}>
+        <input type="hidden" name="type" value={type} />
         {type !== 'listing' && (
           <Field label="Caption">
             <textarea

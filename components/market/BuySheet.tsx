@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { HydratedArtist, HydratedWork } from '@/lib/repo';
 import { artistShare, formatPrice } from '@/lib/utils';
 import { Icon } from '@/components/ui/Icon';
@@ -8,6 +8,51 @@ export function BuySheet({ work, artist }: { work: HydratedWork; artist: Hydrate
   const [open, setOpen] = useState(false);
   const [complete, setComplete] = useState(false);
   const share = artistShare(work.priceNzd);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Esc to close + focus management.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+        setComplete(false);
+      }
+      if (e.key === 'Tab' && dialogRef.current) {
+        // simple focus trap
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    // focus the dialog's first button on open
+    setTimeout(() => {
+      const first = dialogRef.current?.querySelector<HTMLElement>('button');
+      first?.focus();
+    }, 30);
+    // lock body scroll
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+      // restore focus to trigger
+      triggerRef.current?.focus();
+    };
+  }, [open]);
 
   if (work.status !== 'live') {
     return (
@@ -24,6 +69,7 @@ export function BuySheet({ work, artist }: { work: HydratedWork; artist: Hydrate
   return (
     <>
       <button
+        ref={triggerRef}
         onClick={() => setOpen(true)}
         className="rounded-md px-5 py-3 font-semibold transition-transform hover:scale-[1.02]"
         style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
@@ -36,6 +82,14 @@ export function BuySheet({ work, artist }: { work: HydratedWork; artist: Hydrate
           style={{ background: 'rgba(15,14,12,0.55)' }}
           role="dialog"
           aria-modal="true"
+          aria-label={`Purchase ${work.title}`}
+          ref={dialogRef}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setOpen(false);
+              setComplete(false);
+            }
+          }}
         >
           <div
             className="relative w-full max-w-lg rounded-2xl border p-6 md:p-8"

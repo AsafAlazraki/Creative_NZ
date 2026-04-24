@@ -13,8 +13,12 @@ import {
 import { heroImageUrl, portraitImageUrl } from '@/lib/images';
 import { WorkCard } from '@/components/market/WorkCard';
 import { PostCard } from '@/components/feed/PostCard';
+import { FollowButton } from './FollowButton';
+import { SupportButton } from './SupportButton';
+import { ShareButton } from './ShareButton';
 import { formatPrice, formatCount } from '@/lib/utils';
 import { Icon } from '@/components/ui/Icon';
+import { userFollowsHandle } from '@/lib/repo';
 
 export function ProfileEditorial({
   artist,
@@ -139,12 +143,7 @@ export function ProfileEditorial({
                             </li>
                           ))}
                         </ul>
-                        <button
-                          className="mt-4 w-full rounded-md px-4 py-2 font-semibold"
-                          style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-                        >
-                          Support {artist.name.split(' ')[0]}
-                        </button>
+                        <SupportButton artistName={artist.name} tier={t} />
                       </article>
                     ))}
                   </div>
@@ -239,7 +238,7 @@ export function ProfileEditorial({
 
 function ProfileHero({
   artist,
-  viewer: _viewer,
+  viewer,
   isSelf,
 }: {
   artist: HydratedArtist;
@@ -303,12 +302,11 @@ function ProfileHero({
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
             {!isSelf && (
-              <button
-                className="rounded-md px-5 py-2.5 text-sm font-semibold shadow-lg transition-transform hover:scale-[1.02]"
-                style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-              >
-                Follow
-              </button>
+              <FollowButton
+                handle={artist.handle}
+                initiallyFollowing={userFollowsHandle(viewer.id, artist.id)}
+                variant="primary"
+              />
             )}
             {!isSelf && (
               <Link
@@ -327,11 +325,7 @@ function ProfileHero({
                 Analytics
               </Link>
             )}
-            <button
-              className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
-            >
-              Share
-            </button>
+            <ShareButton handle={artist.handle} name={artist.name} variant="ghost" />
           </div>
         </div>
       </div>

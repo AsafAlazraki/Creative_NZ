@@ -5,7 +5,10 @@ import { DesktopNav } from '@/components/nav/DesktopNav';
 import { BottomNav } from '@/components/nav/BottomNav';
 import { RoleSwitcher } from '@/components/nav/RoleSwitcher';
 import { ThemeControls } from '@/components/nav/ThemeControls';
+import { TopSearchBar } from '@/components/nav/TopSearchBar';
 import { PwaRegister } from '@/components/PwaRegister';
+import { AvatarIllustrated } from '@/components/cultural/Avatar';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'KavaWorks — A home for Pacific arts',
@@ -61,11 +64,35 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <div className="flex min-h-screen w-full">
           <DesktopNav user={user} />
           <main id="main" className="flex-1 min-w-0 pb-24 lg:pb-12" role="main">
-            <div className="sticky top-0 z-40 flex items-center justify-end gap-2 border-b px-4 py-2 xl:px-12"
-              style={{ background: 'color-mix(in srgb, var(--bg) 92%, transparent)', backdropFilter: 'blur(8px)', borderColor: 'var(--hairline)' }}
+            <div
+              className="sticky top-0 z-40 flex items-center gap-2 border-b px-4 py-2 xl:px-12"
+              style={{
+                background: 'color-mix(in srgb, var(--bg) 92%, transparent)',
+                backdropFilter: 'blur(8px)',
+                borderColor: 'var(--hairline)',
+              }}
             >
+              <Link
+                href="/"
+                className="font-display text-lg font-bold tracking-tight lg:hidden"
+                aria-label="KavaWorks home"
+              >
+                KavaWorks
+              </Link>
+              <TopSearchBar className="flex-1" />
               <ThemeControls theme={theme} cultural={cultural} />
               <RoleSwitcher currentRole={user.role} />
+              <Link
+                href={`/artist/${user.handle}`}
+                className="lg:hidden ml-1"
+                aria-label="Your profile"
+              >
+                <AvatarIllustrated
+                  nationId={user.primaryNationId}
+                  size={32}
+                  name={user.name}
+                />
+              </Link>
             </div>
             <div className="page-fade-in">{children}</div>
           </main>

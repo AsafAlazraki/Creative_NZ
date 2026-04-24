@@ -9,6 +9,18 @@ import { Icon } from '@/components/ui/Icon';
 import { postImageUrl } from '@/lib/images';
 import { formatCount, formatPrice } from '@/lib/utils';
 
+function usePrefersReducedMotion() {
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReduce(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReduce(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return reduce;
+}
+
 type Reel = {
   post: HydratedPost;
   artist: HydratedArtist;
@@ -17,6 +29,7 @@ type Reel = {
 
 export function ReelsViewer({ reels }: { reels: Reel[] }) {
   const [active, setActive] = useState(0);
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -32,27 +45,65 @@ export function ReelsViewer({ reels }: { reels: Reel[] }) {
     return () => window.removeEventListener('keydown', handler);
   }, [reels.length]);
 
+  if (!reels.length) {
+    return (
+      <div className="flex h-[calc(100vh-160px)] items-center justify-center px-6 text-center">
+        <div className="max-w-md">
+          <p className="font-display text-2xl">No shorts yet.</p>
+          <p className="mt-2" style={{ color: 'var(--ink-muted)' }}>
+            Be the first to share — open Create and pick Short.
+          </p>
+          <Link
+            href="/create?type=short"
+            className="mt-4 inline-block rounded-md px-5 py-2.5 font-semibold"
+            style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
+          >
+            Open Create
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
-      className="relative h-[calc(100vh-56px)] w-full overflow-y-auto snap-y snap-mandatory lg:h-[calc(100vh-64px)]"
-      style={{ scrollSnapType: 'y mandatory', overscrollBehaviorY: 'contain' }}
+      className={
+        'relative h-[calc(100vh-56px)] w-full overflow-y-auto lg:h-[calc(100vh-64px)] ' +
+        (reduceMotion ? '' : 'snap-y snap-mandatory')
+      }
+      style={{
+        scrollSnapType: reduceMotion ? 'none' : 'y mandatory',
+        overscrollBehaviorY: 'contain',
+      }}
       onScroll={(e) => {
         const el = e.currentTarget;
         const idx = Math.round(el.scrollTop / el.clientHeight);
         if (idx !== active) setActive(idx);
       }}
+      role="region"
+      aria-label="Shorts feed"
+      aria-roledescription="vertical reel viewer"
     >
       {reels.map((r, i) => (
-        <ReelCard key={r.post.id} reel={r} isActive={i === active} />
+        <ReelCard key={r.post.id} reel={r} isActive={i === active} reduceMotion={reduceMotion} />
       ))}
       <div className="pointer-events-none fixed right-4 top-20 z-50 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-mono font-semibold text-white backdrop-blur">
-        {active + 1} / {reels.length}
+        <span className="sr-only">Reel </span>
+        {active + 1} <span className="sr-only">of</span><span aria-hidden> / </span>{reels.length}
       </div>
     </div>
   );
 }
 
-function ReelCard({ reel, isActive }: { reel: Reel; isActive: boolean }) {
+function ReelCard({
+  reel,
+  isActive,
+  reduceMotion,
+}: {
+  reel: Reel;
+  isActive: boolean;
+  reduceMotion: boolean;
+}) {
   const { post, artist, work } = reel;
   const img = postImageUrl({
     artform: post.artform,
@@ -63,16 +114,19 @@ function ReelCard({ reel, isActive }: { reel: Reel; isActive: boolean }) {
     w: 900,
     h: 1600,
   });
+  const altText = `${post.artform} ${post.mediaType === 'video' ? 'short video' : 'post'} by ${artist.name}`;
 
   return (
     <section
-      className="relative h-full w-full snap-start snap-always"
-      aria-label={`Reel by ${artist.name}`}
+      className={
+        'relative h-full w-full ' + (reduceMotion ? '' : 'snap-start snap-always')
+      }
+      aria-label={`Reel by ${artist.name}: ${post.caption.slice(0, 80)}`}
     >
       <div className="relative mx-auto flex h-full max-w-[min(500px,100%)] items-center justify-center overflow-hidden bg-black lg:rounded-2xl lg:max-w-[420px] lg:my-3" style={{ aspectRatio: '9/16' }}>
         <img
           src={img}
-          alt={post.artform}
+          alt={altText}
           className="h-full w-full object-cover"
           loading={isActive ? 'eager' : 'lazy'}
           decoding="async"
@@ -134,6 +188,7 @@ function ReelCard({ reel, isActive }: { reel: Reel; isActive: boolean }) {
           </Link>
 
           <p
+            lang={post.captionLang || undefined}
             className="mt-3 font-editorial italic"
             style={{ fontSize: 15, lineHeight: 1.45 }}
           >

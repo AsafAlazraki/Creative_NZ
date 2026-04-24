@@ -281,6 +281,29 @@ export function getUpcomingDrop() {
   return rows.sort((a, b) => a.opensAt.localeCompare(b.opensAt))[0] ?? null;
 }
 
+export function userLikedPostIds(userId: string): Set<string> {
+  const rows = db.select().from(s.likes).where(eq(s.likes.userId, userId)).all();
+  return new Set(rows.map((r) => r.postId));
+}
+
+export function userSavedPostIds(userId: string): Set<string> {
+  const rows = db.select().from(s.saves).where(eq(s.saves.userId, userId)).all();
+  return new Set(
+    rows
+      .filter((r) => r.workId.startsWith('post:'))
+      .map((r) => r.workId.replace(/^post:/, '')),
+  );
+}
+
+export function userFollowsHandle(userId: string, targetId: string): boolean {
+  const row = db
+    .select()
+    .from(s.follows)
+    .where(and(eq(s.follows.followerId, userId), eq(s.follows.followeeId, targetId)))
+    .get();
+  return !!row;
+}
+
 export function getOtherArtists(excludeId: string, limit = 4) {
   return db
     .select()
