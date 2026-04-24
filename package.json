@@ -10,8 +10,7 @@
     "lint": "next lint",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx db/seed.ts",
-    "db:reset": "rm -f db/kavaworks.db && npm run db:push && npm run db:seed",
-    "postinstall": "npm run db:reset --silent || true"
+    "db:reset": "tsx db/seed.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.3",
