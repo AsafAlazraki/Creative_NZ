@@ -35,226 +35,128 @@
 /* ============================================================
  * Default (fallback) tokens
  * ============================================================ */
+/* ============================================================
+ * Default palette — restrained per the Pasifika design integration
+ * plan (April 2026). The chrome is institutional and quiet so the
+ * artists are the visual centre. Cultural ceremony themes (below)
+ * shift only the brand-accent + brand-soft tokens — they do NOT
+ * repaint the surfaces. Richness lives in heroes, photography, and
+ * commissioned attribution moments, not in chrome.
+ *
+ * Tokens drawn from the integration plan:
+ *   --paper      #F6F4EE  warm page surface
+ *   --ink        #0E1014  primary text (the night sky)
+ *   --moana      #0B3D5C  primary action / link / focus
+ *   --moana-soft #E6EEF3  callout tint
+ *   --whetu      #B58A3F  brass wayfinding accent (sparingly)
+ *   --coral      #C75B3C  warm tertiary
+ *   --harakeke   #3F6B4A  success
+ *   --warn       #8B2C2C  destructive
+ *   --rule       #C9CFD8  hairline
+ * ============================================================ */
 :root {
-  --bg: #f2efe9;
+  /* Doc tokens (canonical) */
+  --paper: #f6f4ee;
+  --ink: #0e1014;
+  --moana: #0b3d5c;
+  --moana-soft: #e6eef3;
+  --whetu: #b58a3f;
+  --coral: #c75b3c;
+  --harakeke: #3f6b4a;
+  --warn: #8b2c2c;
+  --rule: #c9cfd8;
+
+  /* Component-facing aliases (kept for compatibility with existing components) */
+  --bg: var(--paper);
   --surface: #ffffff;
-  --surface-2: #f8f6f2;
-  --surface-3: #efeae0;
-  --ink: #0f0e0c;
-  --ink-muted: #6b6258;
-  --ink-soft: #9a9086;
-  --hairline: rgb(15 14 12 / 0.08);
-  --brand: #c8342a;
-  --brand-soft: #ef8a83;
+  --surface-2: #f1ede4;
+  --surface-3: #e6e1d3;
+  --ink-muted: #4a4f57;
+  --ink-soft: #82888f;
+  --hairline: rgb(14 16 20 / 0.10);
+  --brand: var(--moana);
+  --brand-soft: #1f6184;
   --brand-ink: #ffffff;
-  --accent-gold: #b8913d;
-  --accent-jade: #5a7a6b;
-  --accent-coral: #e07856;
-  --accent-ocean: #2f5d6b;
+  --accent-gold: var(--whetu);
+  --accent-jade: var(--harakeke);
+  --accent-coral: var(--coral);
+  --accent-ocean: var(--moana);
   --pattern-opacity: 0.1;
   --pattern-size: 48px;
-  --shadow-sm: 0 1px 2px rgb(15 14 12 / 0.04);
-  --shadow-md: 0 4px 12px rgb(15 14 12 / 0.06);
-  --shadow-lg: 0 12px 32px rgb(15 14 12 / 0.08);
-  --accent-gradient: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 70%, black));
+  --shadow-sm: 0 1px 2px rgb(14 16 20 / 0.04);
+  --shadow-md: 0 4px 12px rgb(14 16 20 / 0.06);
+  --shadow-lg: 0 12px 32px rgb(14 16 20 / 0.08);
+  --accent-gradient: linear-gradient(135deg, var(--moana), color-mix(in srgb, var(--moana) 70%, black));
 }
 
 /* ============================================================
- * Cultural themes — FULL palette shift, not just accent.
- * Each theme is designed sensitively for the tradition it names.
+ * Cultural ceremonies — accent-only overrides.
  *
- *   ula-fala: Sāmoan chiefly red ula (pandanus necklace).
- *             Warm cream ground, deep red brand, tapa earth accents.
- *             Proud, ceremonial, Pasifika red.
+ * Per the design plan: chrome stays institutional; ceremony shifts
+ * the brand accent. Surfaces, ink, hairlines stay the doc default
+ * so the artists' work and photography remain the visual centre.
  *
- *   moana:    The ocean that connects all Pacific peoples.
- *             Seafoam ground, deep teal brand, coral counter-accent.
- *             Cool, expansive, horizon-facing.
+ * Ceremony names retained for backward compatibility:
+ *   ula-fala / moana / tapa / niu / koula
  *
- *   tapa:     Siapo / ngatu / hiapo / kapa / masi — bark cloth.
- *             Oatmeal ground, warm umber brand, rust and ochre.
- *             Handmade, earthen, intimate.
- *
- *   niu:      Coconut palm / foundational growth.
- *             Jade-tinted ground, fern green brand, bronze accent.
- *             Verdant, grounded, Polynesian cosmology.
- *
- *   koula:    Tongan gold / Heilala festival warmth.
- *             Golden cream ground, warm gold brand, deep crimson accent.
- *             Regal, celebratory, ceremonial warmth.
- *
- * IMPORTANT ordering: cultural themes declared BEFORE dark mode, so
- * dark mode's single-attribute selector (same specificity) wins via
- * "last rule wins". See docs/LESSONS_LEARNED.md.
+ * IMPORTANT ordering: ceremony declarations BEFORE dark mode so dark
+ * mode wins by "last rule" with same specificity.
  * ============================================================ */
 
-/* ULA FALA — Sāmoan red --------------------------------------- */
 [data-theme-cultural='ula-fala'] {
-  --bg: #f5ede3;
-  --surface: #fffaf2;
-  --surface-2: #ece1cf;
-  --surface-3: #e0d2bc;
-  --ink: #1a0f0b;
-  --ink-muted: #6d5343;
-  --ink-soft: #a08c76;
-  --hairline: rgb(26 15 11 / 0.1);
-  --brand: #c8342a;
-  --brand-soft: #e67268;
-  --accent-gold: #b8913d;
-  --accent-jade: #6a7d65;
-  --accent-coral: #d67b5b;
-  --accent-ocean: #2f5d6b;
-  --pattern-opacity: 0.12;
-  --pattern-size: 52px;
-  --accent-gradient: linear-gradient(135deg, #c8342a, #8b5a2b);
+  --brand: #b8261c; /* Sāmoan ula red */
+  --brand-soft: #d45f3c;
 }
-
-/* MOANA — Ocean teal ----------------------------------------- */
 [data-theme-cultural='moana'] {
-  --bg: #e8eff1;
-  --surface: #fafcfc;
-  --surface-2: #d8e5e9;
-  --surface-3: #c4d6db;
-  --ink: #0a1518;
-  --ink-muted: #4a6a6f;
-  --ink-soft: #7c9297;
-  --hairline: rgb(10 21 24 / 0.1);
-  --brand: #2f6b7a;
-  --brand-soft: #5a94a3;
-  --accent-gold: #b8913d;
-  --accent-jade: #548b7b;
-  --accent-coral: #e07856;
-  --accent-ocean: #1e4a57;
-  --pattern-opacity: 0.08;
-  --pattern-size: 60px;
-  --accent-gradient: linear-gradient(135deg, #2f6b7a, #1e3a4a);
+  /* Already on the moana axis — slight shift toward seafoam accent */
+  --brand: #0b3d5c;
+  --brand-soft: #2b6b7a;
 }
-
-/* TAPA — Bark cloth earth ------------------------------------ */
 [data-theme-cultural='tapa'] {
-  --bg: #ede5d1;
-  --surface: #fdf6e9;
-  --surface-2: #e3d6ba;
-  --surface-3: #d4c29f;
-  --ink: #1f140a;
-  --ink-muted: #6d563c;
-  --ink-soft: #9e8766;
-  --hairline: rgb(31 20 10 / 0.12);
-  --brand: #8b5a2b;
-  --brand-soft: #b37f50;
-  --accent-gold: #b8913d;
-  --accent-jade: #6a7851;
-  --accent-coral: #c55a3c;
-  --accent-ocean: #405c5f;
-  --pattern-opacity: 0.14;
-  --pattern-size: 44px;
-  --accent-gradient: linear-gradient(135deg, #8b5a2b, #5c3a1b);
+  --brand: #8b5a2b; /* bark earth */
+  --brand-soft: #a86236;
 }
-
-/* NIU — Coconut jade ----------------------------------------- */
 [data-theme-cultural='niu'] {
-  --bg: #e8ede0;
-  --surface: #f8f6ea;
-  --surface-2: #d5dec7;
-  --surface-3: #c0ccaf;
-  --ink: #0c150a;
-  --ink-muted: #52624a;
-  --ink-soft: #849279;
-  --hairline: rgb(12 21 10 / 0.1);
-  --brand: #4a7c3a;
-  --brand-soft: #6fa35f;
-  --accent-gold: #b8913d;
-  --accent-jade: #3b6430;
-  --accent-coral: #c8342a;
-  --accent-ocean: #2f5d6b;
-  --pattern-opacity: 0.11;
-  --pattern-size: 48px;
-  --accent-gradient: linear-gradient(135deg, #4a7c3a, #2a4d1f);
+  --brand: #3f6b4a; /* harakeke jade */
+  --brand-soft: #5b8c69;
 }
-
-/* KOULA — Tongan gold ---------------------------------------- */
 [data-theme-cultural='koula'] {
-  --bg: #f5edd6;
-  --surface: #fefaea;
-  --surface-2: #ebdeb6;
-  --surface-3: #dbc996;
-  --ink: #1f1606;
-  --ink-muted: #6a562d;
-  --ink-soft: #9c8757;
-  --hairline: rgb(31 22 6 / 0.12);
-  --brand: #c89836;
+  --brand: #c89a1f; /* Tongan koka gold */
   --brand-soft: #e4b55c;
-  --accent-gold: #a57513;
-  --accent-jade: #6a7851;
-  --accent-coral: #c8342a;
-  --accent-ocean: #2f5d6b;
-  --pattern-opacity: 0.14;
-  --pattern-size: 50px;
-  --accent-gradient: linear-gradient(135deg, #c89836, #8b5f13);
 }
 
 /* ============================================================
- * Dark mode — applied AFTER cultural themes so ink/surface flip,
- * but each cultural theme's brand hue is preserved at higher chroma.
+ * Dark mode — quiet ink-on-paper inversion. Cultural ceremonies
+ * still only affect --brand.
  * ============================================================ */
 [data-theme='dark'] {
-  --bg: #0f0e0c;
-  --surface: #1a1714;
-  --surface-2: #252019;
-  --surface-3: #2f2820;
-  --ink: #f2efe9;
-  --ink-muted: #a49d91;
-  --ink-soft: #70685c;
-  --hairline: rgb(242 239 233 / 0.1);
-  --brand-ink: #ffffff;
+  --paper: #0e1014;
+  --ink: #f6f4ee;
+  --moana: #6ba3c4;
+  --moana-soft: #14242c;
+  --rule: #2a2e34;
+
+  --bg: var(--paper);
+  --surface: #161922;
+  --surface-2: #1d2129;
+  --surface-3: #252a32;
+  --ink-muted: #b8bdc4;
+  --ink-soft: #6f757b;
+  --hairline: rgb(246 244 238 / 0.1);
+  --brand: var(--moana);
+  --brand-soft: #4a8ab0;
+  --brand-ink: #0e1014;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-md: 0 4px 12px rgb(0 0 0 / 0.5);
   --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.6);
 }
 
-/* Dark mode + cultural theme combinations — preserve cultural brand hue
- * with a slight chroma lift for legibility against dark surfaces. */
-[data-theme='dark'][data-theme-cultural='ula-fala'] {
-  --bg: #140908;
-  --surface: #231210;
-  --surface-2: #2d1814;
-  --ink-muted: #b89788;
-  --brand: #e54b41;
-  --brand-soft: #ef7872;
-}
-[data-theme='dark'][data-theme-cultural='moana'] {
-  --bg: #07141a;
-  --surface: #102027;
-  --surface-2: #162c35;
-  --ink-muted: #8db0b8;
-  --brand: #4fa3b6;
-  --brand-soft: #7dbcca;
-}
-[data-theme='dark'][data-theme-cultural='tapa'] {
-  --bg: #140e07;
-  --surface: #231a10;
-  --surface-2: #2d2115;
-  --ink-muted: #c5a97f;
-  --brand: #c88a55;
-  --brand-soft: #dba77a;
-}
-[data-theme='dark'][data-theme-cultural='niu'] {
-  --bg: #0a120a;
-  --surface: #141e13;
-  --surface-2: #1c2a1a;
-  --ink-muted: #a6c199;
-  --brand: #6fae5a;
-  --brand-soft: #95c585;
-}
-[data-theme='dark'][data-theme-cultural='koula'] {
-  --bg: #141007;
-  --surface: #231b0f;
-  --surface-2: #2e2312;
-  --ink-muted: #d5b474;
-  --brand: #e8b652;
-  --brand-soft: #f0c978;
-}
-
+/* Dark mode + ceremony — keep ceremony hue, drop the chrome repaint */
+[data-theme='dark'][data-theme-cultural='ula-fala'] { --brand: #e54b41; --brand-soft: #ef7872; }
+[data-theme='dark'][data-theme-cultural='moana'] { --brand: #6ba3c4; --brand-soft: #88baca; }
+[data-theme='dark'][data-theme-cultural='tapa'] { --brand: #c88a55; --brand-soft: #dba77a; }
+[data-theme='dark'][data-theme-cultural='niu'] { --brand: #6fae5a; --brand-soft: #95c585; }
+[data-theme='dark'][data-theme-cultural='koula'] { --brand: #e8b33c; --brand-soft: #f0c978; }
 /* ============================================================
  * Base element resets / typography
  * ============================================================ */

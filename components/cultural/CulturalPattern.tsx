@@ -2,6 +2,27 @@
 import { PATTERN_SVG, type PatternId } from '@/lib/patterns';
 import { cn } from '@/lib/utils';
 
+/**
+ * CulturalPattern — wrapper for editorial / hero surfaces.
+ *
+ * Per the Pasifika design language plan (Creative NZ): Pacific
+ * geometric motifs (siapo, ngatu, hiapo, kapa, masi, kōwhaiwhai,
+ * etc.) are not free decorative material. They carry meaning,
+ * customary owners, and lineage. Section 3.2 of the integration
+ * plan calls this the "frangipani problem".
+ *
+ * As a result this component renders **no pattern overlay by
+ * default** — children render against the parent surface only.
+ *
+ * The decorative pattern overlay is opt-in via `decorative={true}`,
+ * and should only be used in surfaces where the pattern is
+ * **attributed** to the artist or context whose tradition it
+ * belongs to (e.g. inside AttributionBlock, the elder plate).
+ *
+ * Until paid Pasifika design engagement happens, treat
+ * `decorative={true}` as a temporary marker showing where a
+ * commissioned, properly-licensed motif should sit.
+ */
 export function CulturalPattern({
   id,
   opacity = 0.1,
@@ -9,6 +30,7 @@ export function CulturalPattern({
   className,
   children,
   tone = 'ink',
+  decorative = false,
 }: {
   id: PatternId | string;
   opacity?: number;
@@ -16,6 +38,8 @@ export function CulturalPattern({
   className?: string;
   children?: React.ReactNode;
   tone?: 'ink' | 'brand';
+  /** Render the pattern overlay. Default: false. Use only where attributed. */
+  decorative?: boolean;
 }) {
   const validId = id in PATTERN_SVG ? (id as PatternId) : 'pattern-tapa';
   const colour = tone === 'brand' ? 'var(--brand)' : 'var(--ink)';
@@ -27,51 +51,65 @@ export function CulturalPattern({
 
   return (
     <div className={cn('relative overflow-hidden', className)}>
-      <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden="true"
-        style={{
-          backgroundImage: url,
-          backgroundSize: `${size}px`,
-          backgroundRepeat: 'repeat',
-          opacity,
-          color: colour,
-        }}
-      />
+      {decorative && (
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            backgroundImage: url,
+            backgroundSize: `${size}px`,
+            backgroundRepeat: 'repeat',
+            opacity,
+            color: colour,
+          }}
+        />
+      )}
       {children && <div className="relative">{children}</div>}
     </div>
   );
 }
 
+/**
+ * PatternBand — was a decorative band; now a quiet horizontal
+ * brass-toned hairline rule per the design plan's "wayfinding"
+ * accents.
+ */
 export function PatternBand({
-  id,
-  height = 64,
+  height = 6,
   className,
 }: {
-  id: string;
+  id?: string;
   height?: number;
   className?: string;
 }) {
   return (
-    <CulturalPattern
-      id={id}
-      opacity={0.12}
-      size={48}
-      className={className}
-    >
-      <div style={{ height }} />
-    </CulturalPattern>
+    <div
+      className={cn('w-full', className)}
+      style={{
+        height,
+        background: 'var(--whetu, #B58A3F)',
+      }}
+      aria-hidden="true"
+    />
   );
 }
 
-export function CulturalRail({ id, className }: { id: string; className?: string }) {
+/**
+ * CulturalRail — was a vertical decorative stripe; now a thin brass
+ * accent line on the inside edge of editorial columns. Keeps the
+ * "wayfinding" thread without the decorative motif.
+ */
+export function CulturalRail({ className }: { id?: string; className?: string }) {
   return (
     <div
-      className={cn('hidden lg:block w-10', className)}
+      className={cn('hidden lg:block', className)}
       aria-hidden="true"
-      style={{ minHeight: '100%' }}
-    >
-      <CulturalPattern id={id} opacity={0.08} size={48} className="h-full w-full" />
-    </div>
+      style={{
+        width: 4,
+        minHeight: '100%',
+        background: 'var(--whetu, #B58A3F)',
+        opacity: 0.55,
+      }}
+    />
   );
 }
