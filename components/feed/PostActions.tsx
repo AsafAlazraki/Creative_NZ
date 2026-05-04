@@ -22,6 +22,7 @@ export function PostActions({
   initiallySaved: boolean;
 }) {
   const [pending, start] = useTransition();
+  const [likeAnimating, setLikeAnimating] = useState(false);
   const [likeState, setLikeState] = useOptimistic(
     { liked: initiallyLiked, count: initialLikes },
     (s) => ({ liked: !s.liked, count: s.liked ? s.count - 1 : s.count + 1 }),
@@ -46,6 +47,8 @@ export function PostActions({
           aria-pressed={likeState.liked}
           disabled={pending}
           onClick={() => {
+            setLikeAnimating(true);
+            setTimeout(() => setLikeAnimating(false), 420);
             start(() => {
               setLikeState(null);
               return togglePostLike(postId);
@@ -56,10 +59,11 @@ export function PostActions({
           <Icon
             name="heart"
             size={18}
-            className={
-              'transition-transform group-hover:scale-110 ' +
-              (likeState.liked ? 'fill-current' : '')
-            }
+            className={[
+              'transition-transform group-hover:scale-110',
+              likeState.liked ? 'fill-current' : '',
+              likeAnimating ? 'honour-pulse' : '',
+            ].join(' ')}
           />
           <span className="font-mono">{formatCount(likeState.count)}</span>
         </button>

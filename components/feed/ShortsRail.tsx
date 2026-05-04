@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Heart } from 'lucide-react';
 import { getPosts, getArtistById, getWorkById } from '@/lib/repo';
 import { postImageUrl } from '@/lib/images';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
@@ -57,7 +58,7 @@ export function ShortsRail() {
               <img
                 src={img}
                 alt={`${r.artform} short by ${artist.name}`}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="h-full w-full object-cover transition-transform duration-[350ms] group-hover:scale-105"
                 loading="lazy"
                 decoding="async"
               />
@@ -88,7 +89,7 @@ export function ShortsRail() {
                   {r.caption}
                 </div>
                 <div className="mt-1 flex items-center gap-2 text-[10px] font-mono opacity-80">
-                  <span>♡ {formatCount(r.likes)}</span>
+                  <span className="flex items-center gap-0.5"><Heart size={10} aria-hidden /> {formatCount(r.likes)}</span>
                   <span>·</span>
                   <span>{formatCount(r.views)} views</span>
                 </div>

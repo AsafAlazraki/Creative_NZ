@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Heart, MessageCircle } from 'lucide-react';
 import { getNations, getAllArtists, getPosts, getArtistById } from '@/lib/repo';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { VerifiedBadge } from '@/components/cultural/Badges';
@@ -199,9 +200,13 @@ export default async function ExplorePage({
                           </div>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', gap: 10, color: '#fff' }}>
-                        <span style={{ fontSize: 11 }}>♡ {post.likes}</span>
-                        <span style={{ fontSize: 11 }}>⟨ {post.comments}</span>
+                      <div style={{ display: 'flex', gap: 10, color: '#fff', alignItems: 'center' }}>
+                        <span style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <Heart size={10} aria-hidden /> {post.likes}
+                        </span>
+                        <span style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <MessageCircle size={10} aria-hidden /> {post.comments}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -215,6 +220,10 @@ export default async function ExplorePage({
       <style>{`
         .group:hover .explore-overlay { background: rgba(14,16,20,0.65) !important; }
         .group:hover .overlay-content { opacity: 1 !important; }
+        @media (hover: none) {
+          .explore-overlay { background: rgba(14,16,20,0.45) !important; }
+          .overlay-content { opacity: 1 !important; }
+        }
       `}</style>
     </div>
   );

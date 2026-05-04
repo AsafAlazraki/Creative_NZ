@@ -43,11 +43,12 @@ export function ThemeControls({
         >
           <span
             className="inline-block h-3 w-3 rounded-full"
-            style={{
-              background: CULTURAL_THEMES.find((c) => c.id === cultural)?.color,
-            }}
+            style={{ background: 'var(--brand)' }}
             aria-hidden
           />
+          <span className="hidden sm:inline" style={{ color: 'var(--ink-muted)' }}>
+            {CULTURAL_THEMES.find((c) => c.id === cultural)?.label ?? 'Theme'}
+          </span>
           <Icon name="chevron-down" size={12} />
         </button>
         {open && (

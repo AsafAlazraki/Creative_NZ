@@ -48,7 +48,7 @@ export function AvatarIllustrated({
         className="absolute inset-0 flex items-center justify-center font-display font-semibold"
         style={{
           color: 'var(--ink-muted)',
-          fontSize: size * 0.4,
+          fontSize: Math.max(size * 0.4, 10),
           letterSpacing: '-0.02em',
         }}
         aria-hidden="true"
