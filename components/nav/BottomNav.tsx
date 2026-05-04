@@ -1,37 +1,61 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import type { CurrentUser } from '@/lib/auth';
-import { ROLE_NAV, SCREENS } from '@/lib/role';
 import { Icon } from '@/components/ui/Icon';
 
-/** Mobile bottom nav uses a curated 5-item set rather than slicing the
- *  longer desktop nav — typical FB/IG mobile pattern. */
-const BOTTOM_NAV_IDS = ['feed', 'explore', 'create', 'notifications', 'messages'];
+const BOTTOM_ITEMS = [
+  { id: 'feed', href: '/', icon: 'home' as const, label: 'Home' },
+  { id: 'explore', href: '/explore', icon: 'compass' as const, label: 'Explore' },
+  { id: 'create', href: '/create', icon: 'plus-square' as const, label: 'Create', accent: true },
+  { id: 'market', href: '/market', icon: 'shopping-bag' as const, label: 'Market' },
+  { id: 'messages', href: '/messages', icon: 'message-circle' as const, label: 'Messages' },
+];
 
 export function BottomNav({ user }: { user: CurrentUser }) {
-  const items = ROLE_NAV[user.role].filter((id) => BOTTOM_NAV_IDS.includes(id));
+  const pathname = usePathname();
+
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 flex items-stretch border-t lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 flex items-stretch lg:hidden"
       style={{
         background: 'color-mix(in srgb, var(--surface) 94%, transparent)',
-        backdropFilter: 'blur(10px)',
-        borderColor: 'var(--hairline)',
+        backdropFilter: 'blur(12px)',
+        borderTop: '1px solid var(--rule)',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
-      aria-label="Sections"
+      aria-label="Navigation"
     >
-      {items.map((id) => {
-        const s = SCREENS[id];
-        if (!s) return null;
+      {BOTTOM_ITEMS.map((item) => {
+        const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
         return (
           <Link
-            key={id}
-            href={s.href}
-            className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs font-medium"
-            style={{ color: 'var(--ink)', minHeight: 56 }}
+            key={item.id}
+            href={item.href}
+            className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2"
+            style={{
+              color: active ? 'var(--moana)' : 'var(--ink-muted)',
+              minHeight: 56,
+              fontSize: 10,
+              fontWeight: active ? 700 : 500,
+              fontFamily: 'var(--font-body)',
+              transition: 'color 150ms ease',
+              textDecoration: 'none',
+            }}
           >
-            <Icon name={s.icon} size={20} />
-            <span>{s.label}</span>
+            {item.accent ? (
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: 'var(--moana)', color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon name={item.icon} size={20} />
+              </div>
+            ) : (
+              <Icon name={item.icon} size={22} />
+            )}
+            <span>{item.label}</span>
           </Link>
         );
       })}

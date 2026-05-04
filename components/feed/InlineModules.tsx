@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { getActiveDrop, getGrants, getArtistById, getWorkById } from '@/lib/repo';
 import { daysUntil } from '@/lib/moana-ola-kb';
-import { Icon } from '@/components/ui/Icon';
+import { workImageUrl } from '@/lib/images';
+import { formatPrice } from '@/lib/utils';
+import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { CountdownClient } from './CountdownClient';
 
 export function DropModule() {
@@ -10,23 +12,39 @@ export function DropModule() {
   const artist = getArtistById(drop.artistId);
   const work = getWorkById(drop.workId);
   if (!artist || !work) return null;
+  const img = workImageUrl({ artform: work.artform, nationId: work.nationId, seed: work.id, w: 240, h: 240 });
 
   return (
     <Link
       href="/drops"
-      className="block rounded-xl border p-5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
-      style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+      style={{
+        borderRadius: 14, overflow: 'hidden',
+        border: '2px solid var(--coral)', background: 'var(--surface)',
+        display: 'flex', gap: 0, textDecoration: 'none',
+      }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="inati-badge mb-2">Inati · 24-hour drop</div>
-          <h3 className="font-display text-lg font-semibold">{work.title}</h3>
-          <p className="mt-1 text-sm" style={{ color: 'var(--ink-muted)' }}>
-            by {artist.name} · {drop.remainingUnits} of {drop.totalUnits} left
-          </p>
+      <div style={{ width: 120, flexShrink: 0, overflow: 'hidden' }}>
+        <img src={img} alt={work.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+      </div>
+      <div style={{ padding: '14px 16px', flex: 1 }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+          color: 'var(--coral)', marginBottom: 4,
+        }}>
+          ● Live Drop
         </div>
-        <div className="text-right">
-          <CountdownClient target={drop.closesAt} />
+        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{work.title}</div>
+        <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 8 }}>
+          {drop.remainingUnits}/{drop.totalUnits} left · {formatPrice(work.priceNzd)} ea
+        </div>
+        <div
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+            borderRadius: 10, background: 'var(--coral)', color: '#fff',
+            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
+          }}
+        >
+          ⚡ Claim
         </div>
       </div>
     </Link>
@@ -44,21 +62,24 @@ export function GrantModule() {
   return (
     <Link
       href={`/grants/${soon.g.id}`}
-      className="block rounded-xl border p-5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
-      style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+      style={{
+        display: 'block', borderRadius: 14, padding: '14px 16px', textDecoration: 'none',
+        border: '1px solid color-mix(in srgb, var(--whetu) 25%, transparent)',
+        background: 'color-mix(in srgb, var(--whetu) 5%, transparent)',
+      }}
     >
-      <div className="flex items-center gap-3">
-        <Icon name="award" size={20} className="shrink-0" />
-        <div className="flex-1 min-w-0">
-          <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-            Grant closing in {soon.days} days
-          </div>
-          <h3 className="font-display font-semibold">{soon.g.name}</h3>
-          <p className="mt-1 text-sm" style={{ color: 'var(--ink-muted)' }}>
-            {soon.g.amountDisplay} · {soon.g.funder}
-          </p>
-        </div>
-        <Icon name="chevron-right" size={16} />
+      <div style={{
+        fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+        color: 'var(--whetu)', marginBottom: 6,
+      }}>
+        Grant closing soon
+      </div>
+      <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, lineHeight: 1.3 }}>{soon.g.name}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{soon.g.funder}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--whetu)' }}>
+          {soon.days}d left
+        </span>
       </div>
     </Link>
   );
@@ -67,18 +88,23 @@ export function GrantModule() {
 export function PlatformNoteModule({ note, author }: { note: string; author: string }) {
   return (
     <div
-      className="rounded-xl border p-5"
-      style={{ borderColor: 'var(--hairline)', background: 'var(--surface-2)' }}
+      style={{
+        borderRadius: 14, padding: '16px 18px',
+        borderLeft: '3px solid var(--whetu)',
+        border: '1px solid var(--rule)', borderLeftWidth: 3, borderLeftColor: 'var(--whetu)',
+        background: 'var(--surface)',
+      }}
     >
-      <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-        From {author}
-      </div>
-      <p
-        className="mt-2 font-editorial italic"
-        style={{ color: 'var(--ink-muted)', lineHeight: 1.5 }}
-      >
+      <p style={{
+        fontFamily: 'var(--font-editorial)', fontStyle: 'italic',
+        fontSize: 15, lineHeight: 1.55, margin: '0 0 10px', color: 'var(--ink)',
+      }}>
         "{note}"
       </p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--whetu)' }}>
+        <span>✦</span>
+        <span style={{ fontWeight: 600 }}>{author}</span>
+      </div>
     </div>
   );
 }

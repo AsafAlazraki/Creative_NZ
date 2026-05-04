@@ -11,7 +11,7 @@ export function CountdownClient({ target, size = 'sm' }: { target: string; size?
 
   if (c.total <= 0) {
     return (
-      <div className="font-mono text-sm font-semibold" style={{ color: 'var(--accent-coral)' }}>
+      <div className="font-mono text-sm font-semibold" style={{ color: 'var(--coral)' }}>
         Closed
       </div>
     );
@@ -19,29 +19,33 @@ export function CountdownClient({ target, size = 'sm' }: { target: string; size?
 
   if (size === 'lg') {
     return (
-      <div className="font-mono tabular-nums">
-        <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-          Closes in
-        </div>
-        <div className="text-4xl font-semibold md:text-5xl lg:text-6xl" style={{ color: 'var(--ink)' }}>
-          {c.days > 0 ? `${c.days}d ` : ''}
-          {c.hours.toString().padStart(2, '0')}:{c.minutes.toString().padStart(2, '0')}:
-          {c.seconds.toString().padStart(2, '0')}
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
+        {[{ v: c.hours, l: 'h' }, { v: c.minutes, l: 'm' }, { v: c.seconds, l: 's' }].map(({ v, l }) => (
+          <div key={l} style={{ textAlign: 'center', minWidth: 52 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 28, color: 'var(--coral)' }}>
+              {String(v).padStart(2, '0')}
+            </div>
+            <div style={{ fontSize: 9, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {l}
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="font-mono tabular-nums">
-      <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-        Closes in
-      </div>
-      <div className="text-lg font-semibold">
-        {c.days > 0 ? `${c.days}d ` : ''}
-        {c.hours.toString().padStart(2, '0')}:{c.minutes.toString().padStart(2, '0')}:
-        {c.seconds.toString().padStart(2, '0')}
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: 4, width: '100%' }}>
+      {[{ v: c.hours, l: 'h' }, { v: c.minutes, l: 'm' }, { v: c.seconds, l: 's' }].map(({ v, l }) => (
+        <div key={l} style={{ textAlign: 'center', minWidth: 44 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 22, color: 'var(--coral)' }}>
+            {String(v).padStart(2, '0')}
+          </div>
+          <div style={{ fontSize: 9, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            {l}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
