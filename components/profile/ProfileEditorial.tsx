@@ -325,6 +325,15 @@ function ProfileHero({
                 Analytics
               </Link>
             )}
+            {isSelf && (
+              <Link
+                href="/settings/profile"
+                className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+              >
+                <Icon name="edit-3" size={14} className="mr-1 inline" />
+                Edit profile
+              </Link>
+            )}
             <ShareButton handle={artist.handle} name={artist.name} variant="ghost" />
           </div>
         </div>

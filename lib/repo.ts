@@ -261,6 +261,48 @@ export function getCollections(userId: string) {
     }));
 }
 
+export function getCollectionById(id: string) {
+  const row = db.select().from(s.collections).where(eq(s.collections.id, id)).get();
+  if (!row) return null;
+  return { ...row, workIds: parseJson<string[]>(row.workIds, []) };
+}
+
+export function searchAll(q: string) {
+  const term = q.toLowerCase().trim();
+  if (!term) return { artists: [], works: [], grants: [], groups: [] };
+
+  const artists = getAllArtists().filter(
+    (a) =>
+      a.name.toLowerCase().includes(term) ||
+      a.handle.toLowerCase().includes(term) ||
+      a.bio.toLowerCase().includes(term) ||
+      a.artforms.some((f) => f.toLowerCase().includes(term)),
+  );
+
+  const works = getWorks({ limit: 200 }).filter(
+    (w) =>
+      w.title.toLowerCase().includes(term) ||
+      w.description.toLowerCase().includes(term) ||
+      w.artform.toLowerCase().includes(term) ||
+      w.materials.toLowerCase().includes(term),
+  );
+
+  const grants = getGrants().filter(
+    (g) =>
+      g.name.toLowerCase().includes(term) ||
+      g.funder.toLowerCase().includes(term) ||
+      g.plainEnglish.toLowerCase().includes(term),
+  );
+
+  const groups = getGroups().filter(
+    (g) =>
+      g.name.toLowerCase().includes(term) ||
+      g.description.toLowerCase().includes(term),
+  );
+
+  return { artists, works, grants, groups };
+}
+
 export function getFollowing(userId: string) {
   const rows = db.select().from(s.follows).where(eq(s.follows.followerId, userId)).all();
   return rows.map((r) => r.followeeId);

@@ -43,7 +43,7 @@ export default async function CollectionsPage() {
           return (
             <Link
               key={c.id}
-              href="#"
+              href={`/collections/${c.id}`}
               className="overflow-hidden rounded-xl border"
               style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
             >

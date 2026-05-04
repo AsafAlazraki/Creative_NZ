@@ -196,6 +196,37 @@ export async function createPost(formData: FormData) {
   redirect('/');
 }
 
+export async function updateProfile(formData: FormData) {
+  const { getCurrentUser } = await import('@/lib/auth');
+  const me = await getCurrentUser();
+  const bio = String(formData.get('bio') ?? '').trim();
+  const statement = String(formData.get('statement') ?? '').trim();
+  const city = String(formData.get('city') ?? '').trim();
+  const artformsRaw = String(formData.get('artforms') ?? '').trim();
+  const artforms = artformsRaw
+    ? JSON.stringify(artformsRaw.split(',').map((a) => a.trim()).filter(Boolean))
+    : undefined;
+
+  const { db } = await import('@/db');
+  const s = await import('@/db/schema');
+  const { eq } = await import('drizzle-orm');
+  const updates: Partial<typeof s.artists.$inferInsert> = {};
+  if (bio) updates.bio = bio;
+  if (statement) updates.statement = statement;
+  if (city) updates.city = city;
+  if (artforms) updates.artforms = artforms;
+  if (Object.keys(updates).length) {
+    db.update(s.artists).set(updates).where(eq(s.artists.id, me.id)).run();
+  }
+  revalidatePath(`/artist/${me.handle}`);
+  redirect(`/artist/${me.handle}`);
+}
+
+export async function requestGroupJoin(groupId: string) {
+  // Demo: just revalidate — in production this would insert a join_requests row
+  revalidatePath(`/groups/${groupId}`);
+}
+
 export async function addComment(postId: string, formData: FormData) {
   const { getCurrentUser } = await import('@/lib/auth');
   const me = await getCurrentUser();

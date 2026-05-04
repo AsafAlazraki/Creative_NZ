@@ -17,13 +17,18 @@ function getCardLayout(index: number): 'hero' | 'tall' | 'wide' | 'reg' {
 export default async function ExplorePage({
   searchParams,
 }: {
-  searchParams: Promise<{ nation?: string }>;
+  searchParams: Promise<{ nation?: string; tag?: string }>;
 }) {
-  const { nation } = await searchParams;
+  const { nation, tag } = await searchParams;
   const nations = getNations();
   const artists = getAllArtists().filter((a) => a.role === 'artist');
   const allPosts = getPosts({ limit: 60 });
-  const posts = nation ? allPosts.filter((p) => p.nationId === nation) : allPosts;
+  let posts = nation ? allPosts.filter((p) => p.nationId === nation) : allPosts;
+  if (tag) {
+    const t = tag.startsWith('#') ? tag.toLowerCase() : `#${tag.toLowerCase()}`;
+    posts = posts.filter((p) => p.caption.toLowerCase().includes(t));
+    if (posts.length < 8) posts = allPosts.slice(0, 24);
+  }
 
   return (
     <div className="px-4 py-6 lg:px-8">
@@ -78,6 +83,18 @@ export default async function ExplorePage({
 
       {/* Nation filter pills (client component for active state) */}
       <ExploreFilterBar nations={nations} activeNation={nation} />
+
+      {/* Tag filter indicator */}
+      {tag && (
+        <div className="mb-4 flex items-center gap-2">
+          <span className="rounded-full px-3 py-1 text-sm font-semibold" style={{ background: 'var(--moana)', color: '#fff' }}>
+            {tag.startsWith('#') ? tag : `#${tag}`}
+          </span>
+          <Link href="/explore" className="text-sm" style={{ color: 'var(--ink-muted)' }}>
+            Clear ×
+          </Link>
+        </div>
+      )}
 
       {/* Masonry grid */}
       <div
