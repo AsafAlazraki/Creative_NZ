@@ -2,10 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ['better-sqlite3'],
-  experimental: {
-    outputFileTracingIncludes: {
-      '/**': ['./db/kavaworks.db'],
-    },
+  outputFileTracingIncludes: {
+    '/**': ['./db/kavaworks.db'],
   },
   images: {
     remotePatterns: [
