@@ -13,9 +13,10 @@ export const metadata = { title: 'Drops · KavaWorks' };
 
 export default async function DropsPage() {
   const drops = getDrops();
-  const live = drops.filter((d) => d.status === 'live');
-  const upcoming = drops.filter((d) => d.status === 'scheduled');
-  const past = drops.filter((d) => d.status === 'closed');
+  const now = new Date();
+  const live = drops.filter((d) => new Date(d.opensAt) <= now && new Date(d.closesAt) > now);
+  const upcoming = drops.filter((d) => new Date(d.opensAt) > now);
+  const past = drops.filter((d) => new Date(d.closesAt) <= now);
 
   return (
     <div className="px-4 py-6 lg:px-10">
@@ -25,6 +26,7 @@ export default async function DropsPage() {
         if (!artist || !work) return null;
         const nation = getNation(artist.primaryNationId);
         void nation;
+        const isOpen = new Date(drop.closesAt) > new Date();
         const dropImg = workImageUrl({
           artform: work.artform,
           nationId: work.nationId,
@@ -73,13 +75,23 @@ export default async function DropsPage() {
                   </div>
 
                   <div className="mt-6 flex flex-wrap gap-2">
-                    <Link
-                      href={`/market/${work.id}`}
-                      className="rounded-md px-6 py-3.5 font-semibold shadow-2xl transition-transform hover:scale-[1.02]"
-                      style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-                    >
-                      Claim this piece — {formatPrice(work.priceNzd)}
-                    </Link>
+                    {isOpen ? (
+                      <Link
+                        href={`/market/${work.id}`}
+                        className="rounded-md px-6 py-3.5 font-semibold shadow-2xl transition-transform hover:scale-[1.02]"
+                        style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
+                      >
+                        Claim this piece — {formatPrice(work.priceNzd)}
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/market/${work.id}`}
+                        className="rounded-md px-6 py-3.5 font-semibold opacity-70"
+                        style={{ background: 'rgba(255,255,255,0.15)', color: '#fff' }}
+                      >
+                        View in market →
+                      </Link>
+                    )}
                   </div>
                 </div>
 
@@ -122,7 +134,7 @@ export default async function DropsPage() {
             const opensDate = new Date(d.opensAt);
             const opensLabel = opensDate.toLocaleDateString('en-NZ', {
               weekday: 'short', day: 'numeric', month: 'long', year: 'numeric',
-            });
+            }).replace(/\s{2,}/g, ' ');
             return (
               <div
                 key={d.id}

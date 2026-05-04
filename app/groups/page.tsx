@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getGroups, getNation, getArtistById } from '@/lib/repo';
-import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 import { ElderBadge } from '@/components/cultural/Badges';
+import { coverImageForOrg } from '@/lib/images';
 
 export const metadata = { title: 'Groups · KavaWorks' };
 
@@ -32,19 +32,28 @@ export default async function GroupsPage() {
               className="overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5"
               style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
             >
-              <CulturalPattern
-                id={g.coverPatternId}
-                opacity={0.14}
-                tone="brand"
-                size={56}
-                className="aspect-[16/9] border-b"
-              >
-                <div className="flex aspect-[16/9] items-end p-4">
-                  <div className="text-xs font-semibold" style={{ color: 'var(--ink-muted)' }}>
+              <div className="relative aspect-[16/9] overflow-hidden border-b bg-[color:var(--surface-2)]">
+                <img
+                  src={coverImageForOrg(g.id, 800, 450)}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.05) 55%)' }}
+                />
+                <div className="absolute inset-0 flex items-end p-4">
+                  <div
+                    className="rounded-md px-2 py-1 text-xs font-semibold"
+                    style={{ background: 'rgba(0,0,0,0.5)', color: '#fff', backdropFilter: 'blur(4px)' }}
+                  >
                     {nation?.flag} {nation?.name}
                   </div>
                 </div>
-              </CulturalPattern>
+              </div>
               <div className="p-5">
                 <h2 className="font-display text-lg font-semibold">{g.name}</h2>
                 <p className="mt-1 line-clamp-2 text-sm" style={{ color: 'var(--ink-muted)' }}>

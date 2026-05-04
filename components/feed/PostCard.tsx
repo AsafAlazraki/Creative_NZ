@@ -82,7 +82,7 @@ export async function PostCard({ post }: { post: HydratedPost }) {
         >
           {post.caption}
         </p>
-        {post.captionTranslation && (
+        {post.captionTranslation && post.captionLang !== 'en' && (
           <p
             className="mt-2 text-sm italic"
             style={{ color: 'var(--ink-muted)', lineHeight: 1.5 }}
@@ -147,6 +147,15 @@ export async function PostCard({ post }: { post: HydratedPost }) {
               <span style={{ color: 'var(--ink-muted)' }}>{c.text}</span>
             </div>
           ))}
+          {post.comments > 3 && (
+            <Link
+              href={`/artist/${post.authorId}`}
+              className="mt-1 block text-xs font-semibold hover:underline"
+              style={{ color: 'var(--brand)' }}
+            >
+              View all {post.comments} comments →
+            </Link>
+          )}
         </div>
       )}
     </article>

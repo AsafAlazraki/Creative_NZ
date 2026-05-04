@@ -114,7 +114,7 @@ function PoolChip({ pool }: { pool: string }) {
         : 'var(--ink-soft)';
   return (
     <span
-      className="rounded-full px-2 py-0.5 text-[11px] font-semibold capitalize"
+      className="rounded-full px-2 py-0.5 text-[11px] font-semibold capitalize whitespace-nowrap"
       style={{
         color,
         background: `color-mix(in srgb, ${color} 10%, transparent)`,

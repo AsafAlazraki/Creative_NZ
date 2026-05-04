@@ -4,7 +4,6 @@ import { getGrantById, getGrants } from '@/lib/repo';
 import { getCurrentUser } from '@/lib/auth';
 import { daysUntil } from '@/lib/moana-ola-kb';
 import { CulturalPattern } from '@/components/cultural/CulturalPattern';
-import { Icon } from '@/components/ui/Icon';
 
 export default async function GrantDetailPage({
   params,
@@ -122,7 +121,7 @@ export default async function GrantDetailPage({
             className="inline-flex items-center gap-2 rounded-md px-5 py-3 font-semibold"
             style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
           >
-            Apply on Creative New Zealand → <Icon name="chevron-right" size={16} />
+            Apply on Creative New Zealand →
           </a>
         </div>
 

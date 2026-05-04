@@ -37,7 +37,7 @@ export function EditorialHero({ artist, quote }: { artist: HydratedArtist; quote
           </div>
           <div className="max-w-3xl">
             <blockquote
-              className="font-editorial italic text-white"
+              className="font-editorial italic text-white line-clamp-4 overflow-hidden"
               style={{
                 fontSize: 'clamp(1.75rem, 4vw, 3.25rem)',
                 lineHeight: 1.15,

@@ -278,8 +278,8 @@ function ProfileHero({
             />
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-baseline gap-2 text-white">
-                <h1 className="font-display font-semibold leading-tight"
-                    style={{ fontSize: 'clamp(2rem, 5.5vw, 4.5rem)', letterSpacing: '-0.02em' }}
+                <h1 className="font-display font-semibold leading-tight break-words min-w-0"
+                    style={{ fontSize: 'clamp(1.5rem, 5.5vw, 4.5rem)', letterSpacing: '-0.02em' }}
                 >
                   {artist.name}
                 </h1>

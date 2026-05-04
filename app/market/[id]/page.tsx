@@ -134,9 +134,18 @@ export default async function WorkDetailPage({
         </div>
       </div>
 
-      {otherWorks.length > 0 && (
+      {otherWorks.length >= 2 && (
         <section className="mt-12">
-          <h2 className="mb-4 font-display text-xl font-semibold">More from {artist.name.split(' ')[0]}</h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-display text-xl font-semibold">More from {artist.name.split(' ')[0]}</h2>
+            <Link
+              href={`/artist/${artist.handle}`}
+              className="text-sm font-semibold hover:underline"
+              style={{ color: 'var(--brand)' }}
+            >
+              See all →
+            </Link>
+          </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {otherWorks.map((w) => (
               <WorkCard key={w.id} work={w} />

@@ -34,7 +34,7 @@ export function ShortsRail() {
           Open reels →
         </Link>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none -mx-4 px-4 lg:-mx-10 lg:px-10 xl:-mx-16 xl:px-16">
+      <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none -mx-4 px-4 lg:-mx-7 lg:px-7">
         {reels.map((r) => {
           const artist = getArtistById(r.authorId);
           const work = r.linkedWorkId ? getWorkById(r.linkedWorkId) : null;
