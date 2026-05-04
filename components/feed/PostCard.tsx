@@ -82,14 +82,7 @@ export async function PostCard({ post }: { post: HydratedPost }) {
         >
           {post.caption}
         </p>
-        {post.captionTranslation && post.captionLang !== 'en' && (
-          <p
-            className="mt-2 text-sm italic"
-            style={{ color: 'var(--ink-muted)', lineHeight: 1.5 }}
-          >
-            {post.captionTranslation}
-          </p>
-        )}
+        {/* Translation hidden in feed; available on the post detail view. */}
         {post.collaboratorHandles.length > 0 && (
           <p className="mt-2 text-xs" style={{ color: 'var(--ink-muted)' }}>
             with{' '}

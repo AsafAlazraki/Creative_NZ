@@ -72,7 +72,7 @@ export const EVENTS = [
       'The Pacific Music Awards honour excellence across Pacific music in Aotearoa. Hosted by the Pacific Music Awards Trust.',
     coverImageCredit: 'Placeholder — typographic card',
     rsvpCount: 284,
-    linkedArtistIds: [],
+    linkedArtistIds: ['artist_004', 'artist_007', 'artist_008'],
   },
   {
     id: 'event_pacific_arts_summit_2026',
