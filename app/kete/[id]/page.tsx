@@ -7,7 +7,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const a = getArticleById(id);
   if (!a) notFound();
-  const related = getArticles().filter((x) => a.relatedArticleIds.includes(x.id));
+  const relatedIds = a.relatedArticleIds as readonly string[];
+  const related = getArticles().filter((x) => relatedIds.includes(x.id));
 
   const paragraphs = a.body.split('\n\n');
   const midQuote = a.pullQuotes.find((q) => q.position === 'mid');

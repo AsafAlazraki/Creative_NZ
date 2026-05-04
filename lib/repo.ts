@@ -1,8 +1,32 @@
-import { db } from '@/db';
-import * as s from '@/db/schema';
-import { desc, eq, inArray, and, ne } from 'drizzle-orm';
-import { parseJson } from './utils';
-import { NATIONS } from '@/db/seed-data/nations';
+import {
+  NATIONS,
+  AWARDS,
+  ALL_ORGS,
+  ALL_EVENTS,
+  ALL_GRANTS,
+  ALL_DROPS,
+  ALL_ARTICLES,
+  getArtists,
+  findArtistById,
+  findArtistByHandle,
+  findArtistsByIds,
+  getPosts as storePosts,
+  getWorks as storeWorks,
+  findWorkById,
+  findWorksByArtist,
+  findWorksByIds,
+  getLikedPostIds,
+  getSavedIds,
+  isFollowing,
+  getFollowing as storeFollowing,
+  getCollections as storeCollections,
+  findCollectionById as storeFindCollection,
+} from './store';
+import { GROUPS } from '@/db/seed-data/groups';
+import type { MutableArtist, MutablePost } from './store';
+import type { WorkSeed } from '@/db/seed-data/types';
+
+// ── Nations ────────────────────────────────────────────────────────────────
 
 export type Nation = typeof NATIONS[number];
 
@@ -14,59 +38,39 @@ export function getNation(id: string): Nation | undefined {
   return (NATIONS as readonly Nation[]).find((n) => n.id === id);
 }
 
-export function getAllArtists() {
-  return db.select().from(s.artists).all().map(hydrateArtist);
+// ── Artists ────────────────────────────────────────────────────────────────
+
+export type HydratedArtist = MutableArtist;
+
+export function getAllArtists(): HydratedArtist[] {
+  return getArtists();
 }
 
-export function getArtistById(id: string) {
-  const row = db.select().from(s.artists).where(eq(s.artists.id, id)).get();
-  return row ? hydrateArtist(row) : null;
+export function getArtistById(id: string): HydratedArtist | null {
+  return findArtistById(id);
 }
 
-export function getArtistByHandle(handle: string) {
-  const row = db.select().from(s.artists).where(eq(s.artists.handle, handle)).get();
-  return row ? hydrateArtist(row) : null;
+export function getArtistByHandle(handle: string): HydratedArtist | null {
+  return findArtistByHandle(handle);
 }
 
-export function getArtistsByIds(ids: string[]) {
-  if (!ids.length) return [];
-  return db.select().from(s.artists).where(inArray(s.artists.id, ids)).all().map(hydrateArtist);
+export function getArtistsByIds(ids: readonly string[]): HydratedArtist[] {
+  return findArtistsByIds([...ids]);
 }
 
-export function hydrateArtist(row: typeof s.artists.$inferSelect) {
-  return {
-    ...row,
-    affiliations: parseJson<string[]>(row.affiliations, []),
-    elderInGroups: parseJson<string[]>(row.elderInGroups, []),
-    artforms: parseJson<string[]>(row.artforms, []),
-    awards: parseJson<
-      Array<{ id: string; name: string; body: string; year: number; amount: number; citation: string }>
-    >(row.awards, []),
-    subscriptionTiers: parseJson<Array<{ name: string; priceNzd: number; perks: string[] }>>(
-      row.subscriptionTiers,
-      [],
-    ),
-    exhibitions: parseJson<Array<{ year: number; title: string; venue: string; role: string }>>(
-      row.exhibitions,
-      [],
-    ),
-    lineage: parseJson<{ apprenticedTo?: string; teaches?: string[]; exhibitedWith?: string[] }>(
-      row.lineage,
-      {},
-    ),
-    expertise: parseJson<string[] | null>(row.expertise, null),
-    orgInfo: parseJson<{
-      mission: string;
-      staff: string[];
-      foundedYear: number;
-      focus: string[];
-    } | null>(row.orgInfo, null),
-    verified: Boolean(row.verified),
-    elderStatus: Boolean(row.elderStatus),
-  };
+export function getOtherArtists(excludeId: string, limit = 4): HydratedArtist[] {
+  return getArtists()
+    .filter((a) => a.id !== excludeId && a.role === 'artist')
+    .slice(0, limit);
 }
 
-export type HydratedArtist = ReturnType<typeof hydrateArtist>;
+// ── Posts ──────────────────────────────────────────────────────────────────
+
+export type HydratedPost = MutablePost;
+
+export function hydratePost(p: MutablePost): HydratedPost {
+  return p;
+}
 
 export function getPosts({
   limit = 50,
@@ -76,196 +80,160 @@ export function getPosts({
   limit?: number;
   viewerNationIds?: string[];
   viewerId?: string;
-}) {
-  const rows = db.select().from(s.posts).orderBy(desc(s.posts.createdAt)).limit(limit).all();
-  const hydrated = rows.map(hydratePost);
-
-  // Tapu filter — viewer must be in the nation or be the author
-  const filtered = hydrated.filter((p) => {
-    if (!p.tapu) return true;
-    if (p.authorId === viewerId) return true;
-    return viewerNationIds.includes(p.nationId);
-  });
-  return filtered;
+} = {}): HydratedPost[] {
+  return storePosts()
+    .filter((p) => {
+      if (!p.tapu) return true;
+      if (p.authorId === viewerId) return true;
+      return viewerNationIds.includes(p.nationId);
+    })
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, limit);
 }
 
-export function getPostsByArtist(artistId: string, limit = 20) {
-  return db
-    .select()
-    .from(s.posts)
-    .where(eq(s.posts.authorId, artistId))
-    .orderBy(desc(s.posts.createdAt))
-    .limit(limit)
-    .all()
-    .map(hydratePost);
+export function getPostsByArtist(artistId: string, limit = 20): HydratedPost[] {
+  return storePosts()
+    .filter((p) => p.authorId === artistId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, limit);
 }
 
-export function hydratePost(row: typeof s.posts.$inferSelect) {
+// ── Works ──────────────────────────────────────────────────────────────────
+
+export type HydratedWork = WorkSeed;
+
+export function getWorks({ limit = 40 }: { limit?: number } = {}): HydratedWork[] {
+  return storeWorks()
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, limit);
+}
+
+export function getWorkById(id: string): HydratedWork | null {
+  return findWorkById(id);
+}
+
+export function getWorksByArtist(artistId: string): HydratedWork[] {
+  return findWorksByArtist(artistId);
+}
+
+export function getWorksByIds(ids: string[]): HydratedWork[] {
+  return findWorksByIds(ids);
+}
+
+// ── Grants ─────────────────────────────────────────────────────────────────
+
+function widenGrant(g: typeof ALL_GRANTS[number]) {
   return {
-    ...row,
-    tapu: Boolean(row.tapu),
-    collaboratorHandles: parseJson<string[]>(row.collaboratorHandles, []),
-    commentsData: parseJson<
-      Array<{ authorHandle: string; text: string; createdAt: string; elderMark?: boolean }>
-    >(row.commentsData, []),
-    linkedWorkId: row.linkedWorkId ?? null,
+    ...g,
+    pool: g.pool as string,
+    eligibility: [...g.eligibility] as string[],
+    howToApply: [...g.howToApply] as string[],
+    similarGrantIds: [...g.similarGrantIds] as string[],
   };
 }
-
-export type HydratedPost = ReturnType<typeof hydratePost>;
-
-export function getWorks({ limit = 40 }: { limit?: number } = {}) {
-  return db.select().from(s.works).orderBy(desc(s.works.createdAt)).limit(limit).all().map(hydrateWork);
-}
-
-export function getWorkById(id: string) {
-  const row = db.select().from(s.works).where(eq(s.works.id, id)).get();
-  return row ? hydrateWork(row) : null;
-}
-
-export function getWorksByArtist(artistId: string) {
-  return db
-    .select()
-    .from(s.works)
-    .where(eq(s.works.artistId, artistId))
-    .all()
-    .map(hydrateWork);
-}
-
-export function getWorksByIds(ids: string[]) {
-  if (!ids.length) return [];
-  return db.select().from(s.works).where(inArray(s.works.id, ids)).all().map(hydrateWork);
-}
-
-export function hydrateWork(row: typeof s.works.$inferSelect) {
-  return {
-    ...row,
-    mediaRefs: parseJson<string[]>(row.mediaRefs, []),
-    edition: parseJson<{ number: number; of: number } | null>(row.edition, null),
-    tapu: Boolean(row.tapu),
-  };
-}
-
-export type HydratedWork = ReturnType<typeof hydrateWork>;
 
 export function getGrants() {
-  return db.select().from(s.grants).all().map(hydrateGrant);
+  return ALL_GRANTS.map(widenGrant);
 }
 
 export function getGrantById(id: string) {
-  const row = db.select().from(s.grants).where(eq(s.grants.id, id)).get();
-  return row ? hydrateGrant(row) : null;
+  const g = ALL_GRANTS.find((g) => g.id === id);
+  return g ? widenGrant(g) : null;
 }
 
-export function hydrateGrant(row: typeof s.grants.$inferSelect) {
-  return {
-    ...row,
-    eligibility: parseJson<string[]>(row.eligibility, []),
-    howToApply: parseJson<string[]>(row.howToApply, []),
-    similarGrantIds: parseJson<string[]>(row.similarGrantIds, []),
-  };
-}
+export type HydratedGrant = ReturnType<typeof getGrantById>;
+
+// ── Groups ─────────────────────────────────────────────────────────────────
 
 export function getGroups() {
-  return db.select().from(s.groups).all().map(hydrateGroup);
+  return GROUPS;
 }
 
 export function getGroupById(id: string) {
-  const row = db.select().from(s.groups).where(eq(s.groups.id, id)).get();
-  return row ? hydrateGroup(row) : null;
+  return GROUPS.find((g) => g.id === id) ?? null;
 }
 
-export function hydrateGroup(row: typeof s.groups.$inferSelect) {
-  return {
-    ...row,
-    elderIds: parseJson<string[]>(row.elderIds, []),
-    threadsData: parseJson<
-      Array<{
-        id: string;
-        title: string;
-        pinned: boolean;
-        messageCount: number;
-        lastMessageAt: string;
-      }>
-    >(row.threadsData, []),
-  };
-}
+// ── Events ─────────────────────────────────────────────────────────────────
 
 export function getEvents() {
-  return db.select().from(s.events).all().map(hydrateEvent);
+  return [...ALL_EVENTS];
 }
 
-export function hydrateEvent(row: typeof s.events.$inferSelect) {
-  return {
-    ...row,
-    linkedArtistIds: parseJson<string[]>(row.linkedArtistIds, []),
-  };
-}
+// ── Orgs ───────────────────────────────────────────────────────────────────
 
 export function getOrgs() {
-  return db.select().from(s.orgs).all().map(hydrateOrg);
+  return [...ALL_ORGS];
 }
 
 export function getOrgById(id: string) {
-  const row = db.select().from(s.orgs).where(eq(s.orgs.id, id)).get();
-  return row ? hydrateOrg(row) : null;
+  return ALL_ORGS.find((o) => o.id === id) ?? null;
 }
 
-export function hydrateOrg(row: typeof s.orgs.$inferSelect) {
-  return {
-    ...row,
-    focus: parseJson<string[]>(row.focus, []),
-    linkedArtistIds: parseJson<string[]>(row.linkedArtistIds, []),
-    currentProgrammes: parseJson<Array<{ title: string; dates: string }>>(
-      row.currentProgrammes,
-      [],
-    ),
-  };
-}
+// ── Articles ───────────────────────────────────────────────────────────────
 
 export function getArticles() {
-  return db.select().from(s.articles).orderBy(desc(s.articles.publishedAt)).all().map(hydrateArticle);
+  return [...ALL_ARTICLES].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }
 
 export function getArticleById(id: string) {
-  const row = db.select().from(s.articles).where(eq(s.articles.id, id)).get();
-  return row ? hydrateArticle(row) : null;
+  return ALL_ARTICLES.find((a) => a.id === id) ?? null;
 }
 
-export function hydrateArticle(row: typeof s.articles.$inferSelect) {
-  return {
-    ...row,
-    pullQuotes: parseJson<Array<{ text: string; position: string }>>(row.pullQuotes, []),
-    sidebar: parseJson<Array<{ label: string; url: string }>>(row.sidebar, []),
-    relatedArticleIds: parseJson<string[]>(row.relatedArticleIds, []),
-  };
-}
+// ── Drops ──────────────────────────────────────────────────────────────────
 
 export function getDrops() {
-  return db.select().from(s.drops).all();
+  return [...ALL_DROPS];
 }
+
+export function getActiveDrop() {
+  return ALL_DROPS.find((d) => d.status === 'live') ?? null;
+}
+
+export function getUpcomingDrop() {
+  return ALL_DROPS.filter((d) => d.status === 'scheduled')
+    .sort((a, b) => a.opensAt.localeCompare(b.opensAt))[0] ?? null;
+}
+
+// ── Awards ─────────────────────────────────────────────────────────────────
 
 export function getAwards() {
-  return db.select().from(s.awards).all();
+  return AWARDS;
 }
 
+// ── Collections ────────────────────────────────────────────────────────────
+
 export function getCollections(userId: string) {
-  return db
-    .select()
-    .from(s.collections)
-    .where(eq(s.collections.userId, userId))
-    .all()
-    .map((c) => ({
-      ...c,
-      workIds: parseJson<string[]>(c.workIds, []),
-    }));
+  return storeCollections(userId);
 }
 
 export function getCollectionById(id: string) {
-  const row = db.select().from(s.collections).where(eq(s.collections.id, id)).get();
-  if (!row) return null;
-  return { ...row, workIds: parseJson<string[]>(row.workIds, []) };
+  return storeFindCollection(id);
 }
+
+// ── Social state ───────────────────────────────────────────────────────────
+
+export function userLikedPostIds(userId: string): Set<string> {
+  return getLikedPostIds(userId);
+}
+
+export function userSavedPostIds(userId: string): Set<string> {
+  const all = getSavedIds(userId);
+  return new Set(Array.from(all).filter((k) => k.startsWith('post:')).map((k) => k.slice(5)));
+}
+
+export function userFollowsHandle(userId: string, targetId: string): boolean {
+  return isFollowing(userId, targetId);
+}
+
+export function getFollowing(userId: string): string[] {
+  return storeFollowing(userId);
+}
+
+export function getFollowedArtists(userId: string): HydratedArtist[] {
+  return findArtistsByIds(storeFollowing(userId));
+}
+
+// ── Search ─────────────────────────────────────────────────────────────────
 
 export function searchAll(q: string) {
   const term = q.toLowerCase().trim();
@@ -301,57 +269,4 @@ export function searchAll(q: string) {
   );
 
   return { artists, works, grants, groups };
-}
-
-export function getFollowing(userId: string) {
-  const rows = db.select().from(s.follows).where(eq(s.follows.followerId, userId)).all();
-  return rows.map((r) => r.followeeId);
-}
-
-export function getFollowedArtists(userId: string) {
-  const ids = getFollowing(userId);
-  return getArtistsByIds(ids);
-}
-
-export function getActiveDrop() {
-  const rows = db.select().from(s.drops).where(eq(s.drops.status, 'live')).all();
-  return rows[0] ?? null;
-}
-
-export function getUpcomingDrop() {
-  const rows = db.select().from(s.drops).where(eq(s.drops.status, 'scheduled')).all();
-  return rows.sort((a, b) => a.opensAt.localeCompare(b.opensAt))[0] ?? null;
-}
-
-export function userLikedPostIds(userId: string): Set<string> {
-  const rows = db.select().from(s.likes).where(eq(s.likes.userId, userId)).all();
-  return new Set(rows.map((r) => r.postId));
-}
-
-export function userSavedPostIds(userId: string): Set<string> {
-  const rows = db.select().from(s.saves).where(eq(s.saves.userId, userId)).all();
-  return new Set(
-    rows
-      .filter((r) => r.workId.startsWith('post:'))
-      .map((r) => r.workId.replace(/^post:/, '')),
-  );
-}
-
-export function userFollowsHandle(userId: string, targetId: string): boolean {
-  const row = db
-    .select()
-    .from(s.follows)
-    .where(and(eq(s.follows.followerId, userId), eq(s.follows.followeeId, targetId)))
-    .get();
-  return !!row;
-}
-
-export function getOtherArtists(excludeId: string, limit = 4) {
-  return db
-    .select()
-    .from(s.artists)
-    .where(and(ne(s.artists.id, excludeId), eq(s.artists.role, 'artist')))
-    .limit(limit)
-    .all()
-    .map(hydrateArtist);
 }

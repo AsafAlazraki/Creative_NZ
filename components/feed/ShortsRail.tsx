@@ -1,8 +1,5 @@
 import Link from 'next/link';
-import { db } from '@/db';
-import * as s from '@/db/schema';
-import { desc } from 'drizzle-orm';
-import { getArtistById, getWorkById, hydratePost } from '@/lib/repo';
+import { getPosts, getArtistById, getWorkById } from '@/lib/repo';
 import { postImageUrl } from '@/lib/images';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { InatiBadge } from '@/components/cultural/Badges';
@@ -10,15 +7,9 @@ import { formatCount, formatPrice } from '@/lib/utils';
 import { Icon } from '@/components/ui/Icon';
 
 export function ShortsRail() {
-  const rows = db
-    .select()
-    .from(s.posts)
-    .orderBy(desc(s.posts.createdAt))
-    .limit(60)
-    .all()
+  const reels = getPosts({ limit: 60 })
     .filter((p) => p.mediaType === 'video' || p.linkedWorkId)
     .slice(0, 10);
-  const reels = rows.map(hydratePost);
 
   if (!reels.length) return null;
 
