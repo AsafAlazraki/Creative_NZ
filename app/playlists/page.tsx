@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 
 const PLAYLISTS = [
@@ -26,10 +27,11 @@ export default function PlaylistsPage() {
       </header>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {PLAYLISTS.map((p) => (
-          <article
+          <Link
             key={p.id}
-            className="overflow-hidden rounded-xl border"
-            style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+            href={`/playlists/${p.id}`}
+            className="overflow-hidden rounded-xl border transition-shadow hover:shadow-md"
+            style={{ borderColor: 'var(--hairline)', background: 'var(--surface)', textDecoration: 'none' }}
           >
             <CulturalPattern id={p.pattern} opacity={0.18} tone="brand" size={56} className="aspect-[16/9] border-b" />
             <div className="p-5">
@@ -38,7 +40,7 @@ export default function PlaylistsPage() {
                 Curated by {p.curator} · {p.count} videos
               </p>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </div>

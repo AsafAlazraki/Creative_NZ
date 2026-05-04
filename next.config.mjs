@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ['better-sqlite3'],
+  outputFileTracingIncludes: {
+    '/**': ['./db/kavaworks.db'],
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },

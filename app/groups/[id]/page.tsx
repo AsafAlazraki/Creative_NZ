@@ -5,6 +5,7 @@ import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { ElderBadge } from '@/components/cultural/Badges';
 import { Icon } from '@/components/ui/Icon';
+import { requestGroupJoin } from '@/app/actions';
 
 export default async function GroupDetailPage({
   params,
@@ -134,12 +135,15 @@ export default async function GroupDetailPage({
               <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
                 {g.description}
               </p>
-              <button
-                className="mt-4 w-full rounded-md px-4 py-2 text-sm font-semibold"
-                style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-              >
-                Request to join
-              </button>
+              <form action={requestGroupJoin.bind(null, g.id)}>
+                <button
+                  type="submit"
+                  className="mt-4 w-full rounded-md px-4 py-2 text-sm font-semibold"
+                  style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
+                >
+                  Request to join
+                </button>
+              </form>
             </div>
           </aside>
         </div>
