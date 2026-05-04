@@ -46,7 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
@@ -63,28 +63,35 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <div className="flex min-h-screen w-full">
           <DesktopNav user={user} />
-          <main id="main" className="flex-1 min-w-0 pb-24 lg:pb-12" role="main">
+          {/* Main content — offset by 72px icon rail on desktop */}
+          <main
+            id="main"
+            className="flex-1 min-w-0 pb-24 lg:pb-12 lg:ml-[72px]"
+            role="main"
+          >
+            {/* Mobile top bar */}
             <div
-              className="sticky top-0 z-40 flex items-center gap-2 border-b px-4 py-2 xl:px-12"
+              className="sticky top-0 z-40 flex items-center gap-2 border-b px-4 py-2 lg:hidden"
               style={{
                 background: 'color-mix(in srgb, var(--bg) 92%, transparent)',
-                backdropFilter: 'blur(8px)',
+                backdropFilter: 'blur(12px)',
                 borderColor: 'var(--hairline)',
               }}
             >
               <Link
                 href="/"
-                className="font-display text-lg font-bold tracking-tight lg:hidden"
+                className="font-display text-lg font-bold tracking-tight"
+                style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}
                 aria-label="KavaWorks home"
               >
                 KavaWorks
               </Link>
-              <TopSearchBar className="flex-1" />
+              <div className="flex-1" />
+              <TopSearchBar className="flex-1 max-w-xs" />
               <ThemeControls theme={theme} cultural={cultural} />
-              <RoleSwitcher currentRole={user.role} />
               <Link
                 href={`/artist/${user.handle}`}
-                className="lg:hidden ml-1"
+                className="ml-1"
                 aria-label="Your profile"
               >
                 <AvatarIllustrated

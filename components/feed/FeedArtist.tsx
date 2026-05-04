@@ -26,8 +26,8 @@ export async function FeedArtist({ user }: { user: CurrentUser }) {
     allArtists.find((a) => a.role === 'artist' && a.id !== user.id)!;
 
   return (
-    <div className="grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[1fr_320px] lg:px-8">
-      <div className="min-w-0">
+    <div className="grid grid-cols-1 px-4 py-6 lg:grid-cols-[1fr_340px] lg:px-0" style={{ gap: 0, borderLeft: 'none' }}>
+      <div className="min-w-0 px-4 lg:px-7 pb-24" style={{ animation: 'page-fade 350ms ease' }}>
         <GreetingStrip name={user.name} nationId={user.primaryNationId} />
         <ComposerCard user={user} />
         <ShortsRail />
@@ -61,8 +61,13 @@ export async function FeedArtist({ user }: { user: CurrentUser }) {
           ))}
         </div>
       </div>
-      <aside className="hidden lg:block">
-        <RightSidebar user={user} />
+      <aside
+        className="hidden lg:block px-5 pb-24"
+        style={{ borderLeft: '1px solid var(--rule)', animation: 'page-fade 400ms ease' }}
+      >
+        <div style={{ paddingTop: 24 }}>
+          <RightSidebar user={user} />
+        </div>
       </aside>
     </div>
   );

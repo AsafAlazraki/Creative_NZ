@@ -1,264 +1,204 @@
 import Link from 'next/link';
-import { getNations, getAllArtists, getWorks, getPosts, getArtistById } from '@/lib/repo';
-import { CulturalPattern } from '@/components/cultural/CulturalPattern';
-import { WorkCard } from '@/components/market/WorkCard';
+import { getNations, getAllArtists, getPosts, getArtistById } from '@/lib/repo';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
-import { NationBadge } from '@/components/cultural/NationBadge';
-import { HASHTAG_TRENDS } from '@/lib/moana-ola-kb';
-import { formatCount } from '@/lib/utils';
+import { VerifiedBadge } from '@/components/cultural/Badges';
+import { Icon } from '@/components/ui/Icon';
 import { postImageUrl } from '@/lib/images';
+import { ExploreFilterBar } from '@/components/explore/ExploreFilterBar';
 
 export const metadata = { title: 'Explore · KavaWorks' };
 
-function normaliseTag(t: string): string {
-  return t.toLowerCase().replace(/^#/, '').trim();
-}
+const CARD_LAYOUTS = ['hero', 'reg', 'reg', 'tall', 'reg', 'wide', 'reg', 'reg', 'tall', 'reg'] as const;
 
-function postMatchesTag(post: { caption: string; captionTranslation: string | null; artform: string; nationId: string }, tag: string) {
-  const hay =
-    `${post.caption} ${post.captionTranslation ?? ''} ${post.artform} ${post.nationId}`.toLowerCase();
-  return hay.includes(tag);
-}
-
-function workMatchesTag(work: { title: string; description: string; artform: string; nationId: string; materials: string }, tag: string) {
-  const hay =
-    `${work.title} ${work.description} ${work.artform} ${work.nationId} ${work.materials}`.toLowerCase();
-  return hay.includes(tag);
+function getCardLayout(index: number): 'hero' | 'tall' | 'wide' | 'reg' {
+  return CARD_LAYOUTS[index % CARD_LAYOUTS.length];
 }
 
 export default async function ExplorePage({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string }>;
+  searchParams: Promise<{ nation?: string }>;
 }) {
-  const { tag: rawTag } = await searchParams;
-  const tag = rawTag ? normaliseTag(rawTag) : null;
-
+  const { nation } = await searchParams;
   const nations = getNations();
   const artists = getAllArtists().filter((a) => a.role === 'artist');
-  const worksAll = getWorks({ limit: 40 });
-  const postsAll = getPosts({ limit: 60 });
-
-  const works = tag ? worksAll.filter((w) => workMatchesTag(w, tag)) : worksAll.slice(0, 12);
-  const posts = tag ? postsAll.filter((p) => postMatchesTag(p, tag)) : [];
-  const matchingArtists = tag
-    ? artists.filter((a) => {
-        const hay = `${a.name} ${a.artforms.join(' ')} ${a.primaryNationId} ${a.affiliations.join(' ')}`.toLowerCase();
-        return hay.includes(tag);
-      })
-    : artists;
-
-  const resultCount = tag ? works.length + posts.length + matchingArtists.length : 0;
+  const allPosts = getPosts({ limit: 60 });
+  const posts = nation ? allPosts.filter((p) => p.nationId === nation) : allPosts;
 
   return (
-    <div className="px-4 py-6 lg:px-10 xl:px-16">
-      <header className="mb-8">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--ink-soft)' }}>
-          Explore
-        </div>
+    <div className="px-4 py-6 lg:px-8">
+      <div className="flex items-center justify-between mb-6">
         <h1
-          className="mt-2 font-display font-semibold"
-          style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', letterSpacing: '-0.02em' }}
+          className="font-display font-bold"
+          style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', letterSpacing: '-0.02em' }}
         >
-          {tag ? (
-            <>
-              #{tag}{' '}
-              <span className="text-[color:var(--ink-muted)]" style={{ fontSize: '0.6em' }}>
-                · {resultCount} result{resultCount === 1 ? '' : 's'}
-              </span>
-            </>
-          ) : (
-            'This week in Pacific arts.'
-          )}
+          Explore
         </h1>
-        <span className="theme-rule mt-3" />
-      </header>
+      </div>
 
-      {/* Tag cloud always visible so people can browse */}
-      <section className="mb-8">
-        <div className="flex flex-wrap gap-2">
-          {HASHTAG_TRENDS.map((t) => {
-            const plain = normaliseTag(t.tag);
-            const active = tag === plain;
-            return (
-              <Link
-                key={t.tag}
-                href={active ? '/explore' : `/explore?tag=${encodeURIComponent(plain)}`}
-                className="rounded-full px-3 py-1.5 text-sm font-semibold transition-colors"
+      {/* Artist story circles */}
+      <div className="mb-5">
+        <div
+          className="flex gap-4 overflow-x-auto pb-3"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {artists.slice(0, 12).map((a) => (
+            <Link
+              key={a.id}
+              href={`/artist/${a.handle}`}
+              className="flex flex-col items-center gap-1.5 cursor-pointer shrink-0"
+              style={{ textDecoration: 'none' }}
+            >
+              <div
                 style={{
-                  background: active
-                    ? 'var(--brand)'
-                    : 'color-mix(in srgb, var(--brand) 6%, transparent)',
-                  color: active ? 'var(--brand-ink)' : 'var(--ink-muted)',
-                  border: `1px solid ${active ? 'var(--brand)' : 'var(--hairline)'}`,
+                  width: 64, height: 64, borderRadius: '50%', padding: 3,
+                  background: 'linear-gradient(135deg, var(--moana), var(--coral), var(--whetu))',
                 }}
               >
-                #{plain}
-              </Link>
-            );
-          })}
-          {tag && !HASHTAG_TRENDS.some((t) => normaliseTag(t.tag) === tag) && (
-            <span
-              className="rounded-full px-3 py-1.5 text-sm font-semibold"
-              style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-            >
-              #{tag}
-            </span>
-          )}
-        </div>
-      </section>
-
-      {tag && resultCount === 0 && (
-        <div
-          className="rounded-xl border p-8 text-center"
-          style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
-        >
-          <p className="font-display text-xl">Nothing matches #{tag} yet.</p>
-          <p className="mt-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
-            Try a different tag — or{' '}
-            <Link href="/explore" className="underline">
-              clear the filter
+                <div style={{
+                  width: '100%', height: '100%', borderRadius: '50%',
+                  overflow: 'hidden', border: '2px solid var(--paper)',
+                }}>
+                  <AvatarIllustrated nationId={a.primaryNationId} size={54} name={a.name} />
+                </div>
+              </div>
+              <span
+                style={{
+                  fontSize: 11, fontWeight: 500, color: 'var(--ink)',
+                  maxWidth: 68, textAlign: 'center', overflow: 'hidden',
+                  textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}
+              >
+                {a.name.split(' ')[0]}
+              </span>
             </Link>
-            .
-          </p>
+          ))}
         </div>
-      )}
+      </div>
 
-      {!tag && (
-        <section className="mb-10">
-          <h2 className="mb-4 font-display text-2xl font-semibold">By nation</h2>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
-            {nations.map((n) => {
-              const count = artists.filter((a) => a.primaryNationId === n.id).length;
-              return (
-                <Link
-                  key={n.id}
-                  href={`/explore?tag=${encodeURIComponent(n.id)}`}
-                  className="block"
+      {/* Nation filter pills (client component for active state) */}
+      <ExploreFilterBar nations={nations} activeNation={nation} />
+
+      {/* Masonry grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+          gap: 4,
+          gridAutoFlow: 'dense',
+        }}
+      >
+        {posts.map((post, i) => {
+          const layout = getCardLayout(i);
+          const artist = getArtistById(post.authorId);
+          const isHero = layout === 'hero';
+          const isTall = layout === 'tall';
+          const isWide = layout === 'wide';
+
+          const aspect = isHero ? '1/1' : isTall ? '2/3' : isWide ? '2/1' : '1/1';
+          const img = postImageUrl({
+            artform: post.artform,
+            nationId: post.nationId,
+            caption: post.caption,
+            mediaType: post.mediaType as 'image' | 'video' | 'audio' | 'gallery',
+            seed: post.id + i,
+            w: isHero ? 800 : isWide ? 800 : 400,
+            h: isHero ? 800 : isTall ? 600 : 400,
+          });
+
+          const gridStyle: React.CSSProperties = {
+            borderRadius: 12,
+            overflow: 'hidden',
+            cursor: 'pointer',
+            position: 'relative',
+          };
+          if (isHero) { gridStyle.gridColumn = 'span 2'; gridStyle.gridRow = 'span 2'; }
+          else if (isWide) { gridStyle.gridColumn = 'span 2'; }
+          else if (isTall) { gridStyle.gridRow = 'span 2'; }
+
+          return (
+            <div
+              key={post.id + '_' + i}
+              style={gridStyle}
+              className="group"
+            >
+              <div
+                style={{
+                  position: 'relative', height: '100%',
+                  minHeight: isHero ? 300 : isTall ? 300 : isWide ? 160 : 160,
+                  background: 'var(--surface-2)',
+                }}
+              >
+                <img
+                  src={img}
+                  alt={post.artform}
+                  loading="lazy"
+                  style={{
+                    position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+                  }}
+                />
+
+                {/* Artform label */}
+                <div style={{
+                  position: 'absolute', bottom: 8, left: 10,
+                  fontSize: 10, fontStyle: 'italic', fontFamily: 'var(--font-editorial)',
+                  color: 'rgba(255,255,255,0.7)', zIndex: 3,
+                }}>
+                  {post.artform}
+                </div>
+
+                {/* Video badge */}
+                {post.mediaType === 'video' && (
+                  <div style={{
+                    position: 'absolute', top: 10, right: 10,
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    background: 'rgba(0,0,0,0.7)', color: '#fff',
+                    borderRadius: 99, padding: '3px 8px',
+                    fontSize: 10, fontFamily: 'var(--font-mono)', fontWeight: 600, zIndex: 3,
+                  }}>▶</div>
+                )}
+
+                {/* Hover overlay */}
+                <div
+                  className="explore-overlay"
+                  style={{
+                    position: 'absolute', inset: 0, zIndex: 2,
+                    background: 'rgba(14,16,20,0)',
+                    display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+                    padding: isHero ? 20 : 12,
+                    transition: 'background 200ms ease',
+                  }}
                 >
-                  <CulturalPattern
-                    id={n.patternId}
-                    opacity={0.14}
-                    tone="brand"
-                    size={40}
-                    className="overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5"
-                  >
-                    <div
-                      className="flex h-full min-h-[120px] flex-col justify-between p-3"
-                      style={{ background: 'color-mix(in srgb, var(--surface) 92%, transparent)' }}
-                    >
-                      <div className="text-2xl" aria-hidden>
-                        {n.flag}
-                      </div>
-                      <div>
-                        <div className="font-display text-sm font-semibold">{n.name.split(' ')[0]}</div>
-                        <div className="text-[10px]" style={{ color: 'var(--ink-muted)' }}>
-                          {count} artist{count === 1 ? '' : 's'}
+                  {artist && (
+                    <div style={{ opacity: 0, transition: 'opacity 200ms ease' }} className="overlay-content">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                        <AvatarIllustrated nationId={artist.primaryNationId} size={isHero ? 32 : 22} name={artist.name} />
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <span style={{ color: '#fff', fontWeight: 600, fontSize: isHero ? 14 : 11 }}>
+                              {artist.name.split(' ')[0]}
+                            </span>
+                            {artist.verified && <VerifiedBadge />}
+                          </div>
                         </div>
                       </div>
+                      <div style={{ display: 'flex', gap: 10, color: '#fff' }}>
+                        <span style={{ fontSize: 11 }}>♡ {post.likes}</span>
+                        <span style={{ fontSize: 11 }}>⟨ {post.comments}</span>
+                      </div>
                     </div>
-                  </CulturalPattern>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {matchingArtists.length > 0 && (
-        <section className="mb-10">
-          <h2 className="mb-4 font-display text-2xl font-semibold">Artists</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {matchingArtists.map((a) => (
-              <Link
-                key={a.id}
-                href={`/artist/${a.handle}`}
-                className="flex items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
-                style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
-              >
-                <AvatarIllustrated nationId={a.primaryNationId} size={52} name={a.name} />
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold truncate">{a.name}</div>
-                  <div className="text-xs truncate" style={{ color: 'var(--ink-muted)' }}>
-                    {a.artforms.join(' · ')}
-                  </div>
-                  <div className="text-xs truncate" style={{ color: 'var(--ink-muted)' }}>
-                    {a.city}
-                  </div>
+                  )}
                 </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-      {posts.length > 0 && (
-        <section className="mb-10">
-          <h2 className="mb-4 font-display text-2xl font-semibold">Posts</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {posts.slice(0, 12).map((p) => {
-              const artist = getArtistById(p.authorId);
-              if (!artist) return null;
-              const img = postImageUrl({
-                artform: p.artform,
-                nationId: p.nationId,
-                caption: p.caption,
-                mediaType: p.mediaType as 'image' | 'video' | 'audio' | 'gallery',
-                seed: p.id,
-                w: 600,
-                h: 750,
-              });
-              return (
-                <article
-                  key={p.id}
-                  className="overflow-hidden rounded-xl border"
-                  style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
-                >
-                  <div className="relative aspect-[4/5]">
-                    <img src={img} alt={p.artform} className="h-full w-full object-cover" loading="lazy" />
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background:
-                          'linear-gradient(to top, rgba(0,0,0,0.7), transparent 45%)',
-                      }}
-                    />
-                    <div className="absolute inset-x-3 bottom-3 text-white">
-                      <div className="flex items-center gap-2 text-xs">
-                        <AvatarIllustrated nationId={artist.primaryNationId} size={20} name={artist.name} />
-                        <span className="font-semibold truncate">{artist.name.split(' ')[0]}</span>
-                      </div>
-                      <p className="mt-1 line-clamp-2 text-xs italic" style={{ lineHeight: 1.4 }}>
-                        {p.caption}
-                      </p>
-                      <div className="mt-1 flex items-center gap-2 font-mono text-[10px] opacity-80">
-                        <span>♡ {formatCount(p.likes)}</span>
-                        <span>·</span>
-                        <span>↻ {formatCount(p.shares)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      <section>
-        <h2 className="mb-4 font-display text-2xl font-semibold">
-          {tag ? 'Works' : 'Trending works'}
-        </h2>
-        {works.length ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {works.map((w) => (
-              <WorkCard key={w.id} work={w} />
-            ))}
-          </div>
-        ) : (
-          <p style={{ color: 'var(--ink-muted)' }}>Nothing in the marketplace matches this tag yet.</p>
-        )}
-      </section>
+      <style>{`
+        .group:hover .explore-overlay { background: rgba(14,16,20,0.65) !important; }
+        .group:hover .overlay-content { opacity: 1 !important; }
+      `}</style>
     </div>
   );
 }
