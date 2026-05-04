@@ -135,9 +135,10 @@ export default async function ExplorePage({
           else if (isTall) { gridStyle.gridRow = 'span 2'; }
 
           return (
-            <div
+            <Link
               key={post.id + '_' + i}
-              style={gridStyle}
+              href={artist ? `/artist/${artist.handle}` : '/explore'}
+              style={{ ...gridStyle, textDecoration: 'none' }}
               className="group"
             >
               <div
@@ -212,7 +213,7 @@ export default async function ExplorePage({
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

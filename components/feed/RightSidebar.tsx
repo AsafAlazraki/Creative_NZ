@@ -232,6 +232,7 @@ function DropModule({
   const work = getWorkById(drop.workId);
   if (!artist || !work) return null;
 
+  const isOpen = new Date(drop.closesAt) > new Date();
   const img = workImageUrl({ artform: work.artform, nationId: work.nationId, seed: work.id, w: 400, h: 250 });
 
   return (
@@ -270,18 +271,33 @@ function DropModule({
             {formatPrice(work.priceNzd)}
           </span>
         </div>
-        <Link
-          href="/drops"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            width: '100%', padding: '9px 0', borderRadius: 10,
-            background: 'var(--coral)', color: '#fff',
-            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
-            textDecoration: 'none',
-          }}
-        >
-          ⚡ Claim
-        </Link>
+        {isOpen ? (
+          <Link
+            href={`/market/${work.id}`}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              width: '100%', padding: '9px 0', borderRadius: 10,
+              background: 'var(--coral)', color: '#fff',
+              fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
+              textDecoration: 'none',
+            }}
+          >
+            ⚡ Claim — {formatPrice(work.priceNzd)}
+          </Link>
+        ) : (
+          <Link
+            href="/drops"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              width: '100%', padding: '9px 0', borderRadius: 10,
+              background: 'var(--surface-2)', color: 'var(--ink-muted)',
+              fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
+              textDecoration: 'none', border: '1px solid var(--hairline)',
+            }}
+          >
+            Notify me for next drop →
+          </Link>
+        )}
       </div>
     </div>
   );

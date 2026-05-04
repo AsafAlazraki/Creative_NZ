@@ -49,19 +49,17 @@ export function WorkCard({ work }: { work: HydratedWork }) {
         </div>
       </div>
       <div className="p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="line-clamp-2 font-display font-semibold" style={{ fontSize: 17 }}>
-            {work.title}
-          </h3>
-          <div className="font-mono text-sm font-semibold shrink-0">{formatPrice(work.priceNzd)}</div>
-        </div>
+        <h3 className="line-clamp-2 font-display font-semibold" style={{ fontSize: 17 }}>
+          {work.title}
+        </h3>
         <div
-          className="mt-1 flex items-center justify-between text-xs"
+          className="mt-1 flex items-center justify-between gap-2 text-xs"
           style={{ color: 'var(--ink-muted)' }}
         >
-          <span className="truncate">{artist.name}</span>
+          <span className="min-w-0 truncate flex-1">{artist.name}</span>
           <NationBadge nationId={work.nationId} size="xs" />
         </div>
+        <div className="mt-2 font-mono text-sm font-semibold">{formatPrice(work.priceNzd)}</div>
       </div>
     </Link>
   );

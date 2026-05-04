@@ -119,6 +119,10 @@ export default async function DropsPage() {
             const a = getArtistById(d.artistId);
             const w = getWorkById(d.workId);
             if (!a || !w) return null;
+            const opensDate = new Date(d.opensAt);
+            const opensLabel = opensDate.toLocaleDateString('en-NZ', {
+              weekday: 'short', day: 'numeric', month: 'long', year: 'numeric',
+            });
             return (
               <div
                 key={d.id}
@@ -130,8 +134,13 @@ export default async function DropsPage() {
                 <div className="text-sm" style={{ color: 'var(--ink-muted)' }}>
                   by {a.name} · {formatPrice(w.priceNzd)} · {d.totalUnits} units
                 </div>
-                <div className="mt-3">
-                  <CountdownClient target={d.opensAt} />
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--ink-soft)' }}>
+                    Opens
+                  </span>
+                  <span className="font-mono text-sm font-semibold" style={{ color: 'var(--moana)' }}>
+                    {opensLabel}
+                  </span>
                 </div>
               </div>
             );
