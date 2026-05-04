@@ -29,9 +29,12 @@ export function RightSidebar({ user }: { user: CurrentUser }) {
   const events = getEvents().slice(0, 3);
   const groups = getGroups().slice(0, 3);
   const allArtists = getAllArtists().filter((a) => a.role === 'artist' && a.id !== user.id);
-  const myIslandArtists = allArtists.filter((a) =>
+  const islandMatches = allArtists.filter((a) =>
     user.affiliations.some((aff) => a.affiliations.includes(aff)),
-  ).slice(0, 6);
+  );
+  const myIslandArtists = islandMatches.length >= 4
+    ? islandMatches.slice(0, 6)
+    : [...islandMatches, ...allArtists.filter((a) => !islandMatches.includes(a))].slice(0, 6);
   const articles = getArticles?.()?.slice(0, 2) ?? [];
 
   return (
@@ -45,7 +48,7 @@ export function RightSidebar({ user }: { user: CurrentUser }) {
             marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6,
           }}>
             <Icon name="globe" size={15} />
-            Your islands
+            {islandMatches.length >= 4 ? 'Your islands' : 'Discover artists'}
           </h3>
           <div
             className="flex gap-3 overflow-x-auto pb-1"

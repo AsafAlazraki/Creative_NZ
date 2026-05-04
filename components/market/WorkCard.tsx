@@ -56,7 +56,7 @@ export function WorkCard({ work }: { work: HydratedWork }) {
           className="mt-1 flex items-center justify-between gap-2 text-xs"
           style={{ color: 'var(--ink-muted)' }}
         >
-          <span className="min-w-0 truncate flex-1">{artist.name}</span>
+          <span className="min-w-0 flex-1">{artist.name}</span>
           <NationBadge nationId={work.nationId} size="xs" />
         </div>
         <div className="mt-2 font-mono text-sm font-semibold">{formatPrice(work.priceNzd)}</div>

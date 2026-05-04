@@ -62,8 +62,8 @@ export async function FeedArtist({ user }: { user: CurrentUser }) {
         </div>
       </div>
       <aside
-        className="hidden lg:block px-5 pb-24"
-        style={{ borderLeft: '1px solid var(--rule)', animation: 'page-fade 400ms ease' }}
+        className="hidden lg:block px-5 pb-24 self-start"
+        style={{ borderLeft: '1px solid var(--rule)', animation: 'page-fade 400ms ease', position: 'sticky', top: 0 }}
       >
         <div style={{ paddingTop: 24 }}>
           <RightSidebar user={user} />
