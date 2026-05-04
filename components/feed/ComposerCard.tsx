@@ -19,10 +19,10 @@ export function ComposerCard({ user }: { user: CurrentUser }) {
           Share with respect, {user.name.split(' ')[0]}…
         </Link>
       </div>
-      <div className="mt-3 flex items-center justify-between gap-2 text-xs">
+      <div className="mt-3 flex items-center gap-1 text-xs overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
         <CreateChip href="/create?type=image" icon="bookmark" label="Photo" />
         <CreateChip href="/create?type=short" icon="film" label="Short" />
-        <CreateChip href="/create?type=long" icon="plus-square" label="Long video" />
+        <CreateChip href="/create?type=long" icon="plus-square" label="Video" />
         <CreateChip href="/create?type=audio" icon="activity" label="Audio" />
         <CreateChip href="/create?type=listing" icon="shopping-bag" label="Listing" />
       </div>
@@ -34,7 +34,7 @@ function CreateChip({ href, icon, label }: { href: string; icon: string; label: 
   return (
     <Link
       href={href}
-      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
+      className="flex shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 py-2 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)] whitespace-nowrap"
       style={{ color: 'var(--ink-muted)' }}
     >
       <Icon name={icon} size={14} />

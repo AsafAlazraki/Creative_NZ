@@ -28,7 +28,7 @@ export function ShortsRail() {
         </div>
         <Link
           href="/reels"
-          className="rounded-full border px-4 py-2 text-xs font-semibold transition-colors hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]"
+          className="rounded-full border px-4 py-2 text-xs font-semibold transition-colors hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] whitespace-nowrap"
           style={{ borderColor: 'var(--hairline)' }}
         >
           Open reels →

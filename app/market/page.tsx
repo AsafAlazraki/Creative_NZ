@@ -31,7 +31,7 @@ export default async function MarketPage() {
               Marketplace
             </div>
             <h1
-              className="mt-3 font-display font-semibold text-white"
+              className="mt-3 font-display font-semibold text-white break-words"
               style={{ fontSize: 'clamp(2.25rem, 5vw, 4.5rem)', lineHeight: 1.05, letterSpacing: '-0.02em' }}
             >
               Works by Pacific artists, <br className="hidden md:block" />

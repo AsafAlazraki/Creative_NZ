@@ -267,7 +267,7 @@ function ProfileHero({
           }}
         />
         <div className="relative flex min-h-[380px] xl:min-h-[480px] flex-col justify-end px-4 py-8 lg:px-10 lg:py-12">
-          <div className="flex items-end gap-5">
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
             <img
               src={portraitImg}
               alt={artist.name}
@@ -276,10 +276,10 @@ function ProfileHero({
               className="h-24 w-24 shrink-0 rounded-full object-cover ring-4 ring-white/80 md:h-32 md:w-32 lg:h-36 lg:w-36"
               loading="eager"
             />
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-baseline gap-2 text-white">
-                <h1 className="font-display font-semibold leading-tight break-words min-w-0"
-                    style={{ fontSize: 'clamp(1.5rem, 5.5vw, 4.5rem)', letterSpacing: '-0.02em' }}
+                <h1 className="w-full font-display font-semibold leading-tight break-words min-w-0"
+                    style={{ fontSize: 'clamp(1.5rem, 5.5vw, 4.5rem)', letterSpacing: '-0.02em', wordBreak: 'break-word' }}
                 >
                   {artist.name}
                 </h1>
@@ -361,7 +361,7 @@ function Stat({ label, value }: { label: string; value: string }) {
       style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
     >
       <div className="font-mono text-xl font-semibold">{value}</div>
-      <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+      <div className="text-[10px] uppercase tracking-[0.06em] leading-tight" style={{ color: 'var(--ink-soft)' }}>
         {label}
       </div>
     </div>

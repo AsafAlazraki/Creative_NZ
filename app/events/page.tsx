@@ -45,9 +45,10 @@ function EventCard({ e, isPast = false }: { e: ReturnType<typeof getEvents>[numb
   const nation = getNation(e.nationId);
   const linked = getArtistsByIds(e.linkedArtistIds);
   return (
-    <article
-      className="group relative overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5 hover:shadow-lg"
-      style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+    <Link
+      href={`/events/${e.id}`}
+      className="group relative block overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5 hover:shadow-lg"
+      style={{ borderColor: 'var(--hairline)', background: 'var(--surface)', textDecoration: 'none', color: 'inherit' }}
     >
       <div className="relative aspect-[16/9] overflow-hidden border-b bg-[color:var(--surface-2)]">
         <img
@@ -111,16 +112,15 @@ function EventCard({ e, isPast = false }: { e: ReturnType<typeof getEvents>[numb
             </span>
           </div>
           {!isPast && (
-            <Link
-              href="/events"
-              className="rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_6%,transparent)]"
+            <span
+              className="rounded-md border px-3 py-1.5 text-xs font-semibold"
               style={{ borderColor: 'var(--hairline)', color: 'var(--brand)' }}
             >
-              RSVP →
-            </Link>
+              Details →
+            </span>
           )}
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

@@ -159,6 +159,10 @@ export function getEvents() {
   return [...ALL_EVENTS];
 }
 
+export function getEventById(id: string) {
+  return ALL_EVENTS.find((e) => e.id === id) ?? null;
+}
+
 // ── Orgs ───────────────────────────────────────────────────────────────────
 
 export function getOrgs() {

@@ -33,7 +33,7 @@ export default async function KetePage() {
           <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
             Kete Toolkit
           </div>
-          <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl">
+          <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl break-words">
             Tautua — free guidance from practitioners who have been there.
           </h1>
           <p className="mt-3 max-w-2xl font-editorial italic" style={{ color: 'var(--ink-muted)', fontSize: 18, lineHeight: 1.5 }}>

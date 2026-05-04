@@ -26,7 +26,7 @@ export default async function GrantsPage() {
           <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
             Grants
           </div>
-          <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl">
+          <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl break-words">
             Funding for Pacific artists and organisations.
           </h1>
           <p
@@ -52,20 +52,20 @@ export default async function GrantsPage() {
               className="rounded-xl border p-5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
               style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
             >
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <div
                     className="text-xs font-semibold uppercase tracking-wider"
                     style={{ color: days < 30 ? 'var(--accent-coral)' : 'var(--ink-soft)' }}
                   >
                     {days > 0 ? `Closes in ${days} days` : 'Closed'}
                   </div>
-                  <h3 className="mt-1 font-display text-lg font-semibold">{g.name}</h3>
-                  <p className="mt-1 text-sm" style={{ color: 'var(--ink-muted)' }}>
-                    {g.amountDisplay} · {g.funder}
-                  </p>
+                  <PoolChip pool={g.pool} />
                 </div>
-                <PoolChip pool={g.pool} />
+                <h3 className="font-display text-lg font-semibold leading-tight">{g.name}</h3>
+                <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
+                  {g.amountDisplay} · {g.funder}
+                </p>
               </div>
             </Link>
           ))}

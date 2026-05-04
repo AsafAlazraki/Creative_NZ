@@ -35,12 +35,12 @@ export function EditorialHero({ artist, quote }: { artist: HydratedArtist; quote
           >
             This week — featured artist
           </div>
-          <div className="max-w-3xl">
+          <div className="max-w-3xl overflow-hidden">
             <blockquote
-              className="font-editorial italic text-white line-clamp-4 overflow-hidden"
+              className="font-editorial italic text-white line-clamp-4 overflow-hidden break-words"
               style={{
-                fontSize: 'clamp(1.75rem, 4vw, 3.25rem)',
-                lineHeight: 1.15,
+                fontSize: 'clamp(1.25rem, 3.5vw, 3.25rem)',
+                lineHeight: 1.2,
                 letterSpacing: '-0.01em',
               }}
             >
