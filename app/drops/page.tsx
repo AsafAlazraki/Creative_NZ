@@ -1,7 +1,5 @@
 import Link from 'next/link';
-import { db } from '@/db';
-import * as s from '@/db/schema';
-import { getArtistById, getWorkById, getNation } from '@/lib/repo';
+import { getDrops, getArtistById, getWorkById, getNation } from '@/lib/repo';
 import { InatiBadge, TapuIndicator } from '@/components/cultural/Badges';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { AttributionBlock } from '@/components/cultural/AttributionBlock';
@@ -14,7 +12,7 @@ import { workImageUrl } from '@/lib/images';
 export const metadata = { title: 'Drops · KavaWorks' };
 
 export default async function DropsPage() {
-  const drops = db.select().from(s.drops).all();
+  const drops = getDrops();
   const live = drops.filter((d) => d.status === 'live');
   const upcoming = drops.filter((d) => d.status === 'scheduled');
   const past = drops.filter((d) => d.status === 'closed');

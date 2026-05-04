@@ -1,9 +1,6 @@
 import { cookies } from 'next/headers';
-import { db } from '@/db';
-import * as schema from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { parseJson } from './utils';
-import { ROLES, type RoleId } from './role';
+import { findArtistById } from './store';
+import type { RoleId } from '@/db/seed-data/types';
 
 export const COOKIE_NAME = 'kavaworks_persona';
 export const THEME_COOKIE = 'kavaworks_theme';
@@ -29,40 +26,24 @@ export type CurrentUser = {
 export async function getCurrentUser(): Promise<CurrentUser> {
   const jar = await cookies();
   const personaId = jar.get(COOKIE_NAME)?.value || DEFAULT_PERSONA;
-  const row = db
-    .select()
-    .from(schema.artists)
-    .where(eq(schema.artists.id, personaId))
-    .get();
+  const row = findArtistById(personaId) ?? findArtistById(DEFAULT_PERSONA);
 
-  const effective = row ?? db
-    .select()
-    .from(schema.artists)
-    .where(eq(schema.artists.id, DEFAULT_PERSONA))
-    .get();
-
-  if (!effective) {
-    throw new Error('No seeded personas available');
-  }
+  if (!row) throw new Error('No seeded personas available');
 
   return {
-    id: effective.id,
-    handle: effective.handle,
-    name: effective.name,
-    role: effective.role as RoleId,
-    primaryNationId: effective.primaryNationId,
-    affiliations: parseJson<string[]>(effective.affiliations, []),
-    city: effective.city,
-    verified: Boolean(effective.verified),
-    elderStatus: Boolean(effective.elderStatus),
-    elderInGroups: parseJson<string[]>(effective.elderInGroups, []),
-    culturalTheme: effective.culturalTheme,
-    avatarStyle: effective.avatarStyle,
+    id: row.id,
+    handle: row.handle,
+    name: row.name,
+    role: row.role as RoleId,
+    primaryNationId: row.primaryNationId,
+    affiliations: row.affiliations,
+    city: row.city,
+    verified: row.verified,
+    elderStatus: row.elderStatus,
+    elderInGroups: row.elderInGroups,
+    culturalTheme: row.culturalTheme,
+    avatarStyle: row.avatarStyle,
   };
-}
-
-export function personaForRole(role: RoleId) {
-  return ROLES.find((r) => r.id === role) ?? ROLES[0];
 }
 
 export async function getTheme(): Promise<'light' | 'dark'> {

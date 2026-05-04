@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth';
-import { db } from '@/db';
-import * as s from '@/db/schema';
-import { eq, desc } from 'drizzle-orm';
-import { getArtistById } from '@/lib/repo';
+import { getPostsByArtist, getArtistById } from '@/lib/repo';
+import { getInbox, getMessages } from '@/lib/messages';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { EmptyState } from '@/components/cultural/EmptyState';
 import { PACIFIC_PROVERBS } from '@/lib/tauhi-va-kb';
@@ -20,11 +18,7 @@ export const metadata = { title: 'Notifications · KavaWorks' };
 export default async function NotificationsPage() {
   const me = await getCurrentUser();
 
-  const myPosts = db
-    .select()
-    .from(s.posts)
-    .where(eq(s.posts.authorId, me.id))
-    .all();
+  const myPosts = getPostsByArtist(me.id, 50);
 
   const commentEvents: Array<{
     type: 'comment';
@@ -34,13 +28,7 @@ export default async function NotificationsPage() {
     postId: string;
   }> = [];
   for (const p of myPosts) {
-    let comments: Array<{ authorHandle: string; text: string; createdAt: string }>;
-    try {
-      comments = JSON.parse(p.commentsData ?? '[]');
-    } catch {
-      continue;
-    }
-    for (const c of comments) {
+    for (const c of p.commentsData) {
       if (c.authorHandle === me.handle) continue;
       commentEvents.push({
         type: 'comment',
@@ -52,13 +40,10 @@ export default async function NotificationsPage() {
     }
   }
 
-  const recentDms = db
-    .select()
-    .from(s.messages)
-    .orderBy(desc(s.messages.createdAt))
-    .limit(20)
-    .all()
-    .filter((m) => m.senderId !== me.id);
+  const conversations = getInbox(me.id);
+  const recentDms = conversations
+    .flatMap((conv) => getMessages(conv.id).filter((m) => m.senderId !== me.id))
+    .slice(0, 20);
 
   const events = [
     ...commentEvents.map((e) => ({ kind: 'comment' as const, at: e.at, payload: e })),
