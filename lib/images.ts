@@ -17,9 +17,10 @@ function hash(seed: string): number {
   return [...seed].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 5381);
 }
 
-function picsum(seed: string, w: number, h: number): string {
+function picsum(seed: string, w: number, h: number, blur?: number): string {
   const safeSeed = seed.replace(/[^a-zA-Z0-9_-]/g, '_');
-  return `https://picsum.photos/seed/${safeSeed}/${w}/${h}`;
+  const base = `https://picsum.photos/seed/${safeSeed}/${w}/${h}`;
+  return blur ? `${base}?blur=${blur}` : base;
 }
 
 function themeSeed(theme: string, seed: string): string {
@@ -79,8 +80,19 @@ export function postImageUrl({
   return picsum(themeSeed(theme, seed), w, h);
 }
 
-export function heroImageUrl(theme: string, seed: string, w = 1800, h = 1000) {
-  return picsum(themeSeed(artformTheme(theme), seed), w, h);
+/**
+ * Hero/banner images — use blur so random picsum photos read as
+ * atmospheric editorial backgrounds rather than "wrong stock photo".
+ * Foreground text + the existing dark gradient overlay carry the meaning;
+ * the hero just supplies depth, mood, and tonal warmth.
+ */
+export function heroImageUrl(theme: string, seed: string, w = 1600, h = 900) {
+  return picsum(themeSeed(artformTheme(theme), seed), w, h, 2);
+}
+
+/** Stronger blur — used for full-bleed cinematic heroes (Drops, Market). */
+export function heroAtmosphericUrl(theme: string, seed: string, w = 1600, h = 900) {
+  return picsum(themeSeed(artformTheme(theme), seed), w, h, 3);
 }
 
 export function portraitImageUrl(name: string, _nationId: string, w = 480, h = 600) {
@@ -88,11 +100,13 @@ export function portraitImageUrl(name: string, _nationId: string, w = 480, h = 6
 }
 
 export function coverImageForOrg(seed: string, w = 1400, h = 600) {
-  return picsum(themeSeed('gallery', seed), w, h);
+  // Light blur — covers sit behind labels but should still feel like a place,
+  // not just texture. Random photos read as atmospheric this way.
+  return picsum(themeSeed('gallery', seed), w, h, 1);
 }
 
 export function coverImageForEvent(seed: string, w = 1400, h = 800) {
-  return picsum(themeSeed('event', seed), w, h);
+  return picsum(themeSeed('event', seed), w, h, 1);
 }
 
 // Back-compat aliases

@@ -10,8 +10,8 @@ export default async function MarketPage() {
   const hero = heroImageUrl(
     'Pacific craft and weaving, studio light, warm earth tones',
     'market-hero',
-    2400,
-    1000,
+    1800,
+    900,
   );
 
   return (

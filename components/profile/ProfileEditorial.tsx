@@ -252,7 +252,7 @@ function ProfileHero({
 }) {
   const nation = getNation(artist.primaryNationId);
   const heroTheme = `${artist.artforms[0] ?? 'Pacific art'}, ${nation?.name ?? 'Pacific'} tradition, studio space, editorial`;
-  const heroImg = heroImageUrl(heroTheme, `${artist.id}-hero`, 2200, 900);
+  const heroImg = heroImageUrl(heroTheme, `${artist.id}-hero`, 1600, 900);
   const portraitImg = portraitImageUrl(artist.name, artist.primaryNationId, 400, 400);
 
   return (

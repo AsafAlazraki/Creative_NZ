@@ -7,7 +7,7 @@ import { heroImageUrl } from '@/lib/images';
 export function EditorialHero({ artist, quote }: { artist: HydratedArtist; quote: string }) {
   const nation = getNation(artist.primaryNationId);
   const heroTheme = `${artist.artforms[0] ?? 'Pacific craft'}, ${nation?.name ?? 'Pacific'} tradition, contemporary practice`;
-  const img = heroImageUrl(heroTheme, artist.id, 2000, 1100);
+  const img = heroImageUrl(heroTheme, artist.id, 1600, 900);
 
   return (
     <section

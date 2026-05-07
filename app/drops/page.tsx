@@ -7,7 +7,7 @@ import { CountdownClient } from '@/components/feed/CountdownClient';
 import { TAUHI_VA_KB } from '@/lib/tauhi-va-kb';
 import { formatPrice } from '@/lib/utils';
 import { InatiFramingClient } from '@/components/market/InatiFramingClient';
-import { workImageUrl } from '@/lib/images';
+import { workImageUrl, heroAtmosphericUrl } from '@/lib/images';
 
 export const metadata = { title: 'Drops · KavaWorks' };
 
@@ -27,14 +27,7 @@ export default async function DropsPage() {
         const nation = getNation(artist.primaryNationId);
         void nation;
         const isOpen = new Date(drop.closesAt) > new Date();
-        const dropImg = workImageUrl({
-          artform: work.artform,
-          nationId: work.nationId,
-          materials: work.materials,
-          seed: `drop-${drop.id}`,
-          w: 2000,
-          h: 1200,
-        });
+        const dropImg = heroAtmosphericUrl(work.artform, `drop-${drop.id}`, 1800, 1000);
         return (
           <section
             key={drop.id}
