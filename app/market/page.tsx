@@ -62,10 +62,13 @@ export default async function MarketPage() {
         </div>
       </header>
 
-      <DropsZone />
+      {/* Browse the existing marketplace first — that's the everyday
+          flow. Drops live below as a special, time-limited section. */}
+      <MarketBrowse works={works} nations={nations.slice(0, 12)} />
 
-      {/* Why Inati? — relocated from old /drops page */}
-      <section className="mb-12">
+      {/* Why Inati? — frames the Drops section that follows. Drops are
+          the canonical Inati moment, so the quote sits adjacent to them. */}
+      <section className="mt-12">
         <div
           className="rounded-2xl px-6 py-6 sm:px-8"
           style={{ background: 'color-mix(in srgb, var(--ink) 4%, transparent)' }}
@@ -85,7 +88,9 @@ export default async function MarketPage() {
         </div>
       </section>
 
-      <MarketBrowse works={works} nations={nations.slice(0, 12)} />
+      <div className="mt-10">
+        <DropsZone />
+      </div>
     </div>
   );
 }

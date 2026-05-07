@@ -16,7 +16,7 @@ export function DropModule() {
 
   return (
     <Link
-      href="/drops"
+      href="/market#drops"
       style={{
         borderRadius: 14, overflow: 'hidden',
         border: '2px solid var(--coral)', background: 'var(--surface)',
