@@ -236,72 +236,85 @@ function DropModule({
   if (!artist || !work) return null;
 
   const isOpen = new Date(drop.closesAt) > new Date();
-  const img = workImageUrl({ artform: work.artform, nationId: work.nationId, seed: work.id, w: 400, h: 250 });
+  const img = workImageUrl({ artform: work.artform, nationId: work.nationId, seed: work.id, w: 400, h: 500 });
 
+  // Atmospheric background-image treatment — the artwork sits behind
+  // the card body at low opacity so the widget feels rooted in the
+  // actual piece rather than being a UI shell with a header thumbnail.
   return (
-    <div style={{ borderRadius: 16, overflow: 'hidden', background: 'var(--surface)', border: '1px solid var(--rule)' }}>
-      <div style={{ position: 'relative' }}>
-        <div style={{ aspectRatio: '16/10', overflow: 'hidden', background: 'var(--surface-2)' }}>
-          <img src={img} alt={work.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-        </div>
-        {isOpen && (
-          <div style={{
-            position: 'absolute', top: 10, right: 10,
-            background: 'var(--coral)', color: '#fff', borderRadius: 99,
-            padding: '4px 10px', fontSize: 11, fontWeight: 700,
-            fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 4,
-            animation: 'pulse 2s infinite',
-          }}>● LIVE</div>
-        )}
+    <div className="relative overflow-hidden rounded-2xl">
+      <div className="absolute inset-0">
+        <img src={img} alt="" aria-hidden className="h-full w-full object-cover opacity-25" loading="lazy" />
       </div>
-      <div style={{ padding: '14px 16px' }}>
-        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
-          {work.title}
+      <div
+        className="relative rounded-2xl border p-4"
+        style={{
+          borderColor: 'var(--hairline)',
+          background: 'color-mix(in srgb, var(--surface) 92%, transparent)',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--ink-muted)' }}>
+            Inati drop
+          </p>
+          {isOpen && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide text-white"
+              style={{ background: 'var(--coral)', animation: 'pulse 2s infinite' }}
+            >
+              ● LIVE
+            </span>
+          )}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, fontSize: 12, color: 'var(--ink-muted)' }}>
-          <AvatarIllustrated nationId={artist.primaryNationId} size={20} name={artist.name} />
-          <span>{artist.name}</span>
+
+        <p className="font-display text-base font-bold leading-tight">{work.title}</p>
+        <div className="mt-1 flex items-center gap-1.5 text-xs" style={{ color: 'var(--ink-muted)' }}>
+          <AvatarIllustrated nationId={artist.primaryNationId} size={16} name={artist.name} />
+          <span className="truncate">by {artist.name}</span>
         </div>
-        <div style={{
-          display: 'flex', justifyContent: 'center', gap: 4, padding: '10px 0', marginBottom: 10,
-          background: 'var(--surface-2)', borderRadius: 10,
-        }}>
-          <CountdownClient target={drop.closesAt} />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, color: 'var(--ink-muted)', marginBottom: 10 }}>
-          <span>
-            <strong style={{ color: 'var(--ink)' }}>{drop.remainingUnits}</strong>/{drop.totalUnits} left
-          </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
-            {formatPrice(work.priceNzd)}
-          </span>
-        </div>
+
         {isOpen ? (
-          <Link
-            href={`/market/${work.id}`}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              width: '100%', padding: '9px 0', borderRadius: 10,
-              background: 'var(--coral)', color: '#fff',
-              fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
-              textDecoration: 'none',
-            }}
-          >
-            ⚡ Claim — {formatPrice(work.priceNzd)}
-          </Link>
+          <>
+            <div
+              className="mt-3 flex justify-center rounded-lg py-2"
+              style={{ background: 'color-mix(in srgb, var(--ink) 5%, transparent)' }}
+            >
+              <CountdownClient target={drop.closesAt} />
+            </div>
+            <div className="mt-2 flex items-center justify-between text-xs" style={{ color: 'var(--ink-muted)' }}>
+              <span>
+                <strong style={{ color: 'var(--ink)' }}>{drop.remainingUnits}</strong>/{drop.totalUnits} left
+              </span>
+              <span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>
+                {formatPrice(work.priceNzd)}
+              </span>
+            </div>
+            <Link
+              href={`/market/${work.id}`}
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ background: 'var(--ink)', color: 'var(--bg)' }}
+            >
+              <Icon name="zap" size={13} />
+              Claim — {formatPrice(work.priceNzd)}
+            </Link>
+          </>
         ) : (
-          <Link
-            href="/drops"
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              width: '100%', padding: '9px 0', borderRadius: 10,
-              background: 'var(--surface-2)', color: 'var(--ink-muted)',
-              fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
-              textDecoration: 'none', border: '1px solid var(--hairline)',
-            }}
-          >
-            Notify me for next drop →
-          </Link>
+          <>
+            <div
+              className="mt-3 rounded-lg py-2 text-center text-sm font-medium"
+              style={{ background: 'color-mix(in srgb, var(--ink) 5%, transparent)', color: 'var(--ink-muted)' }}
+            >
+              Closed
+            </div>
+            <Link
+              href="/market#drops"
+              className="mt-2 block w-full text-center text-xs font-medium transition-colors hover:underline"
+              style={{ color: 'var(--ink-muted)' }}
+            >
+              Notify me for next drop →
+            </Link>
+          </>
         )}
       </div>
     </div>

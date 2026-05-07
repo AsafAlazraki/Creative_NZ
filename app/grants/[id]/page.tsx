@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { getGrantById, getGrants } from '@/lib/repo';
 import { getCurrentUser } from '@/lib/auth';
 import { daysUntil } from '@/lib/moana-ola-kb';
-import { CulturalPattern } from '@/components/cultural/CulturalPattern';
 
 export default async function GrantDetailPage({
   params,
@@ -30,28 +29,51 @@ export default async function GrantDetailPage({
         <span>{g.name}</span>
       </nav>
 
-      <CulturalPattern id="pattern-koula" opacity={0.1} tone="brand" size={56} className="mb-8 rounded-2xl border overflow-hidden">
-        <div className="p-8 md:p-10">
-          <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-            {g.funder} · {g.pool === 'pacific' ? 'Pacific pool' : g.pool === 'ngatoi' ? 'Ngā Toi Māori' : 'General'}
+      {/* Urgency hero — bg colour escalates with how soon the grant closes:
+          ≤7 days = deep red, ≤14 = deep amber, otherwise --ink. The
+          "closes in" stat goes red within the 7-day window so the
+          urgency reads at a glance. */}
+      <header
+        className="mb-8 rounded-2xl px-6 py-8 text-white sm:px-8 sm:py-10"
+        style={{
+          background:
+            days > 0 && days <= 7
+              ? '#3b0a0a'
+              : days > 0 && days <= 14
+                ? '#3a2407'
+                : 'var(--ink)',
+        }}
+      >
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/65">
+          {g.funder} · {g.pool === 'pacific' ? 'Pacific pool' : g.pool === 'ngatoi' ? 'Ngā Toi Māori' : 'General'}
+        </p>
+        <h1 className="mb-6 max-w-2xl font-display text-3xl font-bold leading-tight text-white sm:text-4xl">
+          {g.name}
+        </h1>
+        <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+          <div>
+            <p className="mb-1 text-[10px] uppercase tracking-[0.18em] text-white/65">Amount</p>
+            <p className="font-display text-2xl font-bold leading-none text-white">{g.amountDisplay}</p>
           </div>
-          <h1 className="mt-2 font-display text-4xl font-semibold">{g.name}</h1>
-          <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
-            <span className="font-mono text-xl font-semibold">{g.amountDisplay}</span>
-            <span aria-hidden>·</span>
-            <span>{g.duration ?? 'Single project'}</span>
-            <span aria-hidden>·</span>
-            <span
-              className="font-mono font-semibold"
+          <div>
+            <p className="mb-1 text-[10px] uppercase tracking-[0.18em] text-white/65">
+              {days > 0 ? 'Closes in' : 'Status'}
+            </p>
+            <p
+              className="font-display text-2xl font-bold leading-none"
               style={{
-                color: days > 0 ? (days < 14 ? 'var(--accent-coral)' : 'var(--ink)') : 'var(--ink-soft)',
+                color: days > 0 && days <= 7 ? '#fca5a5' : '#fff',
               }}
             >
-              {days > 0 ? `Closes in ${days} days` : 'Closed'}
-            </span>
+              {days > 0 ? `${days} days` : 'Closed'}
+            </p>
+          </div>
+          <div>
+            <p className="mb-1 text-[10px] uppercase tracking-[0.18em] text-white/65">Duration</p>
+            <p className="text-lg font-semibold text-white">{g.duration ?? 'Single project'}</p>
           </div>
         </div>
-      </CulturalPattern>
+      </header>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
         <div className="min-w-0 space-y-8">

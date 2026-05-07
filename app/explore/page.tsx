@@ -33,13 +33,24 @@ export default async function ExplorePage({
 
   return (
     <div className="px-4 py-6 lg:px-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1
-          className="font-display font-bold"
-          style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', letterSpacing: '-0.02em' }}
-        >
-          Explore
-        </h1>
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <p
+            className="mb-1 text-[11px] font-semibold uppercase tracking-[0.25em]"
+            style={{ color: 'var(--ink-muted)' }}
+          >
+            KavaWorks
+          </p>
+          <h1
+            className="font-display font-bold leading-tight"
+            style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', letterSpacing: '-0.02em' }}
+          >
+            Explore Pacific arts.
+          </h1>
+        </div>
+        <p className="hidden max-w-xs text-right text-sm sm:block" style={{ color: 'var(--ink-muted)' }}>
+          Posts, shorts, and works from artists across Te Moana-nui-a-Kiwa.
+        </p>
       </div>
 
       {/* Artist story circles */}

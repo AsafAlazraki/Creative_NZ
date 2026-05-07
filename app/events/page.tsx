@@ -13,15 +13,45 @@ export default async function EventsPage() {
 
   return (
     <div className="px-4 py-6 lg:px-10">
-      <header className="mb-8">
-        <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
-          Events
+      <header className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <p
+            className="mb-1 text-[11px] font-semibold uppercase tracking-[0.25em]"
+            style={{ color: 'var(--ink-muted)' }}
+          >
+            Events
+          </p>
+          <h1 className="font-display text-4xl font-bold">Pacific arts calendar 2026.</h1>
+          <p
+            className="mt-2 font-editorial italic"
+            style={{ color: 'var(--ink-muted)', fontSize: 16, lineHeight: 1.5 }}
+          >
+            Workshops, exhibitions, festivals, and language weeks across the Pacific arts community.
+          </p>
         </div>
-        <h1 className="mt-2 font-display text-4xl font-semibold">Pacific arts calendar 2026.</h1>
-        <p className="mt-2 font-editorial italic" style={{ color: 'var(--ink-muted)', fontSize: 17 }}>
-          Workshops, exhibitions, festivals, and language weeks across the Pacific arts community.
+        <p className="hidden text-right text-sm md:block" style={{ color: 'var(--ink-muted)' }}>
+          {upcoming.length} upcoming · {past.length} past
         </p>
       </header>
+
+      {/* Type filter — read-only chip row for now (filters not wired)
+          but visually establishes the page is browseable by type. */}
+      <div className="mb-6 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {['All', 'In person', 'Live stream', 'Workshop', 'Festival', 'Language week'].map((type, i) => (
+          <span
+            key={type}
+            className="flex-shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium whitespace-nowrap"
+            style={{
+              borderColor:
+                i === 0 ? 'var(--ink)' : 'color-mix(in srgb, var(--ink) 12%, transparent)',
+              background: i === 0 ? 'var(--ink)' : 'transparent',
+              color: i === 0 ? 'var(--bg)' : 'var(--ink-muted)',
+            }}
+          >
+            {type}
+          </span>
+        ))}
+      </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         {upcoming.map((e) => <EventCard key={e.id} e={e} />)}
