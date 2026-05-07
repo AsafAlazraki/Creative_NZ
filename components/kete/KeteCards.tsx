@@ -20,7 +20,7 @@ export function KeteHero({ articleCount, threadCount }: { articleCount: number; 
         KETE
       </span>
 
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/45">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/65">
         The Kete Toolkit
       </p>
 
@@ -31,7 +31,7 @@ export function KeteHero({ articleCount, threadCount }: { articleCount: number; 
         Tautua — free guidance from practitioners who have been there.
       </h1>
 
-      <p className="mb-8 max-w-md font-editorial italic leading-relaxed text-white/55" style={{ fontSize: 15 }}>
+      <p className="mb-8 max-w-md font-editorial italic leading-relaxed text-white/75" style={{ fontSize: 15 }}>
         Articles written by Pacific artists, arts advisers, and elders. All free, always. Inati.
       </p>
 
@@ -50,7 +50,7 @@ function HeroStat({ value, label, accent }: { value: string; label: string; acce
       <p className="font-display text-[32px] font-bold leading-none" style={{ color: accent ? 'var(--accent-jade)' : '#fff' }}>
         {value}
       </p>
-      <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/40">{label}</p>
+      <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/60">{label}</p>
     </div>
   );
 }
@@ -114,8 +114,8 @@ export function FeatureCard({
       </span>
 
       <div className="relative">
-        <div className="mb-5 inline-flex items-center gap-1.5 rounded bg-white/10 px-2.5 py-1">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/70">
+        <div className="mb-5 inline-flex items-center gap-1.5 rounded bg-white/15 px-2.5 py-1">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/80">
             {readTime} min read
           </span>
         </div>
@@ -124,17 +124,17 @@ export function FeatureCard({
           {title}
         </h3>
 
-        <p className="mb-6 max-w-xl text-[13px] leading-relaxed text-white/60">
+        <p className="mb-6 max-w-xl text-[13px] leading-relaxed text-white/75">
           {excerpt}
         </p>
 
         <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white/15 text-[10px] font-semibold text-white">
+          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-[10px] font-semibold text-white">
             {authorInitials}
           </div>
           <div className="min-w-0">
             <p className="truncate text-[12px] font-semibold text-white">{authorName}</p>
-            <p className="truncate text-[11px] text-white/45">{authorRole}</p>
+            <p className="truncate text-[11px] text-white/60">{authorRole}</p>
           </div>
         </div>
       </div>
@@ -253,17 +253,17 @@ export function KoreroMaiCTA() {
       </span>
 
       <div className="relative">
-        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/40">
+        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/65">
           Ask an adviser
         </p>
         <h2 className="mb-2 font-display font-bold text-white" style={{ fontSize: 28 }}>Kōrero mai.</h2>
-        <p className="mx-auto mb-8 max-w-sm text-[14px] leading-relaxed text-white/50">
+        <p className="mx-auto mb-8 max-w-sm text-[14px] leading-relaxed text-white/70">
           Book a free, confidential kōrero with a Pacific Arts Practice Adviser. No obligation. Inati.
         </p>
 
         <a
           href="mailto:koreromai@kavaworks.demo"
-          className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-5 py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-white/[0.14]"
+          className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-white/[0.18] px-5 py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-white/[0.28]"
         >
           <Icon name="mail" size={16} />
           koreromai@kavaworks.demo
@@ -273,7 +273,7 @@ export function KoreroMaiCTA() {
           {['Free', 'Confidential', 'No obligation'].map((chip) => (
             <span
               key={chip}
-              className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-white/35"
+              className="rounded-full border border-white/25 px-3 py-1 text-[11px] text-white/60"
             >
               {chip}
             </span>

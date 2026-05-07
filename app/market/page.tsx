@@ -46,13 +46,13 @@ export default async function MarketPage() {
               95% of every sale goes directly to the artist. Attribution travels with every work.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
                 <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--accent-jade)]" />
                 Inati pricing: transparent 95/5 split
               </div>
               <a
                 href="#drops"
-                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+                className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-4 py-2 text-xs font-semibold text-white backdrop-blur transition-colors hover:bg-white/30"
               >
                 <Icon name="zap" size={13} />
                 See current drops

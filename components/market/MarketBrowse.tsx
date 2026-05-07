@@ -36,17 +36,17 @@ export function MarketBrowse({ works, nations }: { works: HydratedWork[]; nation
   return (
     <>
       <div
-        className="sticky top-0 z-10 -mx-4 mb-6 border-b px-4 py-3 lg:-mx-10 lg:px-10 xl:-mx-16 xl:px-16"
+        className="sticky top-0 z-10 -mx-4 mb-6 flex flex-col gap-2 border-b px-4 py-3 lg:-mx-10 lg:px-10 xl:-mx-16 xl:px-16"
         style={{
           background: 'color-mix(in srgb, var(--bg) 88%, transparent)',
           backdropFilter: 'blur(12px)',
           borderColor: 'var(--hairline)',
         }}
       >
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Medium tabs */}
+        {/* Row 1 — medium tabs (left) + sort (right) */}
+        <div className="flex items-center justify-between gap-3">
           <div
-            className="flex flex-shrink-0 items-center gap-1 overflow-x-auto rounded-lg p-1 scrollbar-none"
+            className="flex flex-shrink min-w-0 items-center gap-1 overflow-x-auto rounded-lg p-1 scrollbar-none"
             style={{ background: 'color-mix(in srgb, var(--ink) 5%, transparent)' }}
           >
             {MEDIUMS.map((m) => {
@@ -69,59 +69,54 @@ export function MarketBrowse({ works, nations }: { works: HydratedWork[]; nation
             })}
           </div>
 
-          <div className="hidden h-5 w-px lg:block" style={{ background: 'color-mix(in srgb, var(--ink) 12%, transparent)' }} />
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            aria-label="Sort works"
+            className="flex-shrink-0 rounded-lg border bg-transparent px-3 py-1.5 text-xs font-medium focus:outline-none"
+            style={{
+              borderColor: 'color-mix(in srgb, var(--ink) 15%, transparent)',
+              color: 'var(--ink-muted)',
+            }}
+          >
+            <option value="newest">Newest first</option>
+            <option value="priceAsc">Price: low → high</option>
+            <option value="priceDesc">Price: high → low</option>
+          </select>
+        </div>
 
-          {/* Nation chips */}
-          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none">
-            <button
-              type="button"
-              onClick={() => setNationId(null)}
-              className="flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap"
-              style={{
-                borderColor: nationId === null ? 'var(--ink)' : 'color-mix(in srgb, var(--ink) 15%, transparent)',
-                background: nationId === null ? 'var(--ink)' : 'transparent',
-                color: nationId === null ? 'var(--bg)' : 'var(--ink-muted)',
-              }}
-            >
-              All nations
-            </button>
-            {nations.map((n) => {
-              const active = nationId === n.id;
-              return (
-                <button
-                  key={n.id}
-                  type="button"
-                  onClick={() => setNationId(active ? null : n.id)}
-                  className="flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap"
-                  style={{
-                    borderColor: active ? 'var(--ink)' : 'color-mix(in srgb, var(--ink) 15%, transparent)',
-                    background: active ? 'var(--ink)' : 'transparent',
-                    color: active ? 'var(--bg)' : 'var(--ink-muted)',
-                  }}
-                >
-                  {n.flag} {n.name}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sort */}
-          <div className="ml-auto flex-shrink-0">
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              aria-label="Sort works"
-              className="rounded-lg border bg-transparent px-3 py-1.5 text-xs font-medium focus:outline-none"
-              style={{
-                borderColor: 'color-mix(in srgb, var(--ink) 15%, transparent)',
-                color: 'var(--ink-muted)',
-              }}
-            >
-              <option value="newest">Newest first</option>
-              <option value="priceAsc">Price: low → high</option>
-              <option value="priceDesc">Price: high → low</option>
-            </select>
-          </div>
+        {/* Row 2 — nation chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          <button
+            type="button"
+            onClick={() => setNationId(null)}
+            className="flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap"
+            style={{
+              borderColor: nationId === null ? 'var(--ink)' : 'color-mix(in srgb, var(--ink) 15%, transparent)',
+              background: nationId === null ? 'var(--ink)' : 'transparent',
+              color: nationId === null ? 'var(--bg)' : 'var(--ink-muted)',
+            }}
+          >
+            All nations
+          </button>
+          {nations.map((n) => {
+            const active = nationId === n.id;
+            return (
+              <button
+                key={n.id}
+                type="button"
+                onClick={() => setNationId(active ? null : n.id)}
+                className="flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap"
+                style={{
+                  borderColor: active ? 'var(--ink)' : 'color-mix(in srgb, var(--ink) 15%, transparent)',
+                  background: active ? 'var(--ink)' : 'transparent',
+                  color: active ? 'var(--bg)' : 'var(--ink-muted)',
+                }}
+              >
+                {n.flag} {n.name}
+              </button>
+            );
+          })}
         </div>
       </div>
 

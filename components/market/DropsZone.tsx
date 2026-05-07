@@ -92,7 +92,7 @@ function LiveDropCard({ dropId }: { dropId: string }) {
           </div>
 
           <div>
-            <p className="mb-1 text-sm text-white/60">{artist.name} · {work.nationId}</p>
+            <p className="mb-1 text-sm text-white/75">{artist.name} · {work.nationId}</p>
             <h3 className="font-display font-bold leading-tight" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)' }}>
               {work.title}
             </h3>
@@ -103,16 +103,16 @@ function LiveDropCard({ dropId }: { dropId: string }) {
 
           <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
             <div>
-              <p className="mb-1 text-[10px] uppercase tracking-wider text-white/50">Price</p>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-white/65">Price</p>
               <p className="font-display text-2xl font-bold">{formatPrice(work.priceNzd)}</p>
-              <p className="mt-0.5 text-xs text-white/50">95% → {firstName}</p>
+              <p className="mt-0.5 text-xs text-white/65">95% → {firstName}</p>
             </div>
             <div>
-              <p className="mb-1 text-[10px] uppercase tracking-wider text-white/50">Closes in</p>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-white/65">Closes in</p>
               <CountdownClient target={drop.closesAt} />
             </div>
             <div>
-              <p className="mb-1 text-[10px] uppercase tracking-wider text-white/50">Units</p>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-white/65">Units</p>
               <p className="text-lg font-semibold">{drop.remainingUnits} <span className="text-sm font-normal text-white/60">left of {drop.totalUnits}</span></p>
             </div>
           </div>
