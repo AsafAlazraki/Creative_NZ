@@ -1,11 +1,9 @@
-import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth';
-import { getInbox, otherPartyId } from '@/lib/messages';
-import { getArtistById } from '@/lib/repo';
-import { AvatarIllustrated } from '@/components/cultural/Avatar';
+import { getInbox } from '@/lib/messages';
 import { EmptyState } from '@/components/cultural/EmptyState';
+import { ConversationList } from '@/components/messages/ConversationList';
 import { PACIFIC_PROVERBS } from '@/lib/tauhi-va-kb';
-import { timeAgo } from '@/lib/utils';
+import { Icon } from '@/components/ui/Icon';
 
 export const metadata = { title: 'Messages · KavaWorks' };
 
@@ -14,53 +12,57 @@ export default async function MessagesPage() {
   const convs = getInbox(me.id);
 
   return (
-    <div className="px-4 py-6 lg:px-10 xl:px-16">
-      <header className="mb-8">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--ink-soft)' }}>
-          Messages
-        </div>
-        <h1 className="mt-2 font-display font-semibold" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em' }}>
-          Kōrero.
-        </h1>
-        <span className="theme-rule mt-3" />
-      </header>
+    <>
+      {/* Mobile-only list. On lg+ this hides; the layout's left rail
+          carries the conversation list and the right pane shows the
+          welcome state below. */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 lg:hidden">
+        <header className="mb-6">
+          <p
+            className="text-[11px] font-semibold uppercase tracking-[0.25em]"
+            style={{ color: 'var(--ink-muted)' }}
+          >
+            Messages
+          </p>
+          <h1
+            className="mt-1 font-display font-bold leading-tight"
+            style={{ fontSize: 'clamp(1.75rem, 5vw, 2.25rem)' }}
+          >
+            Kōrero.
+          </h1>
+        </header>
+        {convs.length === 0 ? (
+          <EmptyState
+            title="No kōrero yet."
+            proverb={PACIFIC_PROVERBS[5]}
+            cta={{ label: 'Find artists to message', href: '/explore' }}
+          />
+        ) : (
+          <ConversationList meId={me.id} variant="page" />
+        )}
+      </div>
 
-      {convs.length === 0 ? (
-        <EmptyState
-          title="No kōrero yet."
-          proverb={PACIFIC_PROVERBS[5]}
-          cta={{ label: 'Find artists to message', href: '/explore' }}
-        />
-      ) : (
-        <ul className="divide-y rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}>
-          {convs.map((c) => {
-            const otherId = otherPartyId(c, me.id);
-            const other = getArtistById(otherId);
-            if (!other) return null;
-            return (
-              <li key={c.id}>
-                <Link
-                  href={`/messages/${other.handle}`}
-                  className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
-                >
-                  <AvatarIllustrated nationId={other.primaryNationId} size={52} name={other.name} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <div className="font-display font-semibold truncate">{other.name}</div>
-                      <div className="text-xs font-mono shrink-0" style={{ color: 'var(--ink-soft)' }}>
-                        {timeAgo(c.lastMessageAt)}
-                      </div>
-                    </div>
-                    <div className="mt-0.5 truncate text-sm" style={{ color: 'var(--ink-muted)' }}>
-                      {c.lastMessagePreview ?? 'Start the conversation…'}
-                    </div>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
+      {/* Desktop welcome state — visible only on lg+ when no thread is
+          open. Rail on the left already shows conversations. */}
+      <div className="hidden flex-1 flex-col items-center justify-center px-8 py-12 lg:flex">
+        <div className="max-w-md text-center">
+          <div
+            className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full"
+            style={{
+              background: 'color-mix(in srgb, var(--ink) 5%, transparent)',
+              color: 'var(--ink-muted)',
+            }}
+          >
+            <Icon name="message-circle" size={26} />
+          </div>
+          <h2 className="font-display text-2xl font-bold">Kōrero with care.</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm" style={{ color: 'var(--ink-muted)' }}>
+            {convs.length === 0
+              ? 'No kōrero yet. Open an artist profile and tap Message to start one.'
+              : 'Select a conversation from the left, or open an artist profile to start a new one.'}
+          </p>
+        </div>
+      </div>
+    </>
   );
 }

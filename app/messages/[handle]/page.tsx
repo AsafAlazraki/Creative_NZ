@@ -19,22 +19,22 @@ export default async function ThreadPage({ params }: { params: Promise<{ handle:
   const messages = getMessages(conv.id);
 
   return (
-    <div className="flex h-[calc(100vh-56px)] flex-col lg:h-[calc(100vh-64px)]">
+    <>
       <header
-        className="flex items-center gap-3 border-b px-4 py-3 lg:px-10"
+        className="flex flex-shrink-0 items-center gap-3 border-b px-4 py-3 lg:px-6"
         style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
       >
         <Link
           href="/messages"
-          className="rounded-md p-2 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+          className="rounded-md p-2 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] lg:hidden"
           aria-label="Back to messages"
         >
           <Icon name="chevron-left" size={18} />
         </Link>
-        <Link href={`/artist/${other.handle}`} className="flex items-center gap-3 flex-1 min-w-0 hover:underline">
+        <Link href={`/artist/${other.handle}`} className="flex flex-1 items-center gap-3 min-w-0 hover:underline">
           <AvatarIllustrated nationId={other.primaryNationId} size={42} name={other.name} />
           <div className="min-w-0">
-            <div className="font-display font-semibold truncate">{other.name}</div>
+            <div className="truncate font-display font-semibold">{other.name}</div>
             <div className="text-xs" style={{ color: 'var(--ink-muted)' }}>
               <NationBadge nationId={other.primaryNationId} size="xs" />
             </div>
@@ -82,6 +82,6 @@ export default async function ThreadPage({ params }: { params: Promise<{ handle:
       </div>
 
       <ThreadComposer handle={handle} otherName={other.name} />
-    </div>
+    </>
   );
 }
