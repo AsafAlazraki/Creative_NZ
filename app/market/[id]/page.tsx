@@ -27,22 +27,28 @@ export default async function WorkDetailPage({
   if (!artist) notFound();
   const nation = getNation(work.nationId);
   const otherWorks = getWorksByArtist(artist.id).filter((w) => w.id !== work.id).slice(0, 3);
-  const mainImg = workImageUrl({
-    artform: work.artform,
-    nationId: work.nationId,
-    materials: work.materials,
-    seed: work.id,
-    w: 1400,
-    h: 1700,
-  });
-  const detailImg = workImageUrl({
-    artform: work.artform,
-    nationId: work.nationId,
-    materials: work.materials,
-    seed: `${work.id}-detail`,
-    w: 1400,
-    h: 1000,
-  });
+  // Five seed-derived viewpoints of the same work — front, detail crop,
+  // side, materials close-up, in-context shot. Picsum returns a different
+  // photo per seed, so the gallery feels like multiple shots of the same
+  // piece rather than one repeated image.
+  const galleryViews = [
+    { seed: work.id, label: 'Front' },
+    { seed: `${work.id}-detail`, label: 'Detail' },
+    { seed: `${work.id}-side`, label: 'Side' },
+    { seed: `${work.id}-materials`, label: 'Materials' },
+    { seed: `${work.id}-context`, label: 'In context' },
+  ];
+  const gallery = galleryViews.map((v) => ({
+    label: v.label,
+    src: workImageUrl({
+      artform: work.artform,
+      nationId: work.nationId,
+      materials: work.materials,
+      seed: v.seed,
+      w: 1400,
+      h: 1700,
+    }),
+  }));
   void nation;
 
   return (
@@ -55,18 +61,47 @@ export default async function WorkDetailPage({
         <span>{work.title}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
-        <div className="min-w-0 space-y-4">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border bg-[color:var(--surface-2)]" style={{ borderColor: 'var(--hairline)' }}>
-            <img src={mainImg} alt={work.title} className="h-full w-full object-cover" loading="eager" />
-            {work.tapu && (
-              <div className="absolute right-4 top-4">
-                <TapuIndicator />
-              </div>
-            )}
-          </div>
-          <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border bg-[color:var(--surface-2)]" style={{ borderColor: 'var(--hairline)' }}>
-            <img src={detailImg} alt={`${work.title} detail`} className="h-full w-full object-cover" loading="lazy" />
+      <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-start">
+        {/* Left column: vertical reel-style snap gallery. On lg+ it's
+            sticky to the viewport top so the user can scroll-snap through
+            five views while the right column scrolls with the page. */}
+        <div
+          className="min-w-0 lg:sticky lg:top-6"
+          style={{ alignSelf: 'start' }}
+        >
+          <div className="relative space-y-4 lg:space-y-0">
+            <div
+              className="relative w-full overflow-y-auto rounded-2xl border bg-[color:var(--surface-2)] snap-y snap-mandatory scrollbar-none lg:h-[calc(100vh-6rem)]"
+              style={{ borderColor: 'var(--hairline)', overscrollBehaviorY: 'contain' }}
+              tabIndex={0}
+              aria-label={`${work.title} — gallery, scroll to view ${gallery.length} angles`}
+            >
+              {gallery.map((g, i) => (
+                <div
+                  key={g.label}
+                  className="relative aspect-[4/5] w-full snap-start snap-always lg:aspect-auto lg:h-full"
+                >
+                  <img
+                    src={g.src}
+                    alt={`${work.title} — ${g.label.toLowerCase()}`}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                  <div
+                    className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur"
+                    style={{ background: 'rgba(0,0,0,0.55)', color: '#fff' }}
+                  >
+                    {i + 1} / {gallery.length} · {g.label}
+                  </div>
+                  {i === 0 && work.tapu && (
+                    <div className="absolute right-4 top-4">
+                      <TapuIndicator />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

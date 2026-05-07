@@ -6,7 +6,7 @@ import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { NationBadge } from '@/components/cultural/NationBadge';
 import { VerifiedBadge, ElderBadge, InatiBadge, TapuIndicator } from '@/components/cultural/Badges';
 import { Icon } from '@/components/ui/Icon';
-import { postImageUrl } from '@/lib/images';
+import { postImageUrl, reelVideoUrl } from '@/lib/images';
 import { formatCount, formatPrice } from '@/lib/utils';
 
 function usePrefersReducedMotion() {
@@ -143,6 +143,7 @@ function ReelCard({
   reduceMotion: boolean;
 }) {
   const { post, artist, work } = reel;
+  const isVideo = post.mediaType === 'video';
   const img = postImageUrl({
     artform: post.artform,
     nationId: post.nationId,
@@ -152,7 +153,22 @@ function ReelCard({
     w: 900,
     h: 1600,
   });
-  const altText = `${post.artform} ${post.mediaType === 'video' ? 'short video' : 'post'} by ${artist.name}`;
+  const videoSrc = isVideo ? reelVideoUrl(post.id) : null;
+  const altText = `${post.artform} ${isVideo ? 'short video' : 'post'} by ${artist.name}`;
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Pause inactive videos so we don't have N tracks playing simultaneously,
+  // and resume the active one. Network bandwidth + CPU savings.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (isActive) {
+      v.currentTime = 0;
+      void v.play().catch(() => {/* autoplay may be blocked; user can tap */});
+    } else {
+      v.pause();
+    }
+  }, [isActive]);
 
   return (
     <section
@@ -162,13 +178,27 @@ function ReelCard({
       aria-label={`Reel by ${artist.name}: ${post.caption.slice(0, 80)}`}
     >
       <div className="relative mx-auto flex h-full max-w-[min(500px,100%)] items-center justify-center overflow-hidden bg-black lg:my-3 lg:h-[calc(100%-1.5rem)] lg:max-w-[420px] lg:rounded-2xl" style={{ aspectRatio: '9/16' }}>
-        <img
-          src={img}
-          alt={altText}
-          className={'h-full w-full object-cover ' + (isActive ? 'ken-burns' : '')}
-          loading={isActive ? 'eager' : 'lazy'}
-          decoding="async"
-        />
+        {isVideo && videoSrc ? (
+          <video
+            ref={videoRef}
+            src={videoSrc}
+            poster={img}
+            className="h-full w-full object-cover"
+            muted
+            loop
+            playsInline
+            preload={isActive ? 'auto' : 'metadata'}
+            aria-label={altText}
+          />
+        ) : (
+          <img
+            src={img}
+            alt={altText}
+            className={'h-full w-full object-cover ' + (isActive ? 'ken-burns' : '')}
+            loading={isActive ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        )}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -176,17 +206,6 @@ function ReelCard({
               'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0) 55%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%)',
           }}
         />
-
-        {/* Play indicator on video */}
-        {post.mediaType === 'video' && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-70">
-            <div className="rounded-full bg-black/40 p-5 backdrop-blur">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="white" aria-hidden>
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-          </div>
-        )}
 
         {/* Top meta */}
         <div className="absolute left-4 right-4 top-4 flex items-center justify-between text-white">
