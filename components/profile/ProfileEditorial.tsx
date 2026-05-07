@@ -316,15 +316,18 @@ function ProfileHero({
             {!isSelf && (
               <Link
                 href={`/messages/${artist.handle}`}
-                className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+                className="rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
+                style={{ background: 'var(--accent-jade)' }}
               >
+                <Icon name="message-circle" size={14} className="mr-1 inline" />
                 Message
               </Link>
             )}
             {isSelf && (
               <Link
                 href="/analytics"
-                className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+                className="rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
+                style={{ background: 'var(--moana)' }}
               >
                 <Icon name="bar-chart-2" size={14} className="mr-1 inline" />
                 Analytics
@@ -333,7 +336,8 @@ function ProfileHero({
             {isSelf && (
               <Link
                 href="/settings/profile"
-                className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+                className="rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
+                style={{ background: 'var(--accent-gold)' }}
               >
                 <Icon name="edit-3" size={14} className="mr-1 inline" />
                 Edit profile

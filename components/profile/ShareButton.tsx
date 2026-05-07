@@ -24,7 +24,8 @@ export function ShareButton({ handle, name, variant = 'ghost' }: { handle: strin
     return (
       <button
         onClick={onClick}
-        className="rounded-md border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+        className="rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
+        style={{ background: 'var(--accent-coral)' }}
         aria-label={`Share ${name}'s profile`}
       >
         {copied ? 'Link copied' : 'Share'}
