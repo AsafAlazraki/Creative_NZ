@@ -47,6 +47,15 @@ export function WorkCard({ work }: { work: HydratedWork }) {
           </div>
           <InatiBadge />
         </div>
+        {/* Hover overlay — "View work" pill rises into view */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/25">
+          <span
+            className="translate-y-2 rounded-full bg-white px-4 py-1.5 text-xs font-semibold opacity-0 shadow-lg transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100"
+            style={{ color: 'var(--ink)' }}
+          >
+            View work →
+          </span>
+        </div>
       </div>
       <div className="p-4">
         <h3 className="font-display font-semibold leading-snug" style={{ fontSize: 17 }}>

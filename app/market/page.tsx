@@ -1,11 +1,13 @@
 import { getWorks, getNations } from '@/lib/repo';
-import { WorkCard } from '@/components/market/WorkCard';
 import { heroImageUrl } from '@/lib/images';
+import { DropsZone } from '@/components/market/DropsZone';
+import { MarketBrowse } from '@/components/market/MarketBrowse';
+import { Icon } from '@/components/ui/Icon';
 
 export const metadata = { title: 'Marketplace · KavaWorks' };
 
 export default async function MarketPage() {
-  const works = getWorks({ limit: 40 });
+  const works = getWorks({ limit: 60 });
   const nations = getNations();
   const hero = heroImageUrl(
     'Pacific craft and weaving, studio light, warm earth tones',
@@ -43,37 +45,47 @@ export default async function MarketPage() {
             >
               95% of every sale goes directly to the artist. Attribution travels with every work.
             </p>
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
-              <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--accent-jade)]" />
-              Inati pricing: transparent 95/5 split
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
+                <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--accent-jade)]" />
+                Inati pricing: transparent 95/5 split
+              </div>
+              <a
+                href="#drops"
+                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+              >
+                <Icon name="zap" size={13} />
+                See current drops
+              </a>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="mb-6 flex flex-wrap items-center gap-2 text-sm">
-        <span
-          className="text-xs font-semibold uppercase tracking-wider"
-          style={{ color: 'var(--ink-soft)' }}
-        >
-          Filter by nation ·
-        </span>
-        {nations.slice(0, 10).map((n) => (
-          <span
-            key={n.id}
-            className="rounded-full border px-3 py-1 text-xs transition-colors hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]"
-            style={{ borderColor: 'var(--hairline)', color: 'var(--ink-muted)' }}
-          >
-            {n.flag} {n.name}
-          </span>
-        ))}
-      </div>
+      <DropsZone />
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-        {works.map((w) => (
-          <WorkCard key={w.id} work={w} />
-        ))}
-      </div>
+      {/* Why Inati? — relocated from old /drops page */}
+      <section className="mb-12">
+        <div
+          className="rounded-2xl px-6 py-6 sm:px-8"
+          style={{ background: 'color-mix(in srgb, var(--ink) 4%, transparent)' }}
+        >
+          <p
+            className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em]"
+            style={{ color: 'var(--ink-muted)' }}
+          >
+            Why Inati?
+          </p>
+          <blockquote
+            className="font-editorial text-lg italic md:text-xl"
+            style={{ color: 'var(--ink)', lineHeight: 1.5 }}
+          >
+            &ldquo;Inati reminds us that when a catch comes in, every household receives an equal portion. A drop is a catch. The window is 24 hours.&rdquo;
+          </blockquote>
+        </div>
+      </section>
+
+      <MarketBrowse works={works} nations={nations.slice(0, 12)} />
     </div>
   );
 }

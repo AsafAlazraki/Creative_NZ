@@ -14,7 +14,7 @@ const BOTTOM_ITEMS = [
 ];
 
 const MORE_ITEMS = [
-  { href: '/drops', icon: 'zap' as const, label: 'Drops' },
+  { href: '/market#drops', icon: 'zap' as const, label: 'Drops' },
   { href: '/grants', icon: 'award' as const, label: 'Grants' },
   { href: '/events', icon: 'calendar' as const, label: 'Events' },
   { href: '/groups', icon: 'users' as const, label: 'Groups' },

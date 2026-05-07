@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { id: 'feed', href: '/', icon: 'home' as const, label: 'Home' },
   { id: 'explore', href: '/explore', icon: 'compass' as const, label: 'Explore' },
   { id: 'market', href: '/market', icon: 'shopping-bag' as const, label: 'Market' },
-  { id: 'drops', href: '/drops', icon: 'zap' as const, label: 'Drops' },
+  { id: 'drops', href: '/market#drops', icon: 'zap' as const, label: 'Drops' },
   { id: 'grants', href: '/grants', icon: 'award' as const, label: 'Grants' },
   { id: 'events', href: '/events', icon: 'calendar' as const, label: 'Events' },
   { id: 'groups', href: '/groups', icon: 'users' as const, label: 'Groups' },

@@ -9,9 +9,11 @@ import {
 import { AttributionBlock } from '@/components/cultural/AttributionBlock';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { NationBadge } from '@/components/cultural/NationBadge';
-import { InatiBadge, TapuIndicator } from '@/components/cultural/Badges';
+import { InatiBadge } from '@/components/cultural/Badges';
 import { WorkCard } from '@/components/market/WorkCard';
+import { WorkGallery } from '@/components/market/WorkGallery';
 import { BuySheet } from '@/components/market/BuySheet';
+import { Icon } from '@/components/ui/Icon';
 import { formatPrice } from '@/lib/utils';
 import { workImageUrl } from '@/lib/images';
 
@@ -62,48 +64,7 @@ export default async function WorkDetailPage({
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-start">
-        {/* Left column: vertical reel-style snap gallery. On lg+ it's
-            sticky to the viewport top so the user can scroll-snap through
-            five views while the right column scrolls with the page. */}
-        <div
-          className="min-w-0 lg:sticky lg:top-6"
-          style={{ alignSelf: 'start' }}
-        >
-          <div className="relative space-y-4 lg:space-y-0">
-            <div
-              className="relative w-full overflow-y-auto rounded-2xl border bg-[color:var(--surface-2)] snap-y snap-mandatory scrollbar-none lg:h-[calc(100vh-6rem)]"
-              style={{ borderColor: 'var(--hairline)', overscrollBehaviorY: 'contain' }}
-              tabIndex={0}
-              aria-label={`${work.title} — gallery, scroll to view ${gallery.length} angles`}
-            >
-              {gallery.map((g, i) => (
-                <div
-                  key={g.label}
-                  className="relative aspect-[4/5] w-full snap-start snap-always lg:aspect-auto lg:h-full"
-                >
-                  <img
-                    src={g.src}
-                    alt={`${work.title} — ${g.label.toLowerCase()}`}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                  />
-                  <div
-                    className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur"
-                    style={{ background: 'rgba(0,0,0,0.55)', color: '#fff' }}
-                  >
-                    {i + 1} / {gallery.length} · {g.label}
-                  </div>
-                  {i === 0 && work.tapu && (
-                    <div className="absolute right-4 top-4">
-                      <TapuIndicator />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <WorkGallery views={gallery} title={work.title} tapu={!!work.tapu} />
 
         <div className="min-w-0 space-y-6">
           <div>
@@ -136,17 +97,30 @@ export default async function WorkDetailPage({
             </div>
           </Link>
 
-          <div className="flex items-end justify-between gap-4 border-y py-4" style={{ borderColor: 'var(--hairline)' }}>
-            <div>
-              <div className="font-mono text-3xl font-semibold">{formatPrice(work.priceNzd)}</div>
-              <div className="mt-1 flex items-center gap-2 text-xs">
-                <InatiBadge />
-                <span style={{ color: 'var(--ink-muted)' }}>
-                  {formatPrice(Math.round(work.priceNzd * 0.95))} goes directly to {artist.name.split(' ')[0]}
-                </span>
+          <div className="border-y py-4" style={{ borderColor: 'var(--hairline)' }}>
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <div className="font-mono text-3xl font-semibold">{formatPrice(work.priceNzd)}</div>
+                <div className="mt-1 flex items-center gap-2 text-xs">
+                  <InatiBadge />
+                  <span style={{ color: 'var(--ink-muted)' }}>
+                    {formatPrice(Math.round(work.priceNzd * 0.95))} goes directly to {artist.name.split(' ')[0]}
+                  </span>
+                </div>
               </div>
+              <BuySheet work={work} artist={artist} />
             </div>
-            <BuySheet work={work} artist={artist} />
+            <div
+              className="mt-3 flex items-start gap-1.5 text-xs"
+              style={{ color: 'var(--ink-muted)' }}
+            >
+              <span style={{ color: 'var(--accent-jade)' }} className="mt-0.5 flex-shrink-0">
+                <Icon name="shield" size={13} />
+              </span>
+              <span>
+                95% of this sale goes directly to {artist.name.split(' ')[0]}. Attribution travels permanently with the work.
+              </span>
+            </div>
           </div>
 
           <section>
