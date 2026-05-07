@@ -83,7 +83,7 @@ export default async function GroupsPage() {
             >
               <div className="relative aspect-[16/9] overflow-hidden border-b bg-[color:var(--surface-2)]">
                 <img
-                  src={coverImageForOrg(g.id, 800, 450)}
+                  src={(g as { image?: string }).image ?? coverImageForOrg(g.id, 800, 450)}
                   alt=""
                   aria-hidden
                   loading="lazy"

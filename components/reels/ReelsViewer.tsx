@@ -57,6 +57,30 @@ export function ReelsViewer({ reels }: { reels: Reel[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, reels.length, reduceMotion]);
 
+  // IntersectionObserver tracks which reel is in view. The previous
+  // onScroll + Math.round(scrollTop / clientHeight) approach was
+  // unreliable during snap settling; the observer fires when ≥60% of
+  // a reel is visible and is the canonical pattern for vertical reels.
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const sections = Array.from(container.querySelectorAll<HTMLElement>('[data-reel]'));
+    if (sections.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = sections.indexOf(entry.target as HTMLElement);
+            if (idx !== -1) setActive(idx);
+          }
+        });
+      },
+      { root: container, threshold: 0.6 },
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, [reels.length]);
+
   if (!reels.length) {
     return (
       <div className="flex h-[calc(100vh-160px)] items-center justify-center px-6 text-center">
@@ -89,11 +113,6 @@ export function ReelsViewer({ reels }: { reels: Reel[] }) {
         scrollSnapType: reduceMotion ? 'none' : 'y mandatory',
         overscrollBehaviorY: 'contain',
       }}
-      onScroll={(e) => {
-        const el = e.currentTarget;
-        const idx = Math.round(el.scrollTop / el.clientHeight);
-        if (idx !== active) setActive(idx);
-      }}
       role="region"
       aria-label="Shorts feed"
       aria-roledescription="vertical reel viewer"
@@ -122,27 +141,30 @@ export function ReelsViewer({ reels }: { reels: Reel[] }) {
         {active + 1} <span className="sr-only">of</span><span aria-hidden> / </span>{reels.length}
       </div>
 
-      {/* Desktop nav arrows — overlaid on the right edge of the viewport */}
-      <div className="pointer-events-none fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
+      {/* Top-centre / bottom-centre nav arrows — only render when there's
+          somewhere to go. Subtle backdrop-blur pills that don't overlap
+          the back-pill (top-left) or counter (top-right). */}
+      {active > 0 && (
         <button
           type="button"
           onClick={() => scrollToIndex(active - 1)}
-          disabled={active === 0}
           aria-label="Previous reel"
-          className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition-colors hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-25"
+          className="fixed left-1/2 top-16 z-40 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur transition-colors hover:bg-black/55 lg:top-20"
         >
-          <Icon name="chevron-up" size={22} />
+          <Icon name="chevron-up" size={18} />
         </button>
+      )}
+      {active < reels.length - 1 && (
         <button
           type="button"
           onClick={() => scrollToIndex(active + 1)}
-          disabled={active === reels.length - 1}
           aria-label="Next reel"
-          className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition-colors hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-25"
+          className="fixed left-1/2 bottom-8 z-40 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur transition-colors hover:bg-black/55"
         >
-          <Icon name="chevron-down" size={22} />
+          <Icon name="chevron-down" size={18} />
         </button>
-      </div>
+      )}
+
     </div>
   );
 }
@@ -186,6 +208,7 @@ function ReelCard({
 
   return (
     <section
+      data-reel
       className={
         'relative flex h-full w-full items-center justify-center ' + (reduceMotion ? '' : 'snap-start snap-always')
       }

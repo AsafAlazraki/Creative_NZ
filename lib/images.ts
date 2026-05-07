@@ -100,13 +100,13 @@ export function portraitImageUrl(name: string, _nationId: string, w = 480, h = 6
 }
 
 export function coverImageForOrg(seed: string, w = 1400, h = 600) {
-  // Light blur — covers sit behind labels but should still feel like a place,
-  // not just texture. Random photos read as atmospheric this way.
-  return picsum(themeSeed('gallery', seed), w, h, 1);
+  // Sharp — these sit behind a dark label gradient on the cards, the
+  // image itself wants to read as a photo, not a soft texture wash.
+  return picsum(themeSeed('gallery', seed), w, h);
 }
 
 export function coverImageForEvent(seed: string, w = 1400, h = 800) {
-  return picsum(themeSeed('event', seed), w, h, 1);
+  return picsum(themeSeed('event', seed), w, h);
 }
 
 // Back-compat aliases

@@ -17,7 +17,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const endsAt = new Date(e.endsAt);
   const isPast = startsAt < now;
   const isMultiDay = endsAt.toDateString() !== startsAt.toDateString();
-  const img = coverImageForEvent(e.id, 1600, 900);
+  const customImg = (e as { image?: string }).image;
+  const img = customImg ?? coverImageForEvent(e.id, 1600, 900);
 
   const dayNum = startsAt.getDate();
   const monthShort = startsAt.toLocaleDateString('en-NZ', { month: 'short' });

@@ -82,7 +82,7 @@ function EventCard({ e, isPast = false }: { e: ReturnType<typeof getEvents>[numb
     >
       <div className="relative aspect-[16/9] overflow-hidden border-b bg-[color:var(--surface-2)]">
         <img
-          src={coverImageForEvent(e.id, 800, 450)}
+          src={(e as { image?: string }).image ?? coverImageForEvent(e.id, 800, 450)}
           alt=""
           aria-hidden
           loading="lazy"

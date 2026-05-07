@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { WorkCard } from '@/components/market/WorkCard';
+import { NationFilterPopover } from '@/components/market/NationFilterPopover';
 import type { HydratedWork } from '@/lib/repo';
 
 type Nation = { id: string; flag: string; name: string };
@@ -36,88 +37,57 @@ export function MarketBrowse({ works, nations }: { works: HydratedWork[]; nation
   return (
     <>
       <div
-        className="sticky top-0 z-10 -mx-4 mb-6 flex flex-col gap-2 border-b px-4 py-3 lg:-mx-10 lg:px-10 xl:-mx-16 xl:px-16"
+        className="sticky top-0 z-10 -mx-4 mb-6 flex items-center gap-3 border-b px-4 py-3 lg:-mx-10 lg:px-10 xl:-mx-16 xl:px-16"
         style={{
           background: 'color-mix(in srgb, var(--bg) 88%, transparent)',
           backdropFilter: 'blur(12px)',
           borderColor: 'var(--hairline)',
         }}
       >
-        {/* Row 1 — medium tabs (left) + sort (right) */}
-        <div className="flex items-center justify-between gap-3">
-          <div
-            className="flex flex-shrink min-w-0 items-center gap-1 overflow-x-auto rounded-lg p-1 scrollbar-none"
-            style={{ background: 'color-mix(in srgb, var(--ink) 5%, transparent)' }}
-          >
-            {MEDIUMS.map((m) => {
-              const active = medium === m.label;
-              return (
-                <button
-                  key={m.label}
-                  type="button"
-                  onClick={() => setMedium(m.label)}
-                  className="flex-shrink-0 rounded-md px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap"
-                  style={{
-                    background: active ? 'var(--ink)' : 'transparent',
-                    color: active ? 'var(--bg)' : 'var(--ink-muted)',
-                    boxShadow: active ? 'var(--shadow-sm)' : 'none',
-                  }}
-                >
-                  {m.label}
-                </button>
-              );
-            })}
-          </div>
-
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            aria-label="Sort works"
-            className="flex-shrink-0 rounded-lg border bg-transparent px-3 py-1.5 text-xs font-medium focus:outline-none"
-            style={{
-              borderColor: 'color-mix(in srgb, var(--ink) 15%, transparent)',
-              color: 'var(--ink-muted)',
-            }}
-          >
-            <option value="newest">Newest first</option>
-            <option value="priceAsc">Price: low → high</option>
-            <option value="priceDesc">Price: high → low</option>
-          </select>
-        </div>
-
-        {/* Row 2 — nation chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-          <button
-            type="button"
-            onClick={() => setNationId(null)}
-            className="flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap"
-            style={{
-              borderColor: nationId === null ? 'var(--ink)' : 'color-mix(in srgb, var(--ink) 15%, transparent)',
-              background: nationId === null ? 'var(--ink)' : 'transparent',
-              color: nationId === null ? 'var(--bg)' : 'var(--ink-muted)',
-            }}
-          >
-            All nations
-          </button>
-          {nations.map((n) => {
-            const active = nationId === n.id;
+        {/* Segmented medium tabs — left */}
+        <div
+          className="flex min-w-0 flex-shrink items-center gap-1 overflow-x-auto rounded-xl p-1 scrollbar-none"
+          style={{ background: 'color-mix(in srgb, var(--ink) 6%, transparent)' }}
+        >
+          {MEDIUMS.map((m) => {
+            const active = medium === m.label;
             return (
               <button
-                key={n.id}
+                key={m.label}
                 type="button"
-                onClick={() => setNationId(active ? null : n.id)}
-                className="flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors whitespace-nowrap"
+                onClick={() => setMedium(m.label)}
+                className="flex-shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
                 style={{
-                  borderColor: active ? 'var(--ink)' : 'color-mix(in srgb, var(--ink) 15%, transparent)',
                   background: active ? 'var(--ink)' : 'transparent',
-                  color: active ? 'var(--bg)' : 'var(--ink-muted)',
+                  color: active ? 'var(--bg)' : 'color-mix(in srgb, var(--ink) 60%, transparent)',
+                  boxShadow: active ? 'var(--shadow-sm)' : 'none',
                 }}
               >
-                {n.flag} {n.name}
+                {m.label}
               </button>
             );
           })}
         </div>
+
+        <div className="flex-1" />
+
+        {/* Right cluster — nation popover + sort */}
+        <NationFilterPopover options={nations} selectedId={nationId} onSelect={setNationId} />
+
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as SortKey)}
+          aria-label="Sort works"
+          className="flex-shrink-0 rounded-xl border bg-transparent px-3 py-2 text-sm font-medium focus:outline-none"
+          style={{
+            borderColor: 'color-mix(in srgb, var(--ink) 15%, transparent)',
+            color: 'var(--ink)',
+          }}
+        >
+          <option value="newest">Newest first</option>
+          <option value="priceAsc">Price: low–high</option>
+          <option value="priceDesc">Price: high–low</option>
+        </select>
       </div>
 
       {filtered.length === 0 ? (

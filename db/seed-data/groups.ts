@@ -4,6 +4,7 @@ export const GROUPS = [
     name: 'Tongan Weavers Aotearoa',
     description: 'A circle for Tongan ngatu, kupesi, and lālanga practitioners across Aotearoa.',
     nationId: 'tonga',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop',
     charter: `Mālō e lelei. This group is a kava bowl.
 
 We sit in tauhi vā. We do not speak first when an elder is present. We do not post finished work without the story of who taught us. We share what we are working on, we share our frustrations, we ask for help when kupesi goes wrong.
