@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { HydratedArtist, HydratedPost, HydratedWork } from '@/lib/repo';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
@@ -30,20 +30,32 @@ type Reel = {
 export function ReelsViewer({ reels }: { reels: Reel[] }) {
   const [active, setActive] = useState(0);
   const reduceMotion = usePrefersReducedMotion();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollToIndex = (i: number) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const target = Math.max(0, Math.min(i, reels.length - 1));
+    el.scrollTo({
+      top: target * el.clientHeight,
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+  };
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'j') {
         e.preventDefault();
-        setActive((i) => Math.min(i + 1, reels.length - 1));
+        scrollToIndex(active + 1);
       } else if (e.key === 'ArrowUp' || e.key === 'k') {
         e.preventDefault();
-        setActive((i) => Math.max(i - 1, 0));
+        scrollToIndex(active - 1);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [reels.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, reels.length, reduceMotion]);
 
   if (!reels.length) {
     return (
@@ -67,8 +79,10 @@ export function ReelsViewer({ reels }: { reels: Reel[] }) {
 
   return (
     <div
+      ref={scrollRef}
+      tabIndex={0}
       className={
-        'relative h-[calc(100vh-56px)] w-full overflow-y-auto lg:h-[calc(100vh-64px)] ' +
+        'relative h-[calc(100vh-56px)] w-full overflow-y-auto outline-none lg:h-[calc(100vh-64px)] ' +
         (reduceMotion ? '' : 'snap-y snap-mandatory')
       }
       style={{
@@ -87,9 +101,33 @@ export function ReelsViewer({ reels }: { reels: Reel[] }) {
       {reels.map((r, i) => (
         <ReelCard key={r.post.id} reel={r} isActive={i === active} reduceMotion={reduceMotion} />
       ))}
+
+      {/* Counter pill */}
       <div className="pointer-events-none fixed right-4 top-20 z-50 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-mono font-semibold text-white backdrop-blur">
         <span className="sr-only">Reel </span>
         {active + 1} <span className="sr-only">of</span><span aria-hidden> / </span>{reels.length}
+      </div>
+
+      {/* Desktop nav arrows — overlaid on the right edge of the viewport */}
+      <div className="pointer-events-none fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
+        <button
+          type="button"
+          onClick={() => scrollToIndex(active - 1)}
+          disabled={active === 0}
+          aria-label="Previous reel"
+          className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition-colors hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-25"
+        >
+          <Icon name="chevron-up" size={22} />
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollToIndex(active + 1)}
+          disabled={active === reels.length - 1}
+          aria-label="Next reel"
+          className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition-colors hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-25"
+        >
+          <Icon name="chevron-down" size={22} />
+        </button>
       </div>
     </div>
   );
@@ -119,11 +157,11 @@ function ReelCard({
   return (
     <section
       className={
-        'relative h-full w-full ' + (reduceMotion ? '' : 'snap-start snap-always')
+        'relative flex h-full w-full items-center justify-center ' + (reduceMotion ? '' : 'snap-start snap-always')
       }
       aria-label={`Reel by ${artist.name}: ${post.caption.slice(0, 80)}`}
     >
-      <div className="relative mx-auto flex h-full max-w-[min(500px,100%)] items-center justify-center overflow-hidden bg-black lg:rounded-2xl lg:max-w-[420px] lg:my-3" style={{ aspectRatio: '9/16' }}>
+      <div className="relative mx-auto flex h-full max-w-[min(500px,100%)] items-center justify-center overflow-hidden bg-black lg:my-3 lg:h-[calc(100%-1.5rem)] lg:max-w-[420px] lg:rounded-2xl" style={{ aspectRatio: '9/16' }}>
         <img
           src={img}
           alt={altText}
