@@ -11,6 +11,7 @@ export const EVENTS = [
     description:
       'The largest Pasifika cultural festival in Aotearoa. Eleven village stages, kai, arts pavilion, and the largest gathering of Pacific artists in the country.',
     coverImageCredit: 'Placeholder — typographic card',
+    image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1600&q=80&auto=format&fit=crop',
     rsvpCount: 1247,
     linkedArtistIds: ['artist_001', 'artist_003', 'artist_004', 'artist_010'],
   },
@@ -26,6 +27,7 @@ export const EVENTS = [
     description:
       'Tonga\'s national festival, streamed to Aotearoa via community venues. KavaWorks screening partnership with Māngere Arts Centre and Pātaka Art + Museum.',
     coverImageCredit: 'Placeholder — typographic card',
+    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1600&q=80&auto=format&fit=crop',
     rsvpCount: 412,
     linkedArtistIds: ['artist_002', 'persona_elder'],
   },
@@ -41,6 +43,7 @@ export const EVENTS = [
     description:
       'Vaiaso o le Gagana Sāmoa — a week of Sāmoan language and culture with siapo demonstrations, kava ceremonies, workshops, and performances across Aotearoa.',
     coverImageCredit: 'Placeholder — typographic card',
+    image: 'https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=1600&q=80&auto=format&fit=crop',
     rsvpCount: 986,
     linkedArtistIds: ['artist_001', 'artist_010', 'persona_elder'],
   },
@@ -56,6 +59,7 @@ export const EVENTS = [
     description:
       'Uike Kātoanga\'i \'o e Lea faka-Tonga — a week of Tongan language and culture with ngatu demonstrations, kava ceremonies, and performances.',
     coverImageCredit: 'Placeholder — typographic card',
+    image: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1600&q=80&auto=format&fit=crop',
     rsvpCount: 541,
     linkedArtistIds: ['artist_002', 'persona_elder'],
   },
@@ -71,6 +75,7 @@ export const EVENTS = [
     description:
       'The Pacific Music Awards honour excellence across Pacific music in Aotearoa. Hosted by the Pacific Music Awards Trust.',
     coverImageCredit: 'Placeholder — typographic card',
+    image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1600&q=80&auto=format&fit=crop',
     rsvpCount: 284,
     linkedArtistIds: ['artist_004', 'artist_007', 'artist_008'],
   },
@@ -86,6 +91,7 @@ export const EVENTS = [
     description:
       'Three-day national summit of Pacific arts practitioners, advisers, funders, and community leaders. Hosted by Creative New Zealand Pacific Arts.',
     coverImageCredit: 'Placeholder — typographic card',
+    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80&auto=format&fit=crop',
     rsvpCount: 168,
     linkedArtistIds: ['persona_adviser', 'artist_001', 'artist_007', 'artist_012'],
   },

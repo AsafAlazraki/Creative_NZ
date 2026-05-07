@@ -47,6 +47,7 @@ Ngatu is communal. So is this group. Mālō pē.`,
     name: 'Moana Queer Artists',
     description: 'A closed circle for Pasifika queer and trans artists. Safe, kind, small.',
     nationId: 'tonga',
+    image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&q=80&auto=format&fit=crop',
     charter: `Tēnā koutou katoa.
 
 This is a closed group for Pasifika queer and trans artists. Membership is by invitation after a short conversation with an existing member. We keep it small on purpose.
@@ -84,6 +85,7 @@ No images or text from this group are shared outside without member consent. Per
     name: 'Pacific Youth Creators (18–25)',
     description: 'Open group for emerging Pasifika artists 18–25 across Aotearoa.',
     nationId: 'aotearoa',
+    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80&auto=format&fit=crop',
     charter: `Tēnā koutou.
 
 This is a home for emerging artists 18–25. Anyone Pasifika and making things is welcome — no portfolio required, no formal training required.
@@ -119,6 +121,7 @@ Our elder for this group is Aroha Tiatia — not because she is old (she is not)
     name: 'Siapo Makers Circle',
     description: 'Private, elder-led circle for practising siapo makers.',
     nationId: 'samoa',
+    image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80&auto=format&fit=crop',
     charter: `Talofa.
 
 This is a private circle. Membership is by matai endorsement. We do not publish here what is made here.
@@ -154,6 +157,7 @@ Mālō lava.`,
     name: 'Pasifika Spoken Word Aotearoa',
     description: 'Spoken-word poets, audio artists, zine-makers. Open.',
     nationId: 'aotearoa',
+    image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&q=80&auto=format&fit=crop',
     charter: `Tēnā koutou. This is a home for Pasifika poets and spoken-word artists in Aotearoa.
 
 We share drafts. We share performance recordings. We share zine layouts. We share open-mic listings. We share feedback when asked — not before.
@@ -187,6 +191,7 @@ Inati is our working principle. If someone shares something, we assume it is off
     name: 'Climate + Moana Arts',
     description: 'Pasifika artists making climate work. Research, practice, and action.',
     nationId: 'tuvalu',
+    image: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80&auto=format&fit=crop',
     charter: `Tālofa.
 
 We are Pasifika artists — painters, photographers, filmmakers, writers, weavers — working on climate. The crisis is not a theme we pick up when convenient. For several of us it is the frame of our whole lives.
