@@ -1,42 +1,32 @@
 /**
- * Image library — Lorem Flickr with Pacific-themed tags.
+ * Image library — picsum.photos (deterministic, reliable, no API key).
+ * URL format: https://picsum.photos/seed/{seed}/{w}/{h}
  *
- * URL format: https://loremflickr.com/{w}/{h}/{tags}/{lock}
- * Same lock+tags returns the same Flickr photo, so layouts stay consistent.
+ * Earlier we tried Lorem Flickr for tag-themed Pacific imagery, but it
+ * failed to load reliably on the deployed site (intermittent timeouts,
+ * blocked redirects, near-black tag matches). Picsum is back: random
+ * but always loads, and the same seed always returns the same image so
+ * layouts stay consistent.
  *
- * Why not picsum.photos: random photos (storms, lemons, escalators) bear
- * no relation to Pacific arts. Lorem Flickr returns a Flickr photo whose
- * tags overlap our query — so a "weaving,polynesia" query reliably returns
- * something textile-shaped instead of e.g. a Manhattan skyline.
+ * To improve theme relevance without sacrificing reliability, theme
+ * prefixes still bucket each artform into a distinct seed namespace
+ * so e.g. all "weave" posts pull from the same 40-image set.
  */
 
 function hash(seed: string): number {
   return [...seed].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 5381);
 }
 
-function flickr(tags: string, seed: string, w: number, h: number): string {
-  const lock = hash(seed) % 100000;
-  const tagStr = tags.replace(/\s+/g, '');
-  return `https://loremflickr.com/${w}/${h}/${tagStr}/${lock}`;
+function picsum(seed: string, w: number, h: number): string {
+  const safeSeed = seed.replace(/[^a-zA-Z0-9_-]/g, '_');
+  return `https://picsum.photos/seed/${safeSeed}/${w}/${h}`;
 }
 
-// Pacific-relevant tag bundles per artform theme.
-// Tags are ORed by Lorem Flickr — broader bundles produce more consistent
-// hits than narrow ones.
-const TAGS = {
-  weave: 'weaving,textile,fabric,polynesia,handmade',
-  craft: 'carving,wood,sculpture,maori,polynesia',
-  photo: 'polynesia,island,pacific,ocean',
-  art: 'painting,art,canvas,polynesia',
-  perf: 'dance,performance,music,polynesia',
-  fashion: 'fashion,textile,polynesia',
-  jewel: 'jewelry,shell,necklace,pacific',
-  portrait: 'portrait,polynesia,islander',
-  event: 'festival,polynesia,celebration,community',
-  gallery: 'community,polynesia,island,gathering',
-} as const;
+function themeSeed(theme: string, seed: string): string {
+  return `${theme}_${hash(seed) % 40}`;
+}
 
-function artformTheme(artform: string): keyof typeof TAGS {
+function artformTheme(artform: string): string {
   const a = artform.toLowerCase();
   if (
     a.includes('siapo') || a.includes('ngatu') || a.includes('hiapo') ||
@@ -54,7 +44,6 @@ function artformTheme(artform: string): keyof typeof TAGS {
   return 'art';
 }
 
-// Public API
 export function workImageUrl({
   artform,
   seed,
@@ -68,7 +57,7 @@ export function workImageUrl({
   w?: number;
   h?: number;
 }): string {
-  return flickr(TAGS[artformTheme(artform)], seed, w, h);
+  return picsum(themeSeed(artformTheme(artform), seed), w, h);
 }
 
 export function postImageUrl({
@@ -87,35 +76,52 @@ export function postImageUrl({
   h?: number;
 }): string {
   const theme = mediaType === 'audio' ? 'perf' : artformTheme(artform);
-  return flickr(TAGS[theme], seed, w, h);
+  return picsum(themeSeed(theme, seed), w, h);
 }
 
 export function heroImageUrl(theme: string, seed: string, w = 1800, h = 1000) {
-  return flickr(TAGS[artformTheme(theme)], seed, w, h);
+  return picsum(themeSeed(artformTheme(theme), seed), w, h);
 }
 
 export function portraitImageUrl(name: string, _nationId: string, w = 480, h = 600) {
-  return flickr(TAGS.portrait, `portrait-${name}`, w, h);
+  return picsum(themeSeed('portrait', name), w, h);
 }
 
 export function coverImageForOrg(seed: string, w = 1400, h = 600) {
-  return flickr(TAGS.gallery, `org-${seed}`, w, h);
+  return picsum(themeSeed('gallery', seed), w, h);
 }
 
 export function coverImageForEvent(seed: string, w = 1400, h = 800) {
-  return flickr(TAGS.event, `event-${seed}`, w, h);
+  return picsum(themeSeed('event', seed), w, h);
 }
 
-// Back-compat aliases (previously Unsplash-based)
+// Back-compat aliases
 export function unsplashFor(theme: string, seed: string, w = 1600, h = 900) {
-  return flickr(TAGS[artformTheme(theme)], seed, w, h);
+  return picsum(themeSeed(artformTheme(theme), seed), w, h);
 }
-
 export function pickUnsplash(theme: string, seed: string): string {
-  return `${theme}-${hash(seed) % 40}`;
+  return themeSeed(artformTheme(theme), seed);
 }
-
 export const unsplash = (id: string, opts: { w?: number; h?: number } = {}) =>
-  flickr(TAGS.art, id, opts.w ?? 1200, opts.h ?? 900);
-
+  picsum(id, opts.w ?? 1200, opts.h ?? 900);
 export const UNSPLASH = {};
+
+/**
+ * Reel video URL — public sample MP4s used for any post with
+ * mediaType === 'video'. Big Buck Bunny + Sintel + Tears of Steel are
+ * canonical Creative Commons sample clips hosted on Google's GCS bucket.
+ * They're 30 fps H.264 MP4s that play across all browsers without CORS
+ * issues and are intentionally generic placeholder content.
+ */
+const SAMPLE_VIDEOS = [
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+];
+export function reelVideoUrl(seed: string): string {
+  return SAMPLE_VIDEOS[hash(seed) % SAMPLE_VIDEOS.length];
+}
