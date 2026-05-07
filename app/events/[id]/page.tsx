@@ -22,7 +22,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       </Link>
 
       <article className="overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}>
-        <div className="relative aspect-[16/9] max-h-[480px] overflow-hidden bg-[color:var(--surface-2)]">
+        <div className="relative w-full aspect-[21/9] overflow-hidden bg-[color:var(--surface-2)]">
           <img
             src={img}
             alt=""

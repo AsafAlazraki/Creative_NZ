@@ -4,11 +4,16 @@ import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import { NationBadge } from '@/components/cultural/NationBadge';
 
 export function IslandStrip({ nationIds }: { nationIds: string[] }) {
-  const all = getAllArtists().filter(
-    (a) => a.role === 'artist' && nationIds.includes(a.primaryNationId),
+  const allArtists = getAllArtists().filter((a) => a.role === 'artist');
+  const islandMatches = allArtists.filter((a) =>
+    nationIds.some((id) => a.affiliations.includes(id)),
   );
+  const all = islandMatches.length >= 5
+    ? islandMatches
+    : [...islandMatches, ...allArtists.filter((a) => !islandMatches.includes(a))];
 
   if (!all.length) return null;
+  const showFallback = islandMatches.length < 5;
 
   return (
     <section
@@ -17,7 +22,7 @@ export function IslandStrip({ nationIds }: { nationIds: string[] }) {
     >
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-          Your islands
+          {showFallback ? 'Discover artists' : 'Your islands'}
         </h2>
         <Link href="/explore" className="text-xs font-semibold hover:underline">
           See all →

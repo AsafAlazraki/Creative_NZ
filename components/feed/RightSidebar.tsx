@@ -244,13 +244,15 @@ function DropModule({
         <div style={{ aspectRatio: '16/10', overflow: 'hidden', background: 'var(--surface-2)' }}>
           <img src={img} alt={work.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
         </div>
-        <div style={{
-          position: 'absolute', top: 10, right: 10,
-          background: 'var(--coral)', color: '#fff', borderRadius: 99,
-          padding: '4px 10px', fontSize: 11, fontWeight: 700,
-          fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 4,
-          animation: 'pulse 2s infinite',
-        }}>● LIVE</div>
+        {isOpen && (
+          <div style={{
+            position: 'absolute', top: 10, right: 10,
+            background: 'var(--coral)', color: '#fff', borderRadius: 99,
+            padding: '4px 10px', fontSize: 11, fontWeight: 700,
+            fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 4,
+            animation: 'pulse 2s infinite',
+          }}>● LIVE</div>
+        )}
       </div>
       <div style={{ padding: '14px 16px' }}>
         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, marginBottom: 6 }}>

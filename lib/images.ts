@@ -1,25 +1,42 @@
 /**
- * Image library — picsum.photos (deterministic, no API key required).
- * URL format: https://picsum.photos/seed/{seed}/{w}/{h}
- * Same seed always returns the same photo, so layouts stay consistent.
+ * Image library — Lorem Flickr with Pacific-themed tags.
+ *
+ * URL format: https://loremflickr.com/{w}/{h}/{tags}/{lock}
+ * Same lock+tags returns the same Flickr photo, so layouts stay consistent.
+ *
+ * Why not picsum.photos: random photos (storms, lemons, escalators) bear
+ * no relation to Pacific arts. Lorem Flickr returns a Flickr photo whose
+ * tags overlap our query — so a "weaving,polynesia" query reliably returns
+ * something textile-shaped instead of e.g. a Manhattan skyline.
  */
 
 function hash(seed: string): number {
   return [...seed].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 5381);
 }
 
-function picsum(seed: string, w: number, h: number): string {
-  // picsum seeds must be URL-safe strings
-  const safeSeed = seed.replace(/[^a-zA-Z0-9_-]/g, '_');
-  return `https://picsum.photos/seed/${safeSeed}/${w}/${h}`;
+function flickr(tags: string, seed: string, w: number, h: number): string {
+  const lock = hash(seed) % 100000;
+  const tagStr = tags.replace(/\s+/g, '');
+  return `https://loremflickr.com/${w}/${h}/${tagStr}/${lock}`;
 }
 
-// Theme prefixes give visually distinct sets per content type
-function themeSeed(theme: string, seed: string): string {
-  return `${theme}_${hash(seed) % 40}`;
-}
+// Pacific-relevant tag bundles per artform theme.
+// Tags are ORed by Lorem Flickr — broader bundles produce more consistent
+// hits than narrow ones.
+const TAGS = {
+  weave: 'weaving,textile,fabric,polynesia,handmade',
+  craft: 'carving,wood,sculpture,maori,polynesia',
+  photo: 'polynesia,island,pacific,ocean',
+  art: 'painting,art,canvas,polynesia',
+  perf: 'dance,performance,music,polynesia',
+  fashion: 'fashion,textile,polynesia',
+  jewel: 'jewelry,shell,necklace,pacific',
+  portrait: 'portrait,polynesia,islander',
+  event: 'festival,polynesia,celebration,community',
+  gallery: 'community,polynesia,island,gathering',
+} as const;
 
-function artformTheme(artform: string): string {
+function artformTheme(artform: string): keyof typeof TAGS {
   const a = artform.toLowerCase();
   if (
     a.includes('siapo') || a.includes('ngatu') || a.includes('hiapo') ||
@@ -37,7 +54,7 @@ function artformTheme(artform: string): string {
   return 'art';
 }
 
-// Public API used by components
+// Public API
 export function workImageUrl({
   artform,
   seed,
@@ -51,7 +68,7 @@ export function workImageUrl({
   w?: number;
   h?: number;
 }): string {
-  return picsum(themeSeed(artformTheme(artform), seed), w, h);
+  return flickr(TAGS[artformTheme(artform)], seed, w, h);
 }
 
 export function postImageUrl({
@@ -70,35 +87,35 @@ export function postImageUrl({
   h?: number;
 }): string {
   const theme = mediaType === 'audio' ? 'perf' : artformTheme(artform);
-  return picsum(themeSeed(theme, seed), w, h);
+  return flickr(TAGS[theme], seed, w, h);
 }
 
 export function heroImageUrl(theme: string, seed: string, w = 1800, h = 1000) {
-  return picsum(themeSeed(artformTheme(theme), seed), w, h);
+  return flickr(TAGS[artformTheme(theme)], seed, w, h);
 }
 
 export function portraitImageUrl(name: string, _nationId: string, w = 480, h = 600) {
-  return picsum(themeSeed('portrait', name), w, h);
+  return flickr(TAGS.portrait, `portrait-${name}`, w, h);
 }
 
 export function coverImageForOrg(seed: string, w = 1400, h = 600) {
-  return picsum(themeSeed('gallery', seed), w, h);
+  return flickr(TAGS.gallery, `org-${seed}`, w, h);
 }
 
 export function coverImageForEvent(seed: string, w = 1400, h = 800) {
-  return picsum(themeSeed('event', seed), w, h);
+  return flickr(TAGS.event, `event-${seed}`, w, h);
 }
 
 // Back-compat aliases (previously Unsplash-based)
 export function unsplashFor(theme: string, seed: string, w = 1600, h = 900) {
-  return picsum(themeSeed(artformTheme(theme), seed), w, h);
+  return flickr(TAGS[artformTheme(theme)], seed, w, h);
 }
 
 export function pickUnsplash(theme: string, seed: string): string {
-  return themeSeed(artformTheme(theme), seed);
+  return `${theme}-${hash(seed) % 40}`;
 }
 
 export const unsplash = (id: string, opts: { w?: number; h?: number } = {}) =>
-  picsum(id, opts.w ?? 1200, opts.h ?? 900);
+  flickr(TAGS.art, id, opts.w ?? 1200, opts.h ?? 900);
 
 export const UNSPLASH = {};

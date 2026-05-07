@@ -175,7 +175,12 @@ export function ProfileEditorial({
                   <Fact label="Years active" value={`${artist.yearsActive}`} />
                   <Fact label="Primary island" value={nation?.name ?? ''} />
                   {artist.affiliations.length > 1 && (
-                    <Fact label="Affiliations" value={artist.affiliations.join(', ')} />
+                    <Fact
+                      label="Affiliations"
+                      value={artist.affiliations
+                        .map((id) => getNation(id)?.name ?? id)
+                        .join(' · ')}
+                    />
                   )}
                   <Fact label="City" value={artist.city} />
                 </dl>

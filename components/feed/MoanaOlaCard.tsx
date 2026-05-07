@@ -32,12 +32,12 @@ export function MoanaOlaCard({ user: _user }: { user: CurrentUser }) {
         {suggestion.multiplier} for craft posts in this window.
       </h3>
       <p className="mt-1 text-sm" style={{ color: 'var(--ink-muted)', lineHeight: 1.5 }}>
-        {suggestion.reason} Window: <span className="font-mono">{suggestion.window}</span>.
+        {suggestion.reason} Window: <span className="font-semibold">{suggestion.window}</span>.
       </p>
       {moment && daysUntil(moment.startDate) < 90 && (
         <p className="mt-3 text-sm" style={{ color: 'var(--ink-muted)' }}>
           <span className="font-semibold">{moment.name}</span> starts in{' '}
-          <span className="font-mono">{daysUntil(moment.startDate)}</span> days. {moment.guidance}
+          <span className="font-semibold">{daysUntil(moment.startDate)}</span> days. {moment.guidance}
         </p>
       )}
     </div>

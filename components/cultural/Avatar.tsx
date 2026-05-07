@@ -1,5 +1,6 @@
 import { NATIONS } from '@/db/seed-data/nations';
 import { PATTERN_SVG } from '@/lib/patterns';
+import { portraitImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 
 function nationPattern(nationId: string): keyof typeof PATTERN_SVG {
@@ -22,6 +23,14 @@ export function AvatarIllustrated({
   const svg = PATTERN_SVG[patternId]?.replace('%23000', encodeURIComponent('#0F0E0C')) ??
     PATTERN_SVG['pattern-tapa'];
   const bg = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+  const portraitSize = Math.max(64, Math.round(size * 2));
+  const portrait = portraitImageUrl(name, nationId, portraitSize, portraitSize);
+  const initials = name
+    .split(/[\s-]+/)
+    .map((w) => w[0]?.toUpperCase())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('');
 
   return (
     <div
@@ -35,6 +44,9 @@ export function AvatarIllustrated({
       aria-label={`Avatar for ${name}`}
       role="img"
     >
+      {/* Initials + nation pattern as a fallback that paints first; the
+          portrait img overlays once it loads. If the network image fails
+          the initials remain visible underneath. */}
       <div
         className="absolute inset-0"
         aria-hidden="true"
@@ -53,13 +65,16 @@ export function AvatarIllustrated({
         }}
         aria-hidden="true"
       >
-        {name
-          .split(/[\s-]+/)
-          .map((w) => w[0]?.toUpperCase())
-          .filter(Boolean)
-          .slice(0, 2)
-          .join('')}
+        {initials}
       </div>
+      <img
+        src={portrait}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
     </div>
   );
 }
