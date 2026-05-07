@@ -102,8 +102,22 @@ export function ReelsViewer({ reels }: { reels: Reel[] }) {
         <ReelCard key={r.post.id} reel={r} isActive={i === active} reduceMotion={reduceMotion} />
       ))}
 
+      {/* Top-left breadcrumb + back-to-feed link.
+          Without this users on /reels lose all sense of where they are
+          and how to escape the full-screen experience. */}
+      <Link
+        href="/"
+        className="fixed left-4 top-4 z-50 inline-flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition-colors hover:bg-black/75 lg:left-[88px] lg:top-6"
+        aria-label="Back to feed"
+      >
+        <Icon name="chevron-left" size={14} />
+        <span className="font-display">Shorts</span>
+        <span aria-hidden className="text-white/50">·</span>
+        <span className="text-white/70">Back to feed</span>
+      </Link>
+
       {/* Counter pill */}
-      <div className="pointer-events-none fixed right-4 top-20 z-50 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-mono font-semibold text-white backdrop-blur">
+      <div className="pointer-events-none fixed right-4 top-4 z-50 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-mono font-semibold text-white backdrop-blur lg:top-6">
         <span className="sr-only">Reel </span>
         {active + 1} <span className="sr-only">of</span><span aria-hidden> / </span>{reels.length}
       </div>
@@ -257,15 +271,15 @@ function ReelCard({
             </p>
           )}
 
-          {/* TikTok Shop-style product card */}
+          {/* TikTok Shop-style product card. Solid bg + explicit text colors
+              so the parent .text-white never bleeds into shop card copy. */}
           {work && (
             <Link
               href={`/market/${work.id}`}
-              className="mt-3 flex items-center gap-3 rounded-xl bg-white/95 p-2.5 text-[color:var(--ink)] shadow-lg backdrop-blur transition-transform hover:scale-[1.02]"
+              className="mt-3 flex items-center gap-3 rounded-xl p-2.5 shadow-2xl transition-transform hover:scale-[1.02]"
+              style={{ background: '#ffffff', color: 'var(--ink)' }}
             >
-              <div
-                className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[color:var(--surface-2)]"
-              >
+              <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg" style={{ background: 'var(--surface-2)' }}>
                 <img
                   src={postImageUrl({
                     artform: work.artform,
@@ -282,12 +296,12 @@ function ReelCard({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--brand)] text-[9px] font-bold text-white">K</span>
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold" style={{ background: 'var(--brand)', color: '#fff' }}>K</span>
                   <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
                     Shop
                   </span>
                 </div>
-                <div className="truncate text-sm font-semibold">{work.title}</div>
+                <div className="truncate text-sm font-semibold" style={{ color: 'var(--ink)' }}>{work.title}</div>
                 <div className="flex items-baseline justify-between gap-2 text-xs" style={{ color: 'var(--ink-muted)' }}>
                   <span className="font-mono font-semibold" style={{ color: 'var(--ink)' }}>
                     {formatPrice(work.priceNzd)}
@@ -295,7 +309,9 @@ function ReelCard({
                   <InatiBadge size="xs" />
                 </div>
               </div>
-              <Icon name="chevron-right" size={16} />
+              <span style={{ color: 'var(--ink-soft)' }}>
+                <Icon name="chevron-right" size={16} />
+              </span>
             </Link>
           )}
         </div>
