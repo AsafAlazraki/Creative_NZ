@@ -38,6 +38,9 @@ import {
   Dot,
   Mail,
   Edit3,
+  Palette,
+  Clock,
+  MapPin,
 } from 'lucide-react';
 
 const MAP = {
@@ -80,6 +83,9 @@ const MAP = {
   dot: Dot,
   mail: Mail,
   'edit-3': Edit3,
+  palette: Palette,
+  clock: Clock,
+  'map-pin': MapPin,
 } as const;
 
 export type IconName = keyof typeof MAP;

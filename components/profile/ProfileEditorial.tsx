@@ -3,7 +3,6 @@ import type { HydratedArtist, HydratedPost, HydratedWork } from '@/lib/repo';
 import { getNation } from '@/lib/repo';
 import type { CurrentUser } from '@/lib/auth';
 import { CulturalRail } from '@/components/cultural/CulturalPattern';
-import { NationBadge } from '@/components/cultural/NationBadge';
 import { AvatarIllustrated } from '@/components/cultural/Avatar';
 import {
   VerifiedBadge,
@@ -39,14 +38,15 @@ export function ProfileEditorial({
     <div className="relative flex">
       <CulturalRail id={nation?.patternId ?? 'pattern-tapa'} />
       <div className="min-w-0 flex-1">
-        <ProfileHero artist={artist} viewer={viewer} isSelf={isSelf} />
+        <ProfileCover artist={artist} />
+        <ProfileIdentity artist={artist} viewer={viewer} isSelf={isSelf} />
+        <StatsRibbon artist={artist} />
+        <ProfileActions artist={artist} viewer={viewer} isSelf={isSelf} />
 
-        <div className="mx-auto max-w-4xl px-4 py-10 lg:px-10">
-          <StatsBar artist={artist} />
-
+        <div className="mx-auto max-w-5xl px-4 pb-16 pt-2 lg:px-10">
           {isAdviser && !isSelf && (
             <div
-              className="mt-6 rounded-xl border p-4"
+              className="mb-8 rounded-xl border p-4"
               style={{
                 borderColor: 'color-mix(in srgb, var(--accent-coral) 40%, transparent)',
                 background: 'color-mix(in srgb, var(--accent-coral) 6%, transparent)',
@@ -69,35 +69,9 @@ export function ProfileEditorial({
             </div>
           )}
 
-          <section className="mt-12 grid gap-10 lg:grid-cols-[1fr_260px]">
-            <div className="min-w-0 space-y-10">
-              <div>
-                <div
-                  className="text-xs uppercase tracking-wider"
-                  style={{ color: 'var(--ink-soft)' }}
-                >
-                  Artist statement
-                </div>
-                <div className="mt-3 font-editorial text-lg leading-[1.6]" style={{ color: 'var(--ink)' }}>
-                  {artist.statement.split('\n\n').map((para, i) => {
-                    const total = artist.statement.split('\n\n').length;
-                    const isQuoteCandidate =
-                      total >= 4 && i === Math.floor(total / 2) && para.length < 240;
-                    if (isQuoteCandidate) {
-                      return (
-                        <blockquote key={i} className="pull-quote my-6">
-                          "{para}"
-                        </blockquote>
-                      );
-                    }
-                    return (
-                      <p key={i} className="mb-5">
-                        {para}
-                      </p>
-                    );
-                  })}
-                </div>
-              </div>
+          <section className="grid gap-10 lg:grid-cols-[1fr_280px]">
+            <div className="min-w-0 space-y-12">
+              <ArtistStatement statement={artist.statement} />
 
               {artist.lineage && Object.keys(artist.lineage).length > 0 && (
                 <LineageSentence lineage={artist.lineage} />
@@ -105,9 +79,18 @@ export function ProfileEditorial({
 
               {works.length > 0 && (
                 <section>
-                  <h2 className="mb-4 font-display text-xl font-semibold">Works</h2>
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {works.map((w) => (
+                  <div className="mb-4 flex items-baseline justify-between border-b pb-2" style={{ borderColor: 'var(--hairline)' }}>
+                    <h2 className="font-display text-lg font-bold">Works</h2>
+                    <Link
+                      href={`/market?artist=${artist.handle}`}
+                      className="text-sm hover:underline"
+                      style={{ color: 'var(--ink-muted)' }}
+                    >
+                      All works →
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {works.slice(0, 6).map((w) => (
                       <WorkCard key={w.id} work={w} />
                     ))}
                   </div>
@@ -116,8 +99,10 @@ export function ProfileEditorial({
 
               {artist.subscriptionTiers.length > 0 && (
                 <section>
-                  <h2 className="mb-1 font-display text-xl font-semibold">Support {artist.name.split(' ')[0]}</h2>
-                  <p className="mb-4 text-sm" style={{ color: 'var(--ink-muted)' }}>
+                  <div className="mb-1 border-b pb-2" style={{ borderColor: 'var(--hairline)' }}>
+                    <h2 className="font-display text-lg font-bold">Support {artist.name.split(' ')[0]}</h2>
+                  </div>
+                  <p className="mb-4 mt-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
                     Monthly support — 95% of every payment goes directly to the artist. Inati.
                   </p>
                   <div className="grid gap-4 md:grid-cols-3">
@@ -152,7 +137,9 @@ export function ProfileEditorial({
 
               {posts.length > 0 && (
                 <section>
-                  <h2 className="mb-4 font-display text-xl font-semibold">Recent posts</h2>
+                  <div className="mb-4 border-b pb-2" style={{ borderColor: 'var(--hairline)' }}>
+                    <h2 className="font-display text-lg font-bold">Recent posts</h2>
+                  </div>
                   <div className="flex flex-col gap-6">
                     {posts.slice(0, 3).map((p) => (
                       <PostCard key={p.id} post={p} />
@@ -163,35 +150,14 @@ export function ProfileEditorial({
             </div>
 
             <aside className="space-y-6">
-              <section
-                className="rounded-xl border p-4"
-                style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
-              >
-                <h3 className="mb-3 text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-                  Quick facts
-                </h3>
-                <dl className="space-y-2 text-sm">
-                  <Fact label="Artform" value={artist.artforms.join(' · ')} />
-                  <Fact label="Years active" value={`${artist.yearsActive}`} />
-                  <Fact label="Primary island" value={nation?.name ?? ''} />
-                  {artist.affiliations.length > 1 && (
-                    <Fact
-                      label="Affiliations"
-                      value={artist.affiliations
-                        .map((id) => getNation(id)?.name ?? id)
-                        .join(' · ')}
-                    />
-                  )}
-                  <Fact label="City" value={artist.city} />
-                </dl>
-              </section>
+              <QuickFacts artist={artist} />
 
               {artist.awards.length > 0 && (
                 <section
-                  className="rounded-xl border p-4"
+                  className="rounded-2xl border p-5"
                   style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
                 >
-                  <h3 className="mb-3 text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+                  <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--ink-muted)' }}>
                     Awards
                   </h3>
                   <ul className="space-y-3">
@@ -212,10 +178,10 @@ export function ProfileEditorial({
 
               {artist.exhibitions.length > 0 && (
                 <section
-                  className="rounded-xl border p-4"
+                  className="rounded-2xl border p-5"
                   style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
                 >
-                  <h3 className="mb-3 text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+                  <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--ink-muted)' }}>
                     Exhibitions
                   </h3>
                   <ul className="space-y-3 text-sm">
@@ -241,7 +207,138 @@ export function ProfileEditorial({
   );
 }
 
-function ProfileHero({
+/**
+ * Cover — full-bleed editorial header. Image fades into the page bg
+ * via a bottom gradient so the avatar overlap below reads cleanly.
+ */
+function ProfileCover({ artist }: { artist: HydratedArtist }) {
+  const nation = getNation(artist.primaryNationId);
+  const heroTheme = `${artist.artforms[0] ?? 'Pacific art'}, ${nation?.name ?? 'Pacific'} tradition, studio space, editorial`;
+  const heroImg = heroImageUrl(heroTheme, `${artist.id}-hero`, 1600, 900);
+
+  return (
+    <div className="relative h-64 w-full overflow-hidden lg:h-80" aria-hidden>
+      <img src={heroImg} alt="" className="h-full w-full object-cover" loading="eager" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(to top, var(--bg) 0%, color-mix(in srgb, var(--bg) 25%, transparent) 60%, transparent 100%)',
+        }}
+      />
+    </div>
+  );
+}
+
+/**
+ * Identity — avatar + name + handle, overlapping the bottom of the
+ * cover. Per the brief: avatar ~88px, ringed in --bg so it visually
+ * pops out of the cover image.
+ */
+function ProfileIdentity({
+  artist,
+}: {
+  artist: HydratedArtist;
+  viewer: CurrentUser;
+  isSelf: boolean;
+}) {
+  const nation = getNation(artist.primaryNationId);
+  const portraitImg = portraitImageUrl(artist.name, artist.primaryNationId, 320, 320);
+
+  return (
+    <div className="relative -mt-14 px-4 lg:px-10">
+      <div className="mx-auto max-w-5xl">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
+          <div
+            className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-full sm:h-28 sm:w-28"
+            style={{
+              boxShadow: '0 0 0 4px var(--bg)',
+              background: 'var(--surface-2)',
+            }}
+          >
+            <AvatarIllustrated nationId={artist.primaryNationId} size={112} name={artist.name} />
+            <img
+              src={portraitImg}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="eager"
+            />
+          </div>
+          <div className="min-w-0 flex-1 pb-1">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h1
+                className="font-display font-bold leading-tight break-words"
+                style={{ fontSize: 'clamp(1.75rem, 4.5vw, 3rem)', letterSpacing: '-0.02em', wordBreak: 'break-word' }}
+              >
+                {artist.name}
+              </h1>
+              <div className="flex items-center gap-1.5">
+                {artist.verified && <VerifiedBadge />}
+                {artist.elderStatus && <ElderBadge />}
+              </div>
+            </div>
+            <p className="mt-1.5 text-sm" style={{ color: 'var(--ink-muted)' }}>
+              <span className="font-mono">@{artist.handle}</span>
+              <span className="mx-1.5" aria-hidden>·</span>
+              <span aria-hidden>{nation?.flag}</span> {nation?.name}
+              <span className="mx-1.5" aria-hidden>·</span>
+              {artist.city}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Stats ribbon — single horizontal strip, dividers between values.
+ * Replaces the previous 5 separate bordered boxes that read as a UI
+ * grid rather than a piece of editorial composition.
+ */
+function StatsRibbon({ artist }: { artist: HydratedArtist }) {
+  const stats = [
+    { value: formatCount(artist.followers), label: 'Followers' },
+    { value: formatCount(artist.following), label: 'Following' },
+    { value: formatCount(artist.postsCount), label: 'Posts' },
+    { value: formatCount(artist.worksSold), label: 'Works sold' },
+    { value: formatCount(artist.supporters), label: 'Supporters' },
+  ];
+  return (
+    <div className="mt-6 px-4 lg:px-10">
+      <div className="mx-auto max-w-5xl">
+        <div
+          className="flex items-stretch border-y"
+          style={{ borderColor: 'color-mix(in srgb, var(--ink) 8%, transparent)' }}
+        >
+          {stats.map((s, i) => (
+            <div
+              key={s.label}
+              className="flex flex-1 flex-col items-center justify-center py-4"
+              style={i > 0 ? { borderLeft: '1px solid color-mix(in srgb, var(--ink) 8%, transparent)' } : undefined}
+            >
+              <span className="font-display text-xl font-bold leading-none">{s.value}</span>
+              <span
+                className="mt-1.5 text-[10px] uppercase tracking-[0.18em]"
+                style={{ color: 'var(--ink-muted)' }}
+              >
+                {s.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Action bar — one primary (Follow / Edit profile if owner), two ghost
+ * (Message + Share, or Analytics + Share). Per brief: replace 3
+ * competing coloured buttons with a clear visual hierarchy.
+ */
+function ProfileActions({
   artist,
   viewer,
   isSelf,
@@ -250,143 +347,134 @@ function ProfileHero({
   viewer: CurrentUser;
   isSelf: boolean;
 }) {
-  const nation = getNation(artist.primaryNationId);
-  const heroTheme = `${artist.artforms[0] ?? 'Pacific art'}, ${nation?.name ?? 'Pacific'} tradition, studio space, editorial`;
-  const heroImg = heroImageUrl(heroTheme, `${artist.id}-hero`, 1600, 900);
-  const portraitImg = portraitImageUrl(artist.name, artist.primaryNationId, 400, 400);
-
   return (
-    <header className="relative">
-      <div className="relative min-h-[380px] border-b overflow-hidden xl:min-h-[480px]" style={{ borderColor: 'var(--hairline)' }}>
-        <img
-          src={heroImg}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="eager"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(to top, rgba(15,14,12,0.88) 0%, rgba(15,14,12,0.55) 55%, rgba(15,14,12,0.2) 100%)',
-          }}
-        />
-        <div className="relative flex min-h-[380px] xl:min-h-[480px] flex-col justify-end px-4 py-8 lg:px-10 lg:py-12">
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
-            <img
-              src={portraitImg}
-              alt={artist.name}
-              width={128}
-              height={128}
-              className="h-24 w-24 shrink-0 rounded-full object-cover ring-4 ring-white/80 md:h-32 md:w-32 lg:h-36 lg:w-36"
-              loading="eager"
+    <div className="mt-4 px-4 lg:px-10">
+      <div className="mx-auto max-w-5xl">
+        <div className="flex flex-wrap gap-2">
+          {!isSelf && (
+            <FollowButton
+              handle={artist.handle}
+              initiallyFollowing={userFollowsHandle(viewer.id, artist.id)}
+              variant="primary"
             />
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-baseline gap-2 text-white">
-                <h1 className="w-full font-display font-semibold leading-tight break-words min-w-0"
-                    style={{ fontSize: 'clamp(1.5rem, 5.5vw, 4.5rem)', letterSpacing: '-0.02em', wordBreak: 'break-word' }}
-                >
-                  {artist.name}
-                </h1>
-                {artist.verified && <VerifiedBadge />}
-                {artist.elderStatus && <ElderBadge />}
-              </div>
-              <div
-                className="mt-2 flex flex-wrap items-center gap-3 text-sm text-white/85 lg:text-base"
-              >
-                <span className="font-mono">@{artist.handle}</span>
-                <span aria-hidden>·</span>
-                <span className="flex items-center gap-1.5">
-                  <span aria-hidden>{nation?.flag}</span>
-                  <span>{nation?.name}</span>
-                </span>
-                <span aria-hidden>·</span>
-                <span>{artist.city}</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {!isSelf && (
-              <FollowButton
-                handle={artist.handle}
-                initiallyFollowing={userFollowsHandle(viewer.id, artist.id)}
-                variant="primary"
-              />
-            )}
-            {!isSelf && (
-              <Link
-                href={`/messages/${artist.handle}`}
-                className="rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
-                style={{ background: 'var(--accent-jade)' }}
-              >
-                <Icon name="message-circle" size={14} className="mr-1 inline" />
-                Message
-              </Link>
-            )}
-            {isSelf && (
-              <Link
-                href="/analytics"
-                className="rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
-                style={{ background: 'var(--moana)' }}
-              >
-                <Icon name="bar-chart-2" size={14} className="mr-1 inline" />
-                Analytics
-              </Link>
-            )}
-            {isSelf && (
-              <Link
-                href="/settings/profile"
-                className="rounded-md px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-[1.03]"
-                style={{ background: 'var(--accent-gold)' }}
-              >
-                <Icon name="edit-3" size={14} className="mr-1 inline" />
-                Edit profile
-              </Link>
-            )}
-            <ShareButton handle={artist.handle} name={artist.name} variant="ghost" />
-          </div>
+          )}
+          {!isSelf && (
+            <Link
+              href={`/messages/${artist.handle}`}
+              className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+              style={{ borderColor: 'color-mix(in srgb, var(--ink) 15%, transparent)', color: 'var(--ink)' }}
+            >
+              <Icon name="message-circle" size={14} />
+              Message
+            </Link>
+          )}
+          {isSelf && (
+            <Link
+              href="/settings/profile"
+              className="flex-1 sm:flex-none rounded-xl px-5 py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ background: 'var(--ink)', color: 'var(--bg)' }}
+            >
+              <Icon name="edit-3" size={14} className="mr-1.5 inline" />
+              Edit profile
+            </Link>
+          )}
+          {isSelf && (
+            <Link
+              href="/analytics"
+              className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+              style={{ borderColor: 'color-mix(in srgb, var(--ink) 15%, transparent)', color: 'var(--ink)' }}
+            >
+              <Icon name="bar-chart-2" size={14} />
+              Analytics
+            </Link>
+          )}
+          <ShareButton handle={artist.handle} name={artist.name} variant="ghost" />
         </div>
       </div>
-    </header>
-  );
-}
-
-function StatsBar({ artist }: { artist: HydratedArtist }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-      <Stat label="Followers" value={formatCount(artist.followers)} />
-      <Stat label="Following" value={formatCount(artist.following)} />
-      <Stat label="Posts" value={formatCount(artist.postsCount)} />
-      <Stat label="Works sold" value={formatCount(artist.worksSold)} />
-      <Stat label="Supporters" value={formatCount(artist.supporters)} />
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+/**
+ * Statement — first paragraph rendered as a serif pull quote, the
+ * remainder as ordinary editorial prose. Replaces the previous "guess
+ * which paragraph is short enough to be a quote" middle-paragraph
+ * heuristic with something predictable.
+ */
+function ArtistStatement({ statement }: { statement: string }) {
+  const paragraphs = statement.split('\n\n').filter(Boolean);
+  const [first, ...rest] = paragraphs;
   return (
-    <div
-      className="rounded-lg border p-3 text-center"
+    <section>
+      <div className="mb-4 border-b pb-2" style={{ borderColor: 'var(--hairline)' }}>
+        <h2 className="font-display text-lg font-bold">Artist statement</h2>
+      </div>
+      {first && (
+        <blockquote
+          className="mt-4 border-l-2 pl-5 font-editorial italic leading-relaxed"
+          style={{ borderColor: 'var(--brand)', color: 'var(--ink)', fontSize: 22 }}
+        >
+          &ldquo;{first}&rdquo;
+        </blockquote>
+      )}
+      {rest.length > 0 && (
+        <div className="mt-5 space-y-4 text-[15px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
+          {rest.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * Quick facts sidebar — icon-accented rows. Each row gets a 16px lucide
+ * icon in the gutter; the label is small caps and the value is the
+ * actual content.
+ */
+function QuickFacts({ artist }: { artist: HydratedArtist }) {
+  const nation = getNation(artist.primaryNationId);
+  const facts: { icon: string; label: string; value: string }[] = [
+    { icon: 'palette', label: 'Artform', value: artist.artforms.join(' · ') },
+    { icon: 'clock', label: 'Years active', value: `${artist.yearsActive} years` },
+    { icon: 'map-pin', label: 'Primary island', value: nation?.name ?? '' },
+  ];
+  if (artist.affiliations.length > 1) {
+    facts.push({
+      icon: 'users',
+      label: 'Affiliations',
+      value: artist.affiliations.map((id) => getNation(id)?.name ?? id).join(' · '),
+    });
+  }
+  facts.push({ icon: 'globe', label: 'City', value: artist.city });
+
+  return (
+    <section
+      className="rounded-2xl border p-5"
       style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
     >
-      <div className="font-mono text-xl font-semibold">{value}</div>
-      <div className="text-[10px] uppercase tracking-[0.06em] leading-tight" style={{ color: 'var(--ink-soft)' }}>
-        {label}
+      <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--ink-muted)' }}>
+        Quick facts
+      </h3>
+      <div className="space-y-4">
+        {facts.map((f) => (
+          <div key={f.label} className="flex items-start gap-3">
+            <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--ink-muted)' }}>
+              <Icon name={f.icon} size={16} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-muted)' }}>
+                {f.label}
+              </p>
+              <p className="mt-0.5 text-sm font-medium break-words" style={{ color: 'var(--ink)' }}>
+                {f.value}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
-  );
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-        {label}
-      </dt>
-      <dd className="mt-0.5" style={{ color: 'var(--ink)' }}>
-        {value}
-      </dd>
-    </div>
+    </section>
   );
 }
 
