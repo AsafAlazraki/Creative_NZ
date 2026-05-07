@@ -36,6 +36,8 @@ import {
   Moon,
   Circle,
   Dot,
+  Mail,
+  Edit3,
 } from 'lucide-react';
 
 const MAP = {
@@ -76,6 +78,8 @@ const MAP = {
   moon: Moon,
   circle: Circle,
   dot: Dot,
+  mail: Mail,
+  'edit-3': Edit3,
 } as const;
 
 export type IconName = keyof typeof MAP;

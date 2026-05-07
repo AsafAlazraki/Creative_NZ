@@ -1,17 +1,31 @@
-import Link from 'next/link';
 import { getArticles } from '@/lib/repo';
-import { CulturalPattern } from '@/components/cultural/CulturalPattern';
+import {
+  KeteHero,
+  SectionHeader,
+  FeatureCard,
+  CompactCard,
+  WideHorizontalCard,
+  KoreroMaiCTA,
+} from '@/components/kete/KeteCards';
+import { KeteTopicNav } from '@/components/kete/KeteTopicNav';
 
 export const metadata = { title: 'Kete Toolkit · KavaWorks' };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  'making-a-living': 'Making a living',
-  'navigating-grants': 'Navigating grants',
-  'cultural-protocols': 'Cultural protocols',
-  'shipping-logistics': 'Shipping & logistics',
-  'taxes': 'Taxes for artists in NZ',
-  'copyright': 'Copyright & moral rights',
+const ROLE_LABELS: Record<string, string> = {
+  artist: 'Practitioner',
+  adviser: 'Arts Adviser',
+  elder: 'Elder',
+  historian: 'Historian',
 };
+
+function initialsFor(name: string): string {
+  return name
+    .split(/[\s'-]+/)
+    .map((w) => w[0]?.toUpperCase())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('');
+}
 
 export default async function KetePage() {
   const articles = getArticles();
@@ -20,101 +34,108 @@ export default async function KetePage() {
     return acc;
   }, {});
 
-  return (
-    <div className="px-4 py-6 lg:px-10">
-      <CulturalPattern
-        id="pattern-niu"
-        opacity={0.1}
-        tone="brand"
-        size={56}
-        className="mb-8 overflow-hidden rounded-2xl border"
-      >
-        <div className="grid gap-6 p-8 md:p-12 lg:grid-cols-[1fr_auto]">
-          <div>
-            <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
-              Kete Toolkit
-            </div>
-            <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl break-words">
-              Tautua — free guidance from practitioners who have been there.
-            </h1>
-            <p className="mt-3 max-w-2xl font-editorial italic" style={{ color: 'var(--ink-muted)', fontSize: 18, lineHeight: 1.5 }}>
-              Articles written by Pacific artists, arts advisers, and elders. All free, always. Inati.
-            </p>
-          </div>
-          <aside className="hidden self-start lg:block" style={{ minWidth: 220 }}>
-            <div className="rounded-xl border p-5 text-sm" style={{ borderColor: 'var(--hairline)', background: 'color-mix(in srgb, var(--surface) 70%, transparent)', backdropFilter: 'blur(4px)' }}>
-              <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>The Kete</div>
-              <div className="mt-3 space-y-3">
-                <KeteStat value={String(articles.length)} label="articles" />
-                <KeteStat value={String(Object.keys(byCategory).length)} label="topic threads" />
-                <KeteStat value="Free" label="always · always inati" accent />
-              </div>
-            </div>
-          </aside>
-        </div>
-      </CulturalPattern>
+  const shipping = byCategory['shipping-logistics']?.[0];
+  const living = byCategory['making-a-living']?.[0];
+  const grants = byCategory['navigating-grants']?.[0];
+  const protocols = byCategory['cultural-protocols'] ?? [];
+  const [proto1, proto2, proto3] = protocols;
 
-      {Object.entries(byCategory).map(([cat, list]) => (
-        <section key={cat} className="mb-10">
-          <h2 className="mb-4 font-display text-xl font-semibold">
-            {CATEGORY_LABELS[cat] ?? cat}
-          </h2>
-          <div className="grid gap-5 md:grid-cols-2">
-            {list.map((a) => (
-              <Link
-                key={a.id}
-                href={`/kete/${a.id}`}
-                className="rounded-xl border p-5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
-                style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
-              >
-                <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-                  {a.readTimeMin} min read · by {a.author}
-                </div>
-                <h3 className="mt-2 font-display text-lg font-semibold">{a.title}</h3>
-                <p className="mt-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
-                  {a.excerpt}
-                </p>
-              </Link>
-            ))}
-          </div>
+  return (
+    <div className="page-fade-in flex flex-col gap-7 px-4 py-6 lg:px-6">
+      <KeteHero articleCount={articles.length} threadCount={Object.keys(byCategory).length} />
+
+      <KeteTopicNav />
+
+      {shipping && (
+        <section id="shipping" className="scroll-mt-20">
+          <SectionHeader title="Shipping & logistics" count={1} />
+          <FeatureCard
+            bgColor="#0c2d4a"
+            watermarkWord="SHIP"
+            readTime={shipping.readTimeMin}
+            title={shipping.title}
+            excerpt={shipping.excerpt}
+            authorInitials={initialsFor(shipping.author)}
+            authorName={shipping.author}
+            authorRole={ROLE_LABELS[shipping.authorRole] ?? shipping.authorRole}
+            slug={shipping.id}
+          />
         </section>
-      ))}
+      )}
 
-      <section
-        className="mt-10 rounded-xl border p-5"
-        style={{
-          borderColor: 'color-mix(in srgb, var(--accent-coral) 30%, transparent)',
-          background: 'color-mix(in srgb, var(--accent-coral) 4%, transparent)',
-        }}
-      >
-        <h2 className="font-display text-lg font-semibold">Kōrero mai — ask an adviser</h2>
-        <p className="mt-2 text-sm" style={{ color: 'var(--ink-muted)' }}>
-          Book a kōrero with a Pacific Arts Practice Adviser. Free, confidential, no obligation.
-        </p>
-        <a
-          href="mailto:koreromai@kavaworks.demo"
-          className="mt-3 inline-block rounded-md border px-4 py-2 text-sm font-semibold"
-          style={{ borderColor: 'var(--hairline)' }}
-        >
-          koreromai@kavaworks.demo
-        </a>
-      </section>
-    </div>
-  );
-}
+      {living && (
+        <section id="living" className="scroll-mt-20">
+          <SectionHeader title="Making a living" count={1} />
+          <FeatureCard
+            bgColor="#2a1500"
+            watermarkWord="MANA"
+            readTime={living.readTimeMin}
+            title={living.title}
+            excerpt={living.excerpt}
+            authorInitials={initialsFor(living.author)}
+            authorName={living.author}
+            authorRole={ROLE_LABELS[living.authorRole] ?? living.authorRole}
+            slug={living.id}
+          />
+        </section>
+      )}
 
-function KeteStat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
-  return (
-    <div className="flex items-baseline justify-between gap-3 border-b pb-3 last:border-b-0 last:pb-0" style={{ borderColor: 'var(--hairline)' }}>
-      <span
-        className="font-display text-2xl font-semibold leading-none"
-        style={{ color: accent ? 'var(--accent-jade)' : 'var(--ink)' }}
-      >
-        {value}
-      </span>
-      <span className="text-xs uppercase tracking-wider text-right" style={{ color: 'var(--ink-soft)' }}>
-        {label}
-      </span>
+      {grants && (
+        <section id="grants" className="scroll-mt-20">
+          <SectionHeader title="Navigating grants" count={1} />
+          <FeatureCard
+            bgColor="#042e20"
+            watermarkWord="AOG"
+            readTime={grants.readTimeMin}
+            title={grants.title}
+            excerpt={grants.excerpt}
+            authorInitials={initialsFor(grants.author)}
+            authorName={grants.author}
+            authorRole={ROLE_LABELS[grants.authorRole] ?? grants.authorRole}
+            slug={grants.id}
+          />
+        </section>
+      )}
+
+      {protocols.length > 0 && (
+        <section id="protocols" className="scroll-mt-20">
+          <SectionHeader title="Cultural protocols" count={protocols.length} />
+          {proto1 && proto2 && (
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <CompactCard
+                readTime={proto1.readTimeMin}
+                title={proto1.title}
+                excerpt={proto1.excerpt}
+                authorName={proto1.author}
+                authorRole={ROLE_LABELS[proto1.authorRole] ?? proto1.authorRole}
+                slug={proto1.id}
+              />
+              <CompactCard
+                readTime={proto2.readTimeMin}
+                title={proto2.title}
+                excerpt={proto2.excerpt}
+                authorName={proto2.author}
+                authorRole={ROLE_LABELS[proto2.authorRole] ?? proto2.authorRole}
+                slug={proto2.id}
+              />
+            </div>
+          )}
+          {proto3 && (
+            <div className="mt-2">
+              <WideHorizontalCard
+                readTime={proto3.readTimeMin}
+                title={proto3.title}
+                excerpt={proto3.excerpt}
+                authorName={proto3.author}
+                authorRole={ROLE_LABELS[proto3.authorRole] ?? proto3.authorRole}
+                slug={proto3.id}
+              />
+            </div>
+          )}
+        </section>
+      )}
+
+      <KoreroMaiCTA />
     </div>
   );
 }
