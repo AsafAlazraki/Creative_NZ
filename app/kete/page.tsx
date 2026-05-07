@@ -29,16 +29,28 @@ export default async function KetePage() {
         size={56}
         className="mb-8 overflow-hidden rounded-2xl border"
       >
-        <div className="p-8 md:p-12">
-          <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
-            Kete Toolkit
+        <div className="grid gap-6 p-8 md:p-12 lg:grid-cols-[1fr_auto]">
+          <div>
+            <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
+              Kete Toolkit
+            </div>
+            <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl break-words">
+              Tautua — free guidance from practitioners who have been there.
+            </h1>
+            <p className="mt-3 max-w-2xl font-editorial italic" style={{ color: 'var(--ink-muted)', fontSize: 18, lineHeight: 1.5 }}>
+              Articles written by Pacific artists, arts advisers, and elders. All free, always. Inati.
+            </p>
           </div>
-          <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl break-words">
-            Tautua — free guidance from practitioners who have been there.
-          </h1>
-          <p className="mt-3 max-w-2xl font-editorial italic" style={{ color: 'var(--ink-muted)', fontSize: 18, lineHeight: 1.5 }}>
-            Articles written by Pacific artists, arts advisers, and elders. All free, always. Inati.
-          </p>
+          <aside className="hidden self-start lg:block" style={{ minWidth: 220 }}>
+            <div className="rounded-xl border p-5 text-sm" style={{ borderColor: 'var(--hairline)', background: 'color-mix(in srgb, var(--surface) 70%, transparent)', backdropFilter: 'blur(4px)' }}>
+              <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>The Kete</div>
+              <div className="mt-3 space-y-3">
+                <KeteStat value={String(articles.length)} label="articles" />
+                <KeteStat value={String(Object.keys(byCategory).length)} label="topic threads" />
+                <KeteStat value="Free" label="always · always inati" accent />
+              </div>
+            </div>
+          </aside>
         </div>
       </CulturalPattern>
 
@@ -87,6 +99,22 @@ export default async function KetePage() {
           koreromai@kavaworks.demo
         </a>
       </section>
+    </div>
+  );
+}
+
+function KeteStat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 border-b pb-3 last:border-b-0 last:pb-0" style={{ borderColor: 'var(--hairline)' }}>
+      <span
+        className="font-display text-2xl font-semibold leading-none"
+        style={{ color: accent ? 'var(--accent-jade)' : 'var(--ink)' }}
+      >
+        {value}
+      </span>
+      <span className="text-xs uppercase tracking-wider text-right" style={{ color: 'var(--ink-soft)' }}>
+        {label}
+      </span>
     </div>
   );
 }

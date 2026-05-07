@@ -41,21 +41,41 @@ export function GreetingStrip({ name, nationId }: { name: string; nationId: stri
   return (
     <div
       className="mb-6 rounded-2xl overflow-hidden relative"
-      style={{ background: 'var(--moana)', color: '#fff', minHeight: 180, padding: 'clamp(24px, 4vw, 48px)' }}
+      style={{
+        background: 'linear-gradient(135deg, #0a3654 0%, #0b3d5c 40%, #134a6a 100%)',
+        color: '#fff',
+        minHeight: 200,
+        padding: 'clamp(24px, 4vw, 48px)',
+      }}
     >
-      {/* Pattern overlay */}
+      {/* Soft warm highlight (top-left) — adds atmospheric depth */}
       <div style={{
-        position: 'absolute', inset: 0, opacity: 0.08,
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'radial-gradient(circle at 12% 18%, rgba(232, 195, 122, 0.16) 0%, transparent 45%)',
+      }} />
+
+      {/* Repeating motif overlay across whole card */}
+      <div style={{
+        position: 'absolute', inset: 0, opacity: 0.1, pointerEvents: 'none',
         backgroundImage: patternUrl, backgroundSize: 56,
       }} />
-      {/* Gradient overlay */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'linear-gradient(135deg, rgba(10,54,84,0.95) 0%, rgba(10,54,84,0.6) 100%)',
-      }} />
+
+      {/* Larger anchor motif on the right — gives the empty side a visual weight */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', top: '-25%', right: '-8%', width: 360, height: 360,
+          opacity: 0.18, pointerEvents: 'none',
+          backgroundImage: patternUrl, backgroundSize: 240, backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          maskImage: 'radial-gradient(circle at center, #000 30%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, #000 30%, transparent 75%)',
+        }}
+      />
+
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 8, fontWeight: 500 }}>
+        <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 8, fontWeight: 500, letterSpacing: '0.02em' }}>
           {state.greeting}, {name.split(' ')[0]}
         </div>
         <h1
@@ -69,11 +89,11 @@ export function GreetingStrip({ name, nationId }: { name: string; nationId: stri
         </h1>
         <blockquote style={{
           fontFamily: 'var(--font-editorial)', fontStyle: 'italic',
-          fontSize: 15, opacity: 0.8, maxWidth: 440, lineHeight: 1.5, margin: 0,
+          fontSize: 15, opacity: 0.85, maxWidth: 440, lineHeight: 1.5, margin: 0,
         }}>
-          "{state.proverb.text}"
-          <footer style={{ marginTop: 6, fontSize: 12, opacity: 0.7, fontStyle: 'normal' }}>
-            — {state.proverb.language}
+          &ldquo;{state.proverb.text}&rdquo;
+          <footer style={{ marginTop: 6, fontSize: 12, opacity: 0.65, fontStyle: 'normal' }}>
+            &mdash; {state.proverb.language}
           </footer>
         </blockquote>
       </div>

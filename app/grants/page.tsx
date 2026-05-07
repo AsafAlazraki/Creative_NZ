@@ -12,6 +12,8 @@ export default async function GrantsPage() {
   const sortedSoon = [...grants]
     .map((g) => ({ g, days: daysUntil(g.deadline) }))
     .sort((a, b) => a.days - b.days);
+  const totalFunding = grants.reduce((sum, g) => sum + (g.amountMax ?? 0), 0);
+  const closingThisMonth = sortedSoon.filter((x) => x.days > 0 && x.days <= 30).length;
 
   return (
     <div className="px-4 py-6 lg:px-10">
@@ -22,23 +24,35 @@ export default async function GrantsPage() {
         size={56}
         className="mb-10 overflow-hidden rounded-2xl border"
       >
-        <div className="p-8 md:p-12">
-          <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
-            Grants
+        <div className="grid gap-6 p-8 md:p-12 lg:grid-cols-[1fr_auto]">
+          <div>
+            <div className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--ink-soft)' }}>
+              Grants
+            </div>
+            <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl break-words">
+              Funding for Pacific artists and organisations.
+            </h1>
+            <p
+              className="mt-3 max-w-2xl font-editorial italic"
+              style={{ color: 'var(--ink-muted)', fontSize: 18, lineHeight: 1.5 }}
+            >
+              Every grant here is real. Deadlines, amounts, and source URLs link to the official
+              Creative New Zealand pages. Inati — access to funding information is free.
+            </p>
+            <div className="mt-6">
+              <GrantWizard grants={grants} />
+            </div>
           </div>
-          <h1 className="mt-2 font-display text-4xl font-semibold md:text-5xl break-words">
-            Funding for Pacific artists and organisations.
-          </h1>
-          <p
-            className="mt-3 max-w-2xl font-editorial italic"
-            style={{ color: 'var(--ink-muted)', fontSize: 18, lineHeight: 1.5 }}
-          >
-            Every grant here is real. Deadlines, amounts, and source URLs link to the official
-            Creative New Zealand pages. Inati — access to funding information is free.
-          </p>
-          <div className="mt-6">
-            <GrantWizard grants={grants} />
-          </div>
+          <aside className="hidden self-start lg:block" style={{ minWidth: 220 }}>
+            <div className="rounded-xl border p-5 text-sm" style={{ borderColor: 'var(--hairline)', background: 'color-mix(in srgb, var(--surface) 70%, transparent)', backdropFilter: 'blur(4px)' }}>
+              <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>This year</div>
+              <div className="mt-3 space-y-3">
+                <HeroStat value={String(grants.length)} label="grants listed" />
+                <HeroStat value={formatPrice(totalFunding).replace('NZ$', '$')} label="combined ceiling" />
+                <HeroStat value={String(closingThisMonth)} label="closing this month" accent />
+              </div>
+            </div>
+          </aside>
         </div>
       </CulturalPattern>
 
@@ -101,6 +115,22 @@ export default async function GrantsPage() {
           ))}
         </div>
       </section>
+    </div>
+  );
+}
+
+function HeroStat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 border-b pb-3 last:border-b-0 last:pb-0" style={{ borderColor: 'var(--hairline)' }}>
+      <span
+        className="font-display text-2xl font-semibold leading-none"
+        style={{ color: accent ? 'var(--accent-coral)' : 'var(--ink)' }}
+      >
+        {value}
+      </span>
+      <span className="text-xs uppercase tracking-wider text-right" style={{ color: 'var(--ink-soft)' }}>
+        {label}
+      </span>
     </div>
   );
 }
