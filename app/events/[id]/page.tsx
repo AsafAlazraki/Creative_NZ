@@ -17,25 +17,34 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const endsAt = new Date(e.endsAt);
   const isPast = startsAt < now;
   const isMultiDay = endsAt.toDateString() !== startsAt.toDateString();
-  const img = coverImageForEvent(e.id, 1200, 600);
+  const img = coverImageForEvent(e.id, 1600, 900);
 
+  const dayNum = startsAt.getDate();
+  const monthShort = startsAt.toLocaleDateString('en-NZ', { month: 'short' });
+  const yearNum = startsAt.getFullYear();
   const dateFmt = startsAt.toLocaleDateString('en-NZ', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
   const timeFmt = (d: Date) => d.toLocaleTimeString('en-NZ', { hour: 'numeric', minute: '2-digit' });
 
-  // ICS calendar download — works without a server endpoint by using a data: URL
+  // ICS calendar download — no server endpoint needed.
   const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//KavaWorks//EN\nBEGIN:VEVENT\nUID:${e.id}@kavaworks\nSUMMARY:${escapeIcs(e.title)}\nDESCRIPTION:${escapeIcs(e.description)}\nLOCATION:${escapeIcs(e.venue)}\nDTSTART:${toIcsDate(startsAt)}\nDTEND:${toIcsDate(endsAt)}\nEND:VEVENT\nEND:VCALENDAR`;
   const icsHref = `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
 
   return (
     <div className="px-4 py-6 lg:px-10">
-      <Link href="/events" className="mb-6 inline-flex items-center gap-1 text-sm font-semibold hover:underline" style={{ color: 'var(--brand)' }}>
+      <Link
+        href="/events"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+        style={{ color: 'var(--brand)' }}
+      >
         ← All events
       </Link>
 
-      <article className="overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}>
-        <div className="relative w-full aspect-[21/9] overflow-hidden bg-[color:var(--surface-2)]">
+      {/* Full-bleed poster hero — taller, dramatic gradient, identity
+          overlaid on the image rather than below it. */}
+      <header className="relative overflow-hidden rounded-2xl">
+        <div className="relative h-72 w-full sm:h-80 lg:h-96">
           <img
             src={img}
             alt=""
@@ -43,150 +52,243 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             loading="eager"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 60%)' }} />
-          <div className="absolute inset-0 flex items-end justify-between p-6">
-            <div className="rounded-md px-3 py-1.5 font-mono text-xs font-semibold" style={{ background: 'rgba(0,0,0,0.6)', color: '#fff', backdropFilter: 'blur(4px)' }}>
-              {dateFmt}
+          {/* Aggressive gradient — bottom dark, fade to near-black at top */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.15) 100%)',
+            }}
+          />
+
+          {/* Top-right "Past" badge if applicable */}
+          {isPast && (
+            <div
+              className="absolute right-5 top-5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/85 backdrop-blur"
+              style={{ background: 'rgba(0,0,0,0.55)' }}
+            >
+              Past event
             </div>
-            {isPast && (
-              <div className="rounded-md px-3 py-1.5 text-xs font-semibold" style={{ background: 'rgba(0,0,0,0.55)', color: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(4px)' }}>
-                Past event
+          )}
+
+          {/* Identity overlay — bottom of the hero */}
+          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7 lg:p-9">
+            <div className="flex items-end justify-between gap-5">
+              <div className="min-w-0 flex-1">
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
+                    {e.type.replace('-', ' ')}
+                  </span>
+                  <span className="text-sm text-white/75">
+                    {nation?.flag} {nation?.name}
+                  </span>
+                </div>
+                <h1
+                  className="font-display font-bold leading-[1.05] text-white break-words"
+                  style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)', letterSpacing: '-0.02em' }}
+                >
+                  {e.title}
+                </h1>
               </div>
-            )}
+              {/* Date as a visual object */}
+              <div className="hidden flex-shrink-0 text-right text-white sm:block">
+                <div className="font-display text-5xl font-bold leading-none lg:text-6xl">
+                  {dayNum}
+                </div>
+                <div className="mt-1 text-base font-medium text-white/75 lg:text-lg">
+                  {monthShort} {yearNum}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </header>
 
-        <div className="p-6 lg:p-10">
-          <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
-            <div>
-              <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-                {e.type.replace('-', ' ')} · {nation?.flag} {nation?.name}
-              </div>
-              <h1 className="mt-3 font-display text-3xl font-semibold md:text-4xl break-words">{e.title}</h1>
-              <p className="mt-4 text-base leading-relaxed" style={{ color: 'var(--ink-muted)', maxWidth: '65ch' }}>
+      {/* Attendee strip — below hero. Avatar cluster + count on the
+          left, primary CTA + add-to-calendar on the right. */}
+      <div
+        className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-5 py-4"
+        style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+      >
+        <div className="flex items-center gap-3">
+          {linked.length > 0 && (
+            <div className="flex -space-x-2">
+              {linked.slice(0, 5).map((a) => (
+                <div
+                  key={a.id}
+                  className="h-8 w-8 overflow-hidden rounded-full"
+                  style={{ boxShadow: '0 0 0 2px var(--surface)' }}
+                >
+                  <AvatarIllustrated nationId={a.primaryNationId} size={32} name={a.name} />
+                </div>
+              ))}
+            </div>
+          )}
+          <span className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
+            {e.rsvpCount.toLocaleString()}
+            <span className="ml-1 font-normal" style={{ color: 'var(--ink-muted)' }}>
+              {isPast ? 'attended' : 'attending'}
+            </span>
+          </span>
+        </div>
+        {!isPast && (
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="rounded-xl px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ background: 'var(--ink)', color: 'var(--bg)' }}
+            >
+              Register interest
+            </button>
+            <a
+              href={icsHref}
+              download={`${e.id}.ics`}
+              className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+              style={{ borderColor: 'color-mix(in srgb, var(--ink) 15%, transparent)' }}
+            >
+              <Icon name="calendar" size={14} /> Add to calendar
+            </a>
+          </div>
+        )}
+      </div>
+
+      <div className="mx-auto mt-8 max-w-5xl">
+        <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+          <div className="space-y-10">
+            <section>
+              <p className="mb-3 max-w-prose text-base leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
                 {e.description}
               </p>
+            </section>
 
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                {linked.length > 0 && (
-                  <div className="flex items-center gap-3">
-                    <div className="flex -space-x-2">
-                      {linked.slice(0, 5).map((a) => (
-                        <AvatarIllustrated key={a.id} nationId={a.primaryNationId} size={32} name={a.name} className="ring-2 ring-white" />
-                      ))}
-                    </div>
-                    <span className="text-sm" style={{ color: 'var(--ink-muted)' }}>
-                      {e.rsvpCount.toLocaleString()} {isPast ? 'attended' : 'attending'}
-                    </span>
-                  </div>
-                )}
-                {!isPast && (
-                  <>
-                    <button
-                      className="rounded-md px-5 py-2.5 text-sm font-semibold transition-colors"
-                      style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
-                    >
-                      RSVP to this event
-                    </button>
-                    <a
-                      href={icsHref}
-                      download={`${e.id}.ics`}
-                      className="inline-flex items-center gap-1.5 rounded-md border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
+            <section>
+              <div className="mb-4 border-b pb-2" style={{ borderColor: 'var(--hairline)' }}>
+                <h2 className="font-display text-lg font-bold">Schedule</h2>
+              </div>
+              <ol className="space-y-4">
+                <ScheduleRow
+                  time={timeFmt(startsAt)}
+                  title="Doors / kava"
+                  detail={`Welcome and ʻava ceremony${e.type === 'live-stream' ? '. Livestream link emailed to RSVPs 30 min prior.' : '.'}`}
+                />
+                <ScheduleRow
+                  time={addHours(startsAt, 1, timeFmt)}
+                  title="Programme begins"
+                  detail={
+                    linked.length > 0
+                      ? `Featured: ${linked.slice(0, 2).map((a) => a.name).join(', ')}.`
+                      : 'Welcome by host elders, opening performance.'
+                  }
+                />
+                <ScheduleRow
+                  time={timeFmt(endsAt)}
+                  title={isMultiDay ? 'Final day closes' : 'Closes'}
+                  detail={
+                    isMultiDay
+                      ? `Multi-day event runs through ${endsAt.toLocaleDateString('en-NZ', { day: 'numeric', month: 'long' })}.`
+                      : 'Lotu and farewell.'
+                  }
+                />
+              </ol>
+              <p className="mt-3 text-xs italic" style={{ color: 'var(--ink-soft)' }}>
+                Schedule is indicative. Programme details confirmed with RSVPs the week before.
+              </p>
+            </section>
+
+            {linked.length > 0 && (
+              <section>
+                <div className="mb-4 border-b pb-2" style={{ borderColor: 'var(--hairline)' }}>
+                  <h2 className="font-display text-lg font-bold">Featured artists</h2>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {linked.map((a) => (
+                    <Link
+                      key={a.id}
+                      href={`/artist/${a.handle}`}
+                      className="flex items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]"
                       style={{ borderColor: 'var(--hairline)' }}
                     >
-                      <Icon name="calendar" size={14} /> Add to calendar
-                    </a>
-                  </>
-                )}
-              </div>
-
-              <section className="mt-10">
-                <h2 className="mb-4 font-display text-xl font-semibold">Schedule</h2>
-                <ol className="space-y-4">
-                  <ScheduleRow
-                    time={timeFmt(startsAt)}
-                    title="Doors / kava"
-                    detail={`Welcome and ʻava ceremony${e.type === 'live-stream' ? '. Livestream link emailed to RSVPs 30 min prior.' : '.'}`}
-                  />
-                  <ScheduleRow
-                    time={addHours(startsAt, 1, timeFmt)}
-                    title="Programme begins"
-                    detail={linked.length > 0
-                      ? `Featured: ${linked.slice(0, 2).map((a) => a.name).join(', ')}.`
-                      : 'Welcome by host elders, opening performance.'}
-                  />
-                  <ScheduleRow
-                    time={timeFmt(endsAt)}
-                    title={isMultiDay ? 'Final day closes' : 'Closes'}
-                    detail={isMultiDay
-                      ? `Multi-day event runs through ${endsAt.toLocaleDateString('en-NZ', { day: 'numeric', month: 'long' })}.`
-                      : 'Lotu and farewell.'}
-                  />
-                </ol>
-                <p className="mt-3 text-xs italic" style={{ color: 'var(--ink-soft)' }}>
-                  Schedule is indicative. Programme details confirmed with RSVPs the week before.
-                </p>
-              </section>
-
-              {linked.length > 0 && (
-                <section className="mt-10">
-                  <h2 className="mb-4 font-display text-xl font-semibold">Featured artists</h2>
-                  <div className="flex flex-wrap gap-4">
-                    {linked.map((a) => (
-                      <Link key={a.id} href={`/artist/${a.handle}`} className="flex items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_3%,transparent)]" style={{ borderColor: 'var(--hairline)' }}>
-                        <AvatarIllustrated nationId={a.primaryNationId} size={40} name={a.name} />
-                        <div>
-                          <div className="font-semibold text-sm">{a.name}</div>
-                          <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{a.artforms.slice(0, 1).join(', ')}</div>
+                      <AvatarIllustrated nationId={a.primaryNationId} size={40} name={a.name} />
+                      <div>
+                        <div className="text-sm font-semibold">{a.name}</div>
+                        <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                          {a.artforms.slice(0, 1).join(', ')}
                         </div>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+
+          <aside className="space-y-4">
+            {/* When — calendar-card treatment with dark header */}
+            <div
+              className="overflow-hidden rounded-2xl border"
+              style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+            >
+              <div className="px-4 py-3 text-center" style={{ background: 'var(--ink)' }}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/65">When</p>
+              </div>
+              <div className="space-y-3 p-5">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-muted)' }}>
+                    Date
+                  </p>
+                  <p className="font-display text-lg font-bold leading-snug">{dateFmt}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-muted)' }}>
+                    Time
+                  </p>
+                  <p className="text-sm font-medium">
+                    {timeFmt(startsAt)} – {timeFmt(endsAt)}
+                    {isMultiDay && (
+                      <span style={{ color: 'var(--ink-muted)' }}> · multi-day</span>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-muted)' }}>
+                    Where
+                  </p>
+                  <p className="text-sm font-medium">{e.venue}</p>
+                  {e.type === 'live-stream' && (
+                    <p className="mt-0.5 text-xs italic" style={{ color: 'var(--ink-muted)' }}>
+                      Streamed online — RSVP for link
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-muted)' }}>
+                    Format
+                  </p>
+                  <p className="text-sm font-medium">
+                    {e.type === 'live-stream' ? 'Livestream' : 'In person'}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <aside className="space-y-4">
-              <Meta
-                icon="calendar"
-                label="When"
-                value={dateFmt}
-                detail={`${timeFmt(startsAt)} – ${timeFmt(endsAt)}${isMultiDay ? ' · multi-day' : ''}`}
-              />
-              <Meta
-                icon="globe"
-                label="Where"
-                value={e.venue}
-                detail={e.type === 'live-stream' ? 'Streamed online — RSVP for link' : `${nation?.name ?? ''}`}
-              />
-              <Meta
-                icon="users"
-                label="Format"
-                value={e.type === 'live-stream' ? 'Livestream' : 'In person'}
-                detail={`${e.rsvpCount.toLocaleString()} ${isPast ? 'attended' : 'going'}`}
-              />
-              <div className="rounded-xl border p-4 text-sm" style={{ borderColor: 'var(--hairline)', background: 'var(--surface-2)' }}>
-                <div className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Accessibility</div>
-                <p className="mt-2" style={{ color: 'var(--ink-muted)' }}>
-                  Wheelchair access. NZSL on request — email events@kavaworks.nz at least 7 days ahead.
-                </p>
-              </div>
-            </aside>
-          </div>
+            {/* Accessibility */}
+            <div
+              className="rounded-2xl border p-5"
+              style={{ borderColor: 'var(--hairline)', background: 'var(--surface)' }}
+            >
+              <p
+                className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em]"
+                style={{ color: 'var(--ink-muted)' }}
+              >
+                Accessibility
+              </p>
+              <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
+                Wheelchair access. NZSL on request — email events@kavaworks.nz at least 7 days ahead.
+              </p>
+            </div>
+          </aside>
         </div>
-      </article>
-    </div>
-  );
-}
-
-function Meta({ icon, label, value, detail }: { icon: string; label: string; value: string; detail?: string }) {
-  return (
-    <div className="rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
-      <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-        <Icon name={icon} size={13} /> {label}
       </div>
-      <div className="mt-1.5 text-sm font-semibold">{value}</div>
-      {detail && <div className="mt-0.5 text-xs" style={{ color: 'var(--ink-muted)' }}>{detail}</div>}
     </div>
   );
 }
@@ -194,9 +296,14 @@ function Meta({ icon, label, value, detail }: { icon: string; label: string; val
 function ScheduleRow({ time, title, detail }: { time: string; title: string; detail: string }) {
   return (
     <li className="flex gap-4 border-l-2 pl-4" style={{ borderColor: 'var(--brand)' }}>
-      <span className="font-mono text-sm font-semibold tabular-nums" style={{ minWidth: 64, color: 'var(--brand)' }}>{time}</span>
+      <span
+        className="font-mono text-sm font-semibold tabular-nums"
+        style={{ minWidth: 64, color: 'var(--brand)' }}
+      >
+        {time}
+      </span>
       <div>
-        <div className="font-semibold text-sm">{title}</div>
+        <div className="text-sm font-semibold">{title}</div>
         <div className="text-sm" style={{ color: 'var(--ink-muted)' }}>{detail}</div>
       </div>
     </li>
